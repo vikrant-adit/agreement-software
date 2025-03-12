@@ -2,6 +2,7 @@
     // max-width: 600px;
     margin: auto;
     padding: 5px 10px;
+    overflow: hidden;
     // text-align: center;
     .title-head{
       display: flex;
@@ -25,24 +26,32 @@
     text-align: center;
     margin: auto;
   }
-  // input {
-  //   padding: 8px;
-  //   margin-right: 10px;
-  // }
-  
+
   button {
     padding: 8px 15px;
     margin: 5px;
     cursor: pointer;
   }
   
-  table {
-    width: 100%;
+  .table-container{
+   max-height: 50vh;
+    overflow-y: auto;
+    
+    table {
+    width: 70%;
+    margin: auto;
     border-collapse: collapse;
+    
   }
-  
+  th{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: white;
+  }
   th, td {
     padding: 10px;
     border: 1px solid #ddd;
+    text-align: center;
   }
-  
+}

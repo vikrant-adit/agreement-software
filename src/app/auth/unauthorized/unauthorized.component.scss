@@ -1,0 +1,30 @@
+// unauthorized.component.scss
+.unauthorized-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    background-color: #f4f4f4; // Light gray background
+    color: #333; // Dark gray text
+  
+    .icon {
+      font-size: 4rem;
+      height: 4rem;
+      width: 4rem;
+      color: #d32f2f; // Red color for the icon
+      margin-bottom: 1rem;
+    }
+  
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: #2c3e50; // Darker blue for heading
+    }
+  
+    p {
+      font-size: 1.2rem;
+      color: #555;
+    }
+  }

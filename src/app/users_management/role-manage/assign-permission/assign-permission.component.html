@@ -1,0 +1,19 @@
+<div class="dialog-container">
+    <h2>Permissions</h2>
+    <!-- <div class="checkboxes">
+        @for(permission of allPermission;track permission){
+            <mat-checkbox  >{{permission.name}}</mat-checkbox>
+        }
+    </div> -->
+    <div class="checkboxes">
+        @for(permission of mappedPermissions;track permission){
+            <mat-checkbox [checked]="permission.checked" (change)="addNremovePermission($event,permission.id)" >{{permission.name}}</mat-checkbox>
+        }
+    </div>
+   <mat-dialog-actions>
+    <button mat-raised-button color="primary" mat-dialog-close>Cancel</button>
+
+    <button mat-raised-button color="primary" (click)="updatePermissions()">Update Permissions</button>
+   </mat-dialog-actions>
+
+</div>

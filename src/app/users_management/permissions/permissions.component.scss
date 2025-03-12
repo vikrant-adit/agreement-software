@@ -1,0 +1,37 @@
+.container{
+    padding: 10px;
+    overflow: hidden;
+    .head{
+        display: flex;
+        justify-content: space-between;
+        h2{
+            color: var(--secondary-color);
+        }
+        .add-permission{
+            display: inline;
+            gap: 1rem;
+        }
+    }
+    .table-container{
+            max-height: 50vh;
+            overflow-y: auto;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            
+          }
+          th{
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: white;
+          }
+          th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+          }
+    }
+  
+      
+}

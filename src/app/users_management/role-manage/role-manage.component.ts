@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RolesService } from '../../../services/roles/roles.service';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog } from '@angular/material/dialog';
+import { AssignPermissionComponent } from './assign-permission/assign-permission.component';
+import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-role-manage',
   standalone: true,
@@ -16,8 +19,8 @@ export class RoleManageComponent implements OnInit {
   newRole: string = '';
   editRoleId: number | null = null;
   editRoleName: string = '';
-
-  constructor(private roleService: RolesService) {}
+  private authService=inject(AuthService)
+  constructor(private roleService: RolesService, private dialog:MatDialog) {}
 
   ngOnInit() {
     this.loadRoles();
@@ -56,4 +59,16 @@ export class RoleManageComponent implements OnInit {
       this.loadRoles();
     });
   }
+  managePermission(id:number){
+    this.dialog.open(AssignPermissionComponent,
+      {
+        minWidth:'30vw',
+        data:id
+      }
+    )
+  }
+  hasPermission(permission: string): boolean {
+    return this.authService.getUserPermissions().includes(permission);
+  }
+  
 }

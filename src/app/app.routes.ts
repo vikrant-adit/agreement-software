@@ -15,6 +15,7 @@ import { PermissionsComponent } from './users_management/permissions/permissions
 import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
 import { SettingsComponent } from './users_management/settings/settings.component';
 import { AuthGuard } from './auth.guard';
+import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 export const routes: Routes = [
   {
     path: '',
@@ -26,64 +27,85 @@ export const routes: Routes = [
     component: LoginComponent,
   },
   {
+    path: 'unauthorized',
+    component: UnauthorizedComponent,
+  },
+  {
     path:'users',
     component:UsersComponent,
-    canActivate:[AuthGuard]
+    canActivate:[AuthGuard],
+    data: { permission: 'view_users' }
+  },
+  {
+    path:'update-user/:id',
+    component:CreateUserComponent,
+     canActivate:[AuthGuard],
+     data: { permission: 'edit_users' }
+  }, 
+  {
+    path:'create-user',
+    component:CreateUserComponent,
+     canActivate:[AuthGuard],
+     data: { permission: 'add_users' }
   },
   {
     path:'dashboard',
     component:DashboardComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'view_agreements' }
   },
   {
     path:'in-person-lead-form',
     component:InPersonLeadFormComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-welcome',
     component:PreAgreementWelcomeComponent,
-     canActivate:[AuthGuard]
-  },
-  {
-    path:'create-user',
-    component:CreateUserComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-form',
     component:PreAgreementFormComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-form-verification',
     component:PreAgreementFormVerificationComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
   },
   {
     path:'reactivate-form',
     component:ReactivateFormComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
   },
   {
     path:'upgrade-demo',
     component:UpgradeDemoComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
   },
   {
     path:'profile',
     component:ProfileComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
   },
   {
     path:'roles',
     component:RoleManageComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'view_roles' }
   },
   {
     path:'permissions',
     component:PermissionsComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'view_permission' }
   },
   {
     path:'verify-otp',
@@ -92,12 +114,9 @@ export const routes: Routes = [
   {
     path:'settings',
     component:SettingsComponent,
-     canActivate:[AuthGuard]
+     canActivate:[AuthGuard],
+     data: { permission: 'view_settings' }
   },
-  {
-    path:'update-user/:id',
-    component:CreateUserComponent,
-     canActivate:[AuthGuard]
-  }
+  
   
 ];

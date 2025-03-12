@@ -25,4 +25,11 @@ export class PermissionsService {
   getPermissionsForRole(role_id: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/role-permission/${role_id}`);
   }
+
+  udpatePermission(id: number, name:string, description:string): Observable<any[]>{
+    return this.http.put<any[]>(`${this.baseUrl}/update-permissions/${id}`,{name,description});
+  }
+  deletePermission(id: number):Observable<any[]>{
+    return this.http.delete<any[]>(`${this.baseUrl}/delete-permission/${id}`);
+  }
 }

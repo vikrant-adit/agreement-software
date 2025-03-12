@@ -25,11 +25,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
-import {MatDialogModule, MatDialog, MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle} from '@angular/material/dialog'
+import {MatDialogModule, MatDialog} from '@angular/material/dialog'
 import { SelectColumnDialogComponent } from './select-column-dialog/select-column-dialog.component';
 @Component({
   selector: 'app-dashboard',
@@ -198,9 +194,9 @@ export class DashboardComponent {
             }
           },
           error: (error) => {
-            if(error==="Invalid token"){
-              this.route.navigate(['/login'])
-            }
+            // if(error==="Invalid token"){
+            //   this.route.navigate(['/login'])
+            // }
             this.showErrorToast(error);
           }
         }
@@ -266,9 +262,9 @@ export class DashboardComponent {
               this.totalRecords = response.total;
             },
             error: (error) => {
-              if(error==="Invalid token"){
-                this.route.navigate(['/login'])
-              }
+              // if(error==="Invalid token"){
+              //   this.route.navigate(['/login'])
+              // }
               this.showErrorToast(error);
              
               

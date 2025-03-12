@@ -14,7 +14,10 @@
             (page)="pageChanged($event)"
         >
         </mat-paginator>
-        <button (click)="createForm()"> + Create</button>
+        @if(hasPermission('add_users')){
+          <button (click)="createForm()"> + Create</button>
+
+        }
     </div>
     <div class="table-container">
       <mat-table #dataTable [dataSource]="dataSource" matSort>
@@ -68,9 +71,13 @@
             <button mat-icon-button (click)="editUser(element.id)" matTooltip="Edit">
               <mat-icon color="accent">edit</mat-icon>
             </button>
-            <button mat-icon-button matTooltip="Delete">
-              <mat-icon color="warn" (click)="deleteUser(element.id)">delete</mat-icon>
-            </button>
+            @if(hasPermission('delete_users')){
+              <button mat-icon-button matTooltip="Delete">
+                <mat-icon color="warn" (click)="deleteUser(element.id)">delete</mat-icon>
+              </button>
+            }
+
+          
           </mat-cell>
         </ng-container>
   

@@ -33,23 +33,43 @@ login() {
     this.userService.login(username, password).subscribe({
       next: (response) => {
         this.loading = false; // Hide loader
+
         if (response.firstLogin) {
           this.openSnackBar('First-time login. Check your email for OTP.');
           this.route.navigate(['/verify-otp']);
-        } else {
-          this.route.navigate(['/dashboard']);
-          this.openSnackBar(response.message)
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('userId',response.userId)
+          return;
         }
+
+        // ✅ Store JWT tokens & user details
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        localStorage.setItem('userId', response.userId);
+        localStorage.setItem('role', response.role);
+        localStorage.setItem('permissions', JSON.stringify(response.permissions));
+
+        this.openSnackBar(response.message);
+        this.route.navigate(['/dashboard']);
       },
       error: (error) => {
         this.loading = false; // Hide loader on error
         console.error('Login failed', error);
+
+        let errorMessage = 'Login failed. Please try again.';
+        if (error.status === 401) {
+          errorMessage = 'Invalid username or password.';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+
+        this.openSnackBar(errorMessage);
+      },
+      complete: () => {
+        this.loading = false; // Ensure loader is hidden
       }
     });
   }
 }
+
 openSnackBar(msg:string) {
   this._snackBar.open(msg, 'OK', {
     horizontalPosition: 'center',

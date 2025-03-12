@@ -91,8 +91,8 @@
           </mat-radio-group>
           @if(viewPermission){
             <div class="permissions">
-                @for(permission of permissionList;track permission){
-                <mat-checkbox [checked]="permission.checked" (change)="onCheckboxChange($event, permission.id)">
+                @for(permission of mappedPermissions;track permission){
+                <mat-checkbox [checked]="permission.checked" (change)="edit?onCheckboxChange($event, permission.id):addExtraPermission($event, permission.id)">
                   {{ permission.name }}
                 </mat-checkbox>
                 } 

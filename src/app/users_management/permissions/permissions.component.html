@@ -1,63 +1,67 @@
-<!-- <div class="container">
+<div class="container">
+  <div class="head">
     <h2>Permission Management</h2>
-  
+
     <div class="add-permission">
-      <input [(ngModel)]="newPermissionName" placeholder="Permission Name" />
-      <input [(ngModel)]="newPermissionDescription" placeholder="Description" />
-      <button (click)="addPermission()">Add Permission</button>
+      <mat-form-field>
+        <mat-label>Permission Name</mat-label>
+        <input type="text" matInput [(ngModel)]="newPermissionName" />
+      </mat-form-field>
+      &nbsp; &nbsp; &nbsp;
+      <mat-form-field>
+        <mat-label>Permission Description</mat-label>
+        <input type="text" matInput [(ngModel)]="newPermissionDescription" />
+      </mat-form-field>
+      &nbsp; &nbsp; &nbsp;
+      <button mat-raised-button (click)="addPermission()">
+        Add Permission
+      </button>
     </div>
-  
-    <h3>Assign Permissions to Role</h3>
-    <select [(ngModel)]="selectedRoleId" (change)="loadRolePermissions()">
-        @for(role of roles;track role){
-            <option  [value]="role.id">{{ role.name }}</option>
-        }
-    </select>
-    <h4>Available Permissions</h4>
-    <ul>
-        @for(permission of permissions;track permission){
-            <li>
-                <input type="checkbox" [value]="permission.id" [checked]="isPermissionAssigned(permission.id)" />
-                {{ permission.name }}
-              </li>
-        }
-     
-    </ul>
-    <button (click)="assignPermissions(getSelectedPermissions())">Assign</button>
-    <h4>Assigned Permissions</h4>
-    <ul>
-        @for(permission of rolePermissions;track permissions){
-            <li>
-                {{ permission.name }} ({{ permission.description }})
-              </li>
-        }
-     
-    </ul>
-  </div> -->
-  
-  <div class="container">
-    <mat-tab-group>
-        @for(role of roles; track role) {
-          <mat-tab [label]="role.name" style="min-height:50vh;">
-            <strong>Assigned Permissions</strong>
-            <div>
-             
-              @if(permissionsMap[role.id]){
-                <div>
-                    @for(permission of permissionList; track permission) {
-                      <mat-checkbox
-                        [checked]="isPermissionAssigned(role.id, permission.id)"
-                        (change)="onCheckboxChange($event, role.id, permission.id)">
-                        {{ permission.name }}
-                      </mat-checkbox>
-                    }
-                  </div>
-              }
-             
-            </div>
-          </mat-tab>
-        }
-      </mat-tab-group>
-      
-          
   </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Role Name</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(permission of permissions;track permission){
+        <tr>
+          <td>{{ permission.id }}</td>
+          <td>
+            @if(editPermId !== permission.id){
+            <span>{{ permission.name }}</span>
+            }@else if(editPermId === permission.id){
+            <input [(ngModel)]="editPermName" />
+            }
+          </td>
+  
+          <td>
+            @if(editPermId !== permission.id){
+            <span>{{ permission.description }}</span>
+            }@else if(editPermId === permission.id){
+            <input [(ngModel)]="editPermDescription" />
+            }
+          </td>
+          <td>
+            @if(editPermId !== permission.id){
+            <button mat-raised-button (click)="startEdit(permission)">
+              Edit
+            </button>
+            }@else if (editPermId === permission.id) {
+            <button mat-raised-button (click)="updatePermission()">Save</button>
+            }
+            <button mat-raised-button (click)="deletePermission(permission.id)">
+              Delete
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

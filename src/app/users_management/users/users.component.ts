@@ -1,5 +1,5 @@
 // users.component.ts
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, inject } from '@angular/core';
 import { HeaderComponent } from "../../header/header.component";
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,9 +15,10 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { UsersInterface } from '../../../interfaces/users.interface';
 import { UserService } from '../../../services/users/user.service';
 import { DatePipe } from '@angular/common';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, Observable, Subject, switchMap } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 @Component({
     selector: 'app-dashboard',
     standalone: true,
@@ -38,6 +39,7 @@ export class UsersComponent implements OnInit {
     searchTerm: string = '';
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     private searchSubject: Subject<string> = new Subject<string>();
+   private authService =inject(AuthService);
 
     constructor(private userService: UserService,private toasterService:ToastrService,private router:Router) { }
 
@@ -120,4 +122,8 @@ export class UsersComponent implements OnInit {
         this.toasterService.success(res.message)
       })
     }
+    hasPermission(permission: string): boolean {
+      return this.authService.getUserPermissions().includes(permission);
+    }
+    
 }

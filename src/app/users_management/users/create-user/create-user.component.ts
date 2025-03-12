@@ -65,9 +65,6 @@ export class CreateUserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.permissionService.getPermissions().subscribe((res) => {
-      this.permissionList = res;
-    });
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (id) {
@@ -80,9 +77,6 @@ export class CreateUserComponent implements OnInit {
     });
 
     this.getRoles();
-    this.userForm.get('roleId')?.valueChanges.subscribe(res=>{
-      this.loadRolePermissions()
-    })
   }
 
   selectedPermission:any[]=[]
@@ -193,30 +187,60 @@ export class CreateUserComponent implements OnInit {
     }
   }
 
-  loadRolePermissions() {
-    let selectedRoleId=this.userForm.get('roleId')?.value
-        if (!selectedRoleId) return;
-        let data:any[]  
-        this.permissionService.getPermissionsForRole(selectedRoleId).subscribe(res=>{
-          data=res
-        })
-        this.permissionService.getPermissions().subscribe((permissions) => {
-        
-            
-            this.permissionList = permissions.map((permission) => ({
-              ...permission,
-              checked: data.includes(permission.id), // Mark selected
-            }));
-            console.log(this.permissionList,"role permisiojnlkasdasd")
-    
-        })
-       
-      }
 
       //get permission for selected role
+      allPermission:any[]=[]
+      mappedPermissions:any[]=[]
+      selectedRoleId:any
       getRadioInfo(event:any){
-        this.permissionService.getPermissionsForRole(event.value).subscribe(res=>{
-          console.log(res)
-        })
+        if(event.value){
+          if(event.value!=this.selectedRoleId){
+           this.userForm.get('extraPermissions')?.setValue([])
+            this.selectedRoleId=event.value
+          }
+        }
+        
+            this.permissionService.getPermissionsForRole(event.value).subscribe(selectedPermissions => {
+        this.selectedPermission = selectedPermissions;
+      
+        this.permissionService.getPermissions().subscribe(allPermissions => {
+          this.allPermission = allPermissions;
+      
+          // Transform allPermission to mark selected permissions
+          this.mappedPermissions = this.allPermission.map(permission => ({
+            ...permission,
+            checked: this.selectedPermission.some(selected => selected.id === permission.id) // Assuming permissions have an 'id' property
+          }));
+        });
+      });
+      }
+   
+      addExtraPermission(event: any, permissionId: number) {
+     
+        let selectedPermissions = this.userForm.value.extraPermissions || [];
+      
+        if (event.checked) {
+          if (!selectedPermissions.includes(permissionId)) {
+            selectedPermissions.push(permissionId);
+              this.mappedPermissions.forEach(perm=>{
+            if(perm.id==permissionId){
+              perm.checked=event.checked
+            }
+          })
+            
+          }
+        } else {
+          selectedPermissions = selectedPermissions.filter((id: number) => id !== permissionId);
+          this.mappedPermissions.forEach(perm=>{
+            if(perm.id==permissionId){
+              perm.checked=event.checked
+            }
+          })
+        }
+      
+        // Explicitly patch the updated permissions to ensure form reflects changes
+        this.userForm.patchValue({ extraPermissions: [...selectedPermissions] });
+      
+        console.log("Newly added extraPermissions:", this.userForm.value.extraPermissions);
       }
 }

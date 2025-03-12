@@ -51,4 +51,7 @@ h1{
    
   }
   
-  
+  .permissions{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  }
