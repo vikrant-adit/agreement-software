@@ -1,0 +1,103 @@
+<div class="container">
+<app-header></app-header>
+<h1>Tells Us About Your Practice</h1>
+<div class="form-container">
+  
+    <form [formGroup]="practiceForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <mat-form-field appearance="fill">
+          <mat-label>Practice Name</mat-label>
+          <input matInput formControlName="practiceName">
+          @if(practiceForm.get('practiceName')?.hasError('required')){
+            <mat-error >
+              Practice Name is required
+            </mat-error>
+          }
+         
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName">
+          @if(practiceForm.get('firstName')?.hasError('required')){
+            <mat-error>
+              First Name is required
+            </mat-error> 
+          }
+          
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Office Phone Number</mat-label>
+          <input matInput formControlName="officePhoneNumber">
+        </mat-form-field>
+       
+      </div>
+  
+      <div class="form-row">
+        <mat-form-field appearance="fill">
+          <mat-label>Select Event</mat-label>
+          <mat-select formControlName="selectEvent">
+           @for(event of eventz; track event){
+            <mat-option value="event">{{event}}</mat-option>
+            
+           }
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName">
+          @if(practiceForm.get('lastName')?.hasError('required')){
+            <mat-error>
+              Last Name is required
+            </mat-error>
+          }
+        
+        </mat-form-field>
+        
+    
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Office Email</mat-label>
+          <input matInput formControlName="officeEmail">
+        </mat-form-field>
+      </div>
+  
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>POC For Demo</mat-label>
+        <input matInput formControlName="pocForDemo">
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Practice Industry</mat-label>
+          <mat-select formControlName="practiceIndustry">
+            <mat-option value="industry1">Industry 1</mat-option>
+            <mat-option value="industry2">Industry 2</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Select PMS</mat-label>
+          <mat-select formControlName="selectPMS">
+            <mat-option value="pms1">PMS 1</mat-option>
+            <mat-option value="pms2">PMS 2</mat-option>
+            </mat-select>
+        </mat-form-field>
+    
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Select Currency</mat-label>
+          <mat-select formControlName="selectCurrency">
+            <mat-option value="usd">USD</mat-option>
+            <mat-option value="eur">EUR</mat-option>
+            </mat-select>
+        </mat-form-field>
+      </div>
+  
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="2"></textarea>
+      </mat-form-field>
+  
+    <span>
+      <button mat-raised-button color="primary" type="submit">Next</button>
+    </span>
+    </form>
+  </div>
+</div>

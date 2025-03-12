@@ -1,0 +1,93 @@
+
+
+.container {
+  width: 100%;
+  height: 100%;
+  background-image: url('https://demo.enfolytics.com/assets/images/login-screen-bg-image.png');
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  text-align: center;
+  min-width: 20rem;
+  color: white;
+}
+
+.logo {
+  width: 150px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 2px;
+  font-weight: bold;
+  color: #f4891f;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  margin-block-start: 0.5rem;
+  padding: 10px;
+  background-color: #22a9e1;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error{
+  color: rgb(255, 98, 98);
+}
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+::ng-deep .mdc-text-field--filled.mdc-text-field--disabled .mdc-text-field__input{
+  color: black !important;
+}

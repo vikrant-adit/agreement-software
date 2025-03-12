@@ -1,0 +1,46 @@
+.container{
+    background-color: var(--background-color);
+    height: 100%;
+    h1{
+        text-align: center;
+        color: var(--primary-color);
+    }
+    .form-container{
+        background-color: white;
+        width: 70vw;
+        margin: 20px auto;
+        padding: 20px;
+    }
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+      }
+    
+      .form-row mat-form-field {
+        width: 48%;
+      }
+    
+      .plan-options {
+        display: flex;
+        justify-content: space-between;
+        // margin-bottom: 20px;
+      }
+    
+      .plan-option {
+        border: 1px solid #ccc;
+        // padding: 15px;
+        width: 48%;
+        text-align: center;
+      }
+    
+      .add-ons {
+        // margin-bottom: 20px;
+        display: flex;
+      }
+    
+   
+    
+      .activation-fee {
+        margin-bottom: 20px;
+      }
+}

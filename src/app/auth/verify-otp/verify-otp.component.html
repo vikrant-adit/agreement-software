@@ -1,0 +1,33 @@
+<div class="container">.
+    <img src="https://demo.enfolytics.com/assets/images/adit-logo.png" alt="Company Logo" class="logo">
+    <form [formGroup]="verifyOtpForm" (ngSubmit)="verifyOtp()">
+        <label>Email:</label>
+        <input type="text" formControlName="email" required placeholder="Enter Email"/>
+      
+        <label>OTP:</label>
+        <input type="text" formControlName="otp" required placeholder="Enter OTP" />
+      
+        <label>New Password:</label>
+        <input type="password" formControlName="newPassword" required placeholder="Enter New Password" />
+      
+        <button type="submit" [disabled]="verifyOtpForm.invalid">Verify OTP</button>
+        @if(errorMessage){
+            <p class="error">{{ errorMessage }}</p>
+        }
+        @if(successMessage){
+            <p class="success">{{ successMessage }}</p>
+    
+        }
+        @if(verifyOtpForm.get('email')?.value){
+            <button type="button" (click)="resendOTP()" [disabled]="isResendDisabled">
+                Resend OTP
+              </button>
+        }
+       
+        @if(resendMessage){
+            <p class="info">{{ resendMessage }}</p>
+        }
+       
+      </form>
+      
+</div>

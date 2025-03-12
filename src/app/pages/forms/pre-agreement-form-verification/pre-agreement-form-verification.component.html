@@ -1,0 +1,15 @@
+<div class="container">
+    <app-header></app-header>
+    <h1>Package Change Agreement</h1>
+    <div class="form-container">
+      
+        <form [formGroup]="packageForm" (ngSubmit)="onSubmit()">
+       
+            <mat-form-field appearance="fill">
+              <mat-label>Enter Account ID or Customer ID*</mat-label>
+              <input matInput formControlName="accountID">
+            </mat-form-field>
+        
+        </form>
+      </div>
+    </div>

@@ -1,0 +1,31 @@
+<h1 mat-dialog-title>Select Fields</h1>
+  <mat-dialog-content class="content" >
+      <div class="modify-column">
+          <h3>Modify Column</h3>
+        <div class="column_list">
+          @for (column of columns; track column) {
+              <mat-checkbox [checked]="column.selected" (change)="update($event.checked, column.id)">
+                {{ column.name }}
+              </mat-checkbox>
+            }
+        </div>
+        </div>
+        <div class="selected-column">
+          <h3>Selected Column</h3>
+          <div class="column_list">
+            <div cdkDropList class="column">
+              @for(column of columns; track column) {
+                  @if(column.selected){
+                      <div class="column-box" cdkDrag>
+                        <mat-icon>drag_indicator</mat-icon> {{column.name}}
+                      </div>
+                  }
+              }
+            </div>
+          </div>
+        </div>
+  </mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data">Confirm</button>
+</mat-dialog-actions>

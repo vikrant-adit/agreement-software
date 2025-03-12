@@ -1,0 +1,63 @@
+<!-- <div class="container">
+    <h2>Permission Management</h2>
+  
+    <div class="add-permission">
+      <input [(ngModel)]="newPermissionName" placeholder="Permission Name" />
+      <input [(ngModel)]="newPermissionDescription" placeholder="Description" />
+      <button (click)="addPermission()">Add Permission</button>
+    </div>
+  
+    <h3>Assign Permissions to Role</h3>
+    <select [(ngModel)]="selectedRoleId" (change)="loadRolePermissions()">
+        @for(role of roles;track role){
+            <option  [value]="role.id">{{ role.name }}</option>
+        }
+    </select>
+    <h4>Available Permissions</h4>
+    <ul>
+        @for(permission of permissions;track permission){
+            <li>
+                <input type="checkbox" [value]="permission.id" [checked]="isPermissionAssigned(permission.id)" />
+                {{ permission.name }}
+              </li>
+        }
+     
+    </ul>
+    <button (click)="assignPermissions(getSelectedPermissions())">Assign</button>
+    <h4>Assigned Permissions</h4>
+    <ul>
+        @for(permission of rolePermissions;track permissions){
+            <li>
+                {{ permission.name }} ({{ permission.description }})
+              </li>
+        }
+     
+    </ul>
+  </div> -->
+  
+  <div class="container">
+    <mat-tab-group>
+        @for(role of roles; track role) {
+          <mat-tab [label]="role.name" style="min-height:50vh;">
+            <strong>Assigned Permissions</strong>
+            <div>
+             
+              @if(permissionsMap[role.id]){
+                <div>
+                    @for(permission of permissionList; track permission) {
+                      <mat-checkbox
+                        [checked]="isPermissionAssigned(role.id, permission.id)"
+                        (change)="onCheckboxChange($event, role.id, permission.id)">
+                        {{ permission.name }}
+                      </mat-checkbox>
+                    }
+                  </div>
+              }
+             
+            </div>
+          </mat-tab>
+        }
+      </mat-tab-group>
+      
+          
+  </div>

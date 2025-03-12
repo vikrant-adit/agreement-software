@@ -1,0 +1,16 @@
+.container{
+    background-color: var(--background-color);
+    min-height: 100%;
+    h1{
+        text-align: center;
+        color: var(--primary-color);
+    }
+    .content{
+        width: 80%;
+        margin: auto;
+        border-radius: 10px;
+        box-shadow:0 0px 5px rgba(0, 0, 0, 20%);
+        background-color: white;
+        min-height: 60vh;
+    }
+}

@@ -1,0 +1,148 @@
+
+.dashboard-container{
+  height: 100%;
+  background: rgb(216, 216, 216);
+  background-size: cover;
+  .container{
+    width: 98%;
+    overflow: hidden;
+    margin-block-start: 1rem;
+    display: flex;
+    flex-direction: column;
+    margin-inline: 15px;
+    .head{
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      .group{
+        display: flex;
+        flex-direction: row;
+        // align-items: baseline;
+        gap: 1rem;
+        button{
+          border-radius: 6px;
+          height: 3.5rem;
+        }
+      }
+    }
+    .table-container {
+      width: 100%;
+      overflow: auto;
+      max-height: 60vh;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: #b0afaf;
+        border-radius: 6px;
+
+        &:hover {
+          background: #898888;
+        }
+      }
+    }
+
+  }
+}
+
+
+
+.mat-mdc-header-row{
+background-color: var(--primary-color);
+color: white;
+font-weight: 600;
+}
+.mat-mdc-header-cell{
+  text-align: center;
+  border-left: 1px dashed rgba(0, 0, 0, 0.3);
+}
+
+.mat-mdc-cell {
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.8); 
+  border-collapse: collapse;
+  text-align: center;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+.sticky-right-1-head, .sticky-right-2-head {
+
+  position: sticky;
+  right: 0;
+  z-index: 3; /* Optional: Adjust as needed */
+}
+.sticky-right-1-row, .sticky-right-2-row {
+  position: sticky;
+  right: 0;
+  z-index: 1; /* Optional: Adjust as needed */
+}
+
+.sticky-right-1-head {
+  right: 95px; /* Adjust as needed */
+
+}
+
+.sticky-right-2-head {
+  right: 0;
+  min-width: 6.2rem;
+}
+.sticky-right-1-row {
+  right: 95px; /* Adjust as needed */
+}
+
+.sticky-right-2-row {
+  right: 0;
+  min-width: 6.2rem;
+}
+
+.sticky-left-1-head, .sticky-left-2-head {
+  min-width: 8rem;
+  position: sticky;
+  left: 0;
+  z-index: 3; /* Optional: Adjust as needed */
+}
+.sticky-left-1-row, .sticky-left-2-row {
+  position: sticky;
+  min-width: 8rem;
+
+  left: 0;
+  z-index: 1; /* Optional: Adjust as needed */
+}
+
+.sticky-left-1-head {
+  left: 120px; /* Adjust as needed */
+}
+
+.sticky-left-2-head {
+  left: 0;
+}
+.sticky-left-1-row {
+  left: 120px; /* Adjust as needed */
+}
+
+.sticky-left-2-row {
+  left: 0;
+}
+
+.table-head-1{
+  position: sticky;
+  top: 56px;
+  width: 100%;
+  z-index: 10;
+  }
+  .table-head-2{
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+    }
+.action-bar{
+  display: inline-flex;
+}

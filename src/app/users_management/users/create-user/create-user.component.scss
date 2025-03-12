@@ -1,0 +1,54 @@
+.container{
+    background-color:var(--background-color);
+    height: 100%;
+}
+h1{
+  color: var(--primary-color);
+  text-align: center;
+}
+.user-form {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 6px;
+    box-shadow:0 6px 21px rgb(0 0 0 / 26%);
+    padding: 10px;
+    gap: 15px;
+    max-width: 80vw;
+    margin: 2rem auto;
+    .group{
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        align-items: center;
+        .full-width {
+            width: 400px;
+          }
+          .submitButton {
+            background-color: var(--primary-color);
+            color: white;
+            width: 20rem;
+            // align-self: center;
+          }
+          .title{
+            position: absolute;
+            // top:0;
+
+          }
+          .checkboxes{
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            // border: 1px solid black;
+          }
+    }
+    .role{
+      width: 70%;
+      margin: auto;
+    }
+      
+   
+  }
+  
+  

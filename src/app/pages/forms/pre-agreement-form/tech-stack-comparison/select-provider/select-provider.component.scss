@@ -1,0 +1,10 @@
+.dialog-container{
+    padding: 20px;
+    .column{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .search-field{
+        width: 100%;
+    }  
+}

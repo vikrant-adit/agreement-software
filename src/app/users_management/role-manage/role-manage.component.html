@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="title-head">
+    <h2>Role Management</h2>
+  
+    <!-- Add Role -->
+    <div class="add-role">
+      <mat-form-field>
+        <mat-label> Enter Role Name </mat-label>
+        <input matInput [(ngModel)]="newRole" placeholder="Enter Role Name" />
+      </mat-form-field>
+      
+      <button mat-raised-button (click)="addRole()">Add Role</button>
+    </div>
+  </div>
+  
+    <!-- Role List -->
+   <div class="role-table">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Role Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+       
+        @for(role of roles;track role){
+            <tr>
+                <td>{{ role.id }}</td>
+            <td>
+              @if(editRoleId !== role.id){
+                  <span>{{ role.name }}</span>
+              }@else if(editRoleId === role.id){
+                  <input [(ngModel)]="editRoleName" />
+              }
+            </td>
+          <td>
+            @if(editRoleId !== role.id){
+                <button mat-raised-button (click)="startEdit(role)">Edit</button>
+            }@else if (editRoleId === role.id) {
+                <button mat-raised-button (click)="updateRole()">Save</button>
+            }
+            <button mat-raised-button (click)="deleteRole(role.id)">Delete</button>
+          </td>
+        </tr>
+        }
+        
+      </tbody>
+    </table>
+   </div>
+  </div>
+  

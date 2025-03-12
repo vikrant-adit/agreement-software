@@ -1,0 +1,13 @@
+<div class="container">
+  <app-header></app-header>
+<div class="actions-container">
+    @for(action of actions;track action){
+        <div  class="action-item">
+            <button mat-raised-button color="primary" (click)="routeToForms(action.route)">
+              <mat-icon class="icon">{{ action.icon }}</mat-icon>
+              <span>{{ action.label }}</span>
+            </button>
+          </div>
+    }
+  </div>
+</div>

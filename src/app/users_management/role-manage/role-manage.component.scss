@@ -1,0 +1,48 @@
+.container {
+    // max-width: 600px;
+    margin: auto;
+    padding: 5px 10px;
+    // text-align: center;
+    .title-head{
+      display: flex;
+      justify-content: space-between;
+      align-content: center;
+      h2{
+        color: var(--secondary-color);
+      }
+      .add-role{
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+  
+  .add-role {
+    margin-bottom: 20px;
+  }
+  .role-table{
+    width: 60%;
+    text-align: center;
+    margin: auto;
+  }
+  // input {
+  //   padding: 8px;
+  //   margin-right: 10px;
+  // }
+  
+  button {
+    padding: 8px 15px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
