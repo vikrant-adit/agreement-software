@@ -6,6 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-permissions',
   standalone: true,
@@ -21,7 +22,7 @@ export class PermissionsComponent {
   newPermissionName: string = '';
   newPermissionDescription: string = '';
   roles: any[] = [];
-  constructor(private permissionService: PermissionsService) {}
+  constructor(private permissionService: PermissionsService,private authService:AuthService) {}
 
   ngOnInit() {
     this.loadPermissions();
@@ -72,5 +73,8 @@ export class PermissionsComponent {
     });
   }
   
+  hasPermission(permission: string): boolean {
+    return this.authService.getUserPermissions().includes(permission);
+  }
 
 }

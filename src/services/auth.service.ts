@@ -22,8 +22,8 @@ export class AuthService {
       map(response => {
         // Update localStorage with new tokens, role, and permissions
         localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('role', response.role);
-        localStorage.setItem('permissions', JSON.stringify(response.permissions));
+        // localStorage.setItem('role', response.role);
+        // localStorage.setItem('permissions', JSON.stringify(response.permissions));
         return response;
       })
     );

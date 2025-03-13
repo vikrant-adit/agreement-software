@@ -17,7 +17,7 @@ import { RolesService } from '../../../../services/roles/roles.service';
 import { UserService } from '../../../../services/users/user.service';
 import { PermissionsService } from '../../../../services/permissons/permissions.service';
 import { HeaderComponent } from '../../../header/header.component';
-
+import { AuthService } from '../../../../services/auth.service';
 @Component({
   standalone: true,
   imports: [
@@ -52,7 +52,7 @@ export class CreateUserComponent implements OnInit {
   permissionList: any[] = [];
   viewPermission = false;
   edit=false
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,private authService:AuthService) {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -242,5 +242,9 @@ export class CreateUserComponent implements OnInit {
         this.userForm.patchValue({ extraPermissions: [...selectedPermissions] });
       
         console.log("Newly added extraPermissions:", this.userForm.value.extraPermissions);
+      }
+
+      hasPermission(permission: string): boolean {
+        return this.authService.getUserPermissions().includes(permission);
       }
 }

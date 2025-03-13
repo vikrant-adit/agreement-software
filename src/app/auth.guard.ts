@@ -15,14 +15,14 @@ export class AuthGuard implements CanActivate {
     const refreshToken = localStorage.getItem('refreshToken');
     const requiredPermission = route.data['permission']; // 👈 Get permission from route
     const userPermissions = this.authService.getUserPermissions(); // 👈 Get stored permissions
-
+    if (!accessToken) {
+      return this.redirectToLogin();
+    }
     if (!userPermissions.includes(requiredPermission)) {
       this.router.navigate(['/unauthorized']); // Redirect if no permission
       return false;
     }
-    if (!accessToken) {
-      return this.redirectToLogin();
-    }
+  
 
     if (this.isTokenExpired(accessToken)) {
       if (refreshToken && !this.isTokenExpired(refreshToken)) {

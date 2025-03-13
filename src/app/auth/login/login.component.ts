@@ -27,12 +27,13 @@ constructor(private route:Router){
 loading=false
 login() {
   if (this.loginForm.valid) {
-    this.loading = true; // Show loader
+   
     const { username, password } = this.loginForm.value;
 
     this.userService.login(username, password).subscribe({
       next: (response) => {
-        this.loading = false; // Hide loader
+     
+         // Hide loader
 
         if (response.firstLogin) {
           this.openSnackBar('First-time login. Check your email for OTP.');
@@ -46,12 +47,12 @@ login() {
         localStorage.setItem('userId', response.userId);
         localStorage.setItem('role', response.role);
         localStorage.setItem('permissions', JSON.stringify(response.permissions));
-
         this.openSnackBar(response.message);
         this.route.navigate(['/dashboard']);
+     
       },
       error: (error) => {
-        this.loading = false; // Hide loader on error
+      
         console.error('Login failed', error);
 
         let errorMessage = 'Login failed. Please try again.';

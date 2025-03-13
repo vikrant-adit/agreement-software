@@ -93,18 +93,18 @@ export class PreAgreementFormComponent implements OnInit {
         formData.append('fileUpload', this.selectedFile);
       }
       console.log(formData,"Data that is submitted")
-      // this.formService.saveForm(formData).subscribe({
-      //   next: (response) => {
-      //     console.log('Form submitted successfully:', response);
-      //     alert('Form submitted successfully!');
-      //     this.preAgreementForm.reset();
-      //     this.selectedFile = null;
-      //   },
-      //   error: (error) => {
-      //     console.error('Error submitting form:', error);
-      //     alert('Error submitting form. Please try again.');
-      //   }
-      // });
+      this.formService.saveForm(formData).subscribe({
+        next: (response) => {
+          console.log('Form submitted successfully:', response);
+          alert('Form submitted successfully!');
+          this.preAgreementForm.reset();
+          this.selectedFile = null;
+        },
+        error: (error) => {
+          console.error('Error submitting form:', error);
+          alert('Error submitting form. Please try again.');
+        }
+      });
   
     } else {
       alert('Please fill all required fields.');

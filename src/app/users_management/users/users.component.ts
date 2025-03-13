@@ -29,7 +29,7 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class UsersComponent implements OnInit {
     // displayedColumns: string[] = ['id', 'name', 'email', 'designation', 'user_group', 'created_at', 'actions'];
-    displayedColumns: string[] = ['id', 'name', 'email', 'created_at', 'actions'];
+    displayedColumns: string[] = ['id', 'name', 'email','role_name', 'created_at', 'actions'];
 
     dataSource = new MatTableDataSource<UsersInterface>;
     totalRecords: number = 0;
