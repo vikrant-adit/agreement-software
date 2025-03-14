@@ -16,6 +16,7 @@ import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
 import { SettingsComponent } from './users_management/settings/settings.component';
 import { AuthGuard } from './auth.guard';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
+import { ViewAgreementComponent } from './pages/forms/pre-agreement-form/view-agreement/view-agreement.component';
 export const routes: Routes = [
   {
     path: '',
@@ -71,6 +72,12 @@ export const routes: Routes = [
     component:PreAgreementFormComponent,
      canActivate:[AuthGuard],
      data: { permission: 'add_agreements' }
+  },
+  {
+    path:'view-agreement',
+    component:ViewAgreementComponent,
+    //  canActivate:[AuthGuard],
+    //  data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-form-verification',

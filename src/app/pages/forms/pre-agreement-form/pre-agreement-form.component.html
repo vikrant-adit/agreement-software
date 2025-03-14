@@ -146,7 +146,7 @@
                 <!-- Promotion Expiry Date -->
                 <mat-form-field appearance="fill" class="form-field">
                   <mat-label>Promotion Expiry Date</mat-label>
-                  <input matInput [matDatepicker]="picker">
+                  <input formControlName="promotionExpiryDate" matInput [matDatepicker]="picker">
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
@@ -257,7 +257,7 @@
                           <h3 class="bundle-title">{{ getBundleTitle(control) }}</h3>
                         </ng-container>
                        }
-                      <div [ngClass]="getBundleClass(control)" class="bundle">
+                      <div [class]="getBundleClass(control)" class="bundle">
                         <mat-form-field appearance="fill" class="form-field">
                           <mat-label>{{ getLabel(control) }}</mat-label>
                           <span matPrefix>$&nbsp;</span> 
@@ -299,7 +299,7 @@
       
         <mat-checkbox formControlName="displayTechStackComparison">Display Tech Stack Comparison?</mat-checkbox>
         @if(preAgreementForm.get('displayTechStackComparison')?.value){
-          <app-tech-stack-comparison></app-tech-stack-comparison>
+          <app-tech-stack-comparison (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
         }
       </div>
       <span>

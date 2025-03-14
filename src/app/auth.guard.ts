@@ -30,8 +30,8 @@ export class AuthGuard implements CanActivate {
           const newTokenData:any = await firstValueFrom(this.authService.refreshAccessToken());
           if (newTokenData?.accessToken) {
             localStorage.setItem('accessToken', newTokenData.accessToken);
-            localStorage.setItem('role', newTokenData.role);
-            localStorage.setItem('permissions', JSON.stringify(newTokenData.permissions));
+            // localStorage.setItem('role', newTokenData.role);
+            // localStorage.setItem('permissions', JSON.stringify(newTokenData.permissions));
             return true; // Token refreshed successfully, allow access
           }
         } catch (error) {

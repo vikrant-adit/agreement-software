@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   FormBuilder,
   FormControl,
@@ -22,7 +22,6 @@ import { promotionPricing } from './pricingArr';
   selector: 'app-pre-agreement-form',
   standalone: true,
   imports: [
-    NgClass,
     MatFormFieldModule,
     MatDatepickerModule,
     MatInputModule,
@@ -41,8 +40,14 @@ import { promotionPricing } from './pricingArr';
 export class PreAgreementFormComponent implements OnInit {
   preAgreementForm: FormGroup;
   dental_or_optometry = '';
-  formService=inject(OnlineFormAgreementService)
-  constructor(private fb: FormBuilder) {
+  formService=inject(OnlineFormAgreementService);
+  receivedForm!: FormGroup;
+
+  onFormChanged(form: FormGroup) {
+    this.receivedForm = form;
+    // console.log('Received Form:', this.receivedForm.value);
+  }
+  constructor(private fb: FormBuilder, private router:Router) {
     this.preAgreementForm = this.fb.group({
       practiceIndustry: ['', Validators.required],
       newOrExistingClient: ['', Validators.required],
@@ -52,10 +57,11 @@ export class PreAgreementFormComponent implements OnInit {
       pms: ['', Validators.required],
       displayPricing: [false],
       displayTechStackComparison: [false],
-      sales_person_promotion_type: ['Custom'],
+      sales_person_promotion_type: [''],
+      promotionExpiryDate:[],
       event_type: [''],
       pricingDetails: this.createPricingFormGroup(), // Nested FormGroup
-      techStack:[]
+      techStack:[[]]
     });
   }
   createPricingFormGroup(): FormGroup {
@@ -66,14 +72,11 @@ export class PreAgreementFormComponent implements OnInit {
     // this.onPromotionChange();
   }
   onSubmit() {
-    const controls = this.preAgreementForm.controls;
-        for (const controlName in controls) {
-          if (controls.hasOwnProperty(controlName)) {
-            const control = controls[controlName];
-            console.log(`Control Name: ${controlName}, Value: ${control.value}`);
-          }
-        }
+    // Set the techStack value from receivedForm
+    this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
+    console.log("Updated techStack:", this.preAgreementForm.get('techStack')?.value);
   
+    // Check if the form is valid
     if (this.preAgreementForm.valid) {
       const formData = new FormData();
   
@@ -81,36 +84,41 @@ export class PreAgreementFormComponent implements OnInit {
       Object.keys(this.preAgreementForm.value).forEach(key => {
         const value = this.preAgreementForm.value[key];
   
-        if (key === 'pricingDetails') {
+        // Handle nested objects (e.g., pricingDetails)
+        if (typeof value === 'object' && value !== null && !(value instanceof File)) {
           formData.append(key, JSON.stringify(value)); // Convert object to JSON string
         } else if (value !== null && value !== undefined) {
           formData.append(key, value);
         }
       });
   
-      // Append file separately
+      // Append file separately if selected
       if (this.selectedFile) {
-        formData.append('fileUpload', this.selectedFile);
+        formData.append('fileUpload', this.selectedFile, this.selectedFile.name); // Include file name
       }
-      console.log(formData,"Data that is submitted")
+  
+      // Log the FormData for debugging
+      console.log("Data that is submitted:", formData);
+  
+      // Submit the form data to the API
       this.formService.saveForm(formData).subscribe({
         next: (response) => {
           console.log('Form submitted successfully:', response);
           alert('Form submitted successfully!');
-          this.preAgreementForm.reset();
-          this.selectedFile = null;
+          this.preAgreementForm.reset(); // Reset the form
+          this.selectedFile = null; // Clear the selected file
+          this.router.navigate(['/view_agreement'])
         },
         error: (error) => {
           console.error('Error submitting form:', error);
           alert('Error submitting form. Please try again.');
         }
       });
-  
     } else {
+      // If the form is invalid, show an alert
       alert('Please fill all required fields.');
     }
   }
-  
   
   promotionPricing: any = promotionPricing;
   get promotionKeys() {

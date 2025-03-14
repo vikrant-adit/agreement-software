@@ -1,0 +1,714 @@
+<div class="container">
+  <app-header></app-header>
+  <div class="card">
+    <div class="spending">
+      <div class="check">
+        <mat-icon>check_circle_outline</mat-icon>
+      </div>
+      <div class="spend-title">
+        <h2>
+          So You’re Spending <span>${{ totalCost }}</span> Per Month On
+        </h2>
+      </div>
+      <div class="logo-img"></div>
+      <div class="gaps-in-your-tech">
+        <div class="head">
+          <img
+            src="https://demo.enfolytics.com/assets/images/tech-stack-summary-icon.svg"
+            alt=""
+          />
+          <h2>Current Gaps in Your Tech Stack</h2>
+          <button mat-raised-button type="button">
+            <mat-icon>add_circle</mat-icon> Expand
+          </button>
+        </div>
+        <div class="techs">
+          <div class="batch">
+            <h3 class="heading">Communications</h3>
+            <div class="communication">
+              @for (column of communicationsList; track column) {
+              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              }
+            </div>
+          </div>
+          <div class="batch">
+            <h3 class="heading">Operations</h3>
+            <div class="operations">
+              @for (column of operations; track column) {
+              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              }
+            </div>
+          </div>
+          <div class="batch">
+            <h3 class="heading">Analytics</h3>
+            <div class="analytics">
+              @for (column of analytics; track column) {
+              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              }
+            </div>
+          </div>
+          <div class="batch">
+            <h3 class="heading">Mobile</h3>
+            <div class="mobile">
+              @for (column of mobile; track column) {
+              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="check">
+      <mat-icon>check_circle_outline</mat-icon>
+    </div>
+    <div class="head">
+      <h1>Step 1: Choose a Package</h1>
+      <div class="title-head">
+        <span>How would you like to pay?</span>
+        <div class="toggle-container">
+          <button
+            [class]="{ active: isAnnually }"
+            (click)="toggleView('annually')"
+            class="toggle-btn"
+          >
+            Annually
+          </button>
+          <button
+            [class]="{ active: !isAnnually }"
+            (click)="toggleView('monthly')"
+            class="toggle-btn"
+          >
+            Monthly
+          </button>
+        </div>
+        <!-- @if(isAnnually){
+                <div class="content">
+                    <h2>Annually Content</h2>
+                    <p>This is the content for the annually view.</p>
+                </div>
+              }
+              @if(!isAnnually){
+                <div class="content">
+                    <h2>Monthly Content</h2>
+                    <p>This is the content for the monthly view.</p>
+                </div>
+              } -->
+        <span>Save $1050 When You Pay Annually!</span>
+      </div>
+      <div class="content">
+        <div class="mini-card tech">
+          <h1>Tech Bundle</h1>
+          <h2>
+            Reg Price <span class="striked">$549</span>
+            <span class="org_price">$399</span>
+          </h2>
+          <div style="margin-block: 5px">
+            <p>$600 Saved By Going Annual</p>
+            <p>+$750 Hardware Credit</p>
+          </div>
+          <div class="techs">
+            <span> <mat-icon>check_circle_outline</mat-icon> Adit Voice </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Patient Texting
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Reminders & Recalls
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Patient Forms
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> Adit Pay </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon>Online Scheduling
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon>TeleMed </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Call Tracking
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Pozative Reviews
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Email Campaigns
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> eFax </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Customer Success Team
+            </span>
+          </div>
+        </div>
+        <div class="mini-card analytics">
+          <div class="popular-tag">Most Popular</div>
+          <h1>Analytics Bundle</h1>
+          <h2>
+            Reg Price <span class="striked">$649</span>
+            <span class="org_price">$499</span>
+          </h2>
+          <div style="margin-block: 5px">
+            <p>$600 Saved By Going Annual</p>
+            <p>+$750 Hardware Credit</p>
+          </div>
+          <div class="techs">
+            <div class="tech_column">
+              <span class="techBundle"> All Tech Bundle Features Plus </span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Treatment Plans
+              </span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Health Score
+                Report</span
+              >
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Bulk Quick Text</span
+              >
+            </div>
+            <div class="tech_column">
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Morning Huddle</span
+              >
+              <span> <mat-icon>check_circle_outline</mat-icon>Follow Ups</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Patient Lists</span
+              >
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Track Provider
+                Hours</span
+              >
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Practice
+                Performance</span
+              >
+              <span
+                ><mat-icon>check_circle_outline</mat-icon>Provider
+                Performance</span
+              >
+            </div>
+            <div class="tech_column">
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Hygiene
+                Performance</span
+              >
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Operatory
+                Utilization</span
+              >
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Growth
+                Dashboards</span
+              >
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Collections
+                Dashboards</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="btnClass">
+        <button mat-raised-button class="nextbtn">Next</button>
+      </div>
+    </div>
+  </div>
+  <div class="multiple-card">
+    <div class="left-card">
+      <div class="card">
+        <h1>Step 2: Select Your Hardware</h1>
+        <div class="phone hardware">
+          <p>Would you like to use physical phones?*</p>
+          <div class="toggle-container">
+            <button
+              [class]="{ active: selectPhone }"
+              (click)="selectPhone = true"
+              class="toggle-btn"
+            >
+              Yes
+            </button>
+            <button
+              [class]="{ active: !selectPhone }"
+              (click)="selectPhone = false"
+              class="toggle-btn"
+            >
+              No
+            </button>
+          </div>
+          @if(selectPhone){
+          <div class="phone-context">
+            <span class="info">
+              <mat-icon>info</mat-icon>To ensure optimal phone experience, we
+              require all customers who opt for hard phones to purchase at least
+              two 2616s.
+            </span>
+            <div class="phones-grid">
+              <div
+                class="phone-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/grandstream-grp-2616.png"
+                  alt=""
+                />
+                <p class="phone-name">Grandstream <strong> GRP 2616</strong></p>
+                <span class="price">$150</span>
+                <span class="description"
+                  >Best for workstations handling more than 10 calls per day.
+                  (Recommended for front desk, call centers, etc.)</span
+                >
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+              <div
+                class="phone-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/grandstream-grp-2613.png"
+                  alt=""
+                />
+                <p class="phone-name">Grandstream <strong> GRP 2613</strong></p>
+                <span class="price">$100</span>
+                <span class="description"
+                  >Best for workstations handling less than 10 calls per day.
+                  (Typically in Operatories and Hallways)</span
+                >
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+              <div
+                class="phone-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/grandstream-dp-720.png"
+                  alt=""
+                />
+                <p class="phone-name">Grandstream <strong> DP 720</strong></p>
+                <span class="price">$100</span>
+                <span class="description"
+                  >Best for staff who are constantly on their feet and handle
+                  less than 10 calls per day.</span
+                >
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+              <div
+                class="phone-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/grp-2616-wall-mount.png"
+                  alt=""
+                />
+                <p class="phone-name">GRP 2616 Wall Mount</p>
+                <span class="price">$10</span>
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+              <div
+                class="phone-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/grp-2613-wall-mount.png"
+                  alt=""
+                />
+                <p class="phone-name">GRP 2613 Wall Mount</p>
+                <span class="price">$10</span>
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+              <div
+                class="phone-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/headset-adapter.png"
+                  alt=""
+                />
+                <p class="phone-name">Headset + Adapter</p>
+                <span class="price">$275</span>
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+            </div>
+            <span class="terms">
+              <input class="checkBox" type="checkbox" /><span
+                >I understand that our practice needs to have an ethernet outlet
+                available at every location where a phone needs to be
+                installed.</span
+              >
+            </span>
+          </div>
+          }
+        </div>
+        <div class="terminals hardware">
+          <p>Would you like to purchase payment terminals?*</p>
+          <div class="toggle-container">
+            <button
+              [class]="{ active: selectTerminal }"
+              (click)="selectTerminal = true"
+              class="toggle-btn"
+            >
+              Yes
+            </button>
+            <button
+              [class]="{ active: !selectTerminal }"
+              (click)="selectTerminal = false"
+              class="toggle-btn"
+            >
+              No
+            </button>
+          </div>
+          @if(selectTerminal){
+          <div class="terminal-context">
+            <div class="terminal-grid">
+              <div
+                class="terminal-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e.png"
+                  alt=""
+                />
+                <p class="sub">Stripe</p>
+                <p class="terminal-name">BBPOS WisePOS E</p>
+                <span class="price">$250</span>
+                <span class="description"
+                  >Best for workstations handling more than 10 calls per day.
+                  (Recommended for front desk, call centers, etc.)</span
+                >
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+              <div
+                class="terminal-content"
+                [class]="count > 0 ? 'active-content' : ''"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e-dock.png"
+                  alt=""
+                />
+                <p class="sub">Stripe</p>
+                <p class="terminal-name">BBPOS WisePOS E Dock</p>
+                <span class="price">$49</span>
+                <span class="description"
+                  >Best for workstations handling less than 10 calls per day.
+                  (Typically in Operatories and Hallways)</span
+                >
+                <div class="counter-container">
+                  <button (click)="decrement()">−</button>
+                  <span>{{ count }}</span>
+                  <button (click)="increment()">+</button>
+                </div>
+              </div>
+            </div>
+            <p class="refund">
+              <span> Refund Policy:</span> Please note that you will be
+              receiving your terminals and docks selected from our vendor
+              Stripe. All terminal sales with Stripe are non-refundable after 30
+              days from when you receive the shipment.
+            </p>
+          </div>
+          }
+        </div>
+        <div class="btnClass">
+          <button mat-raised-button class="nextbtn">Next</button>
+        </div>
+      </div>
+      <div class="card about-practice">
+        <h1>Step 3: Tell Us About Your Practice</h1>
+        <p>
+          To sign up for Adit, please begin by filling out the below
+          information.
+        </p>
+        <form>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Practice Name</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+          </div>
+
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Location Short Name (ex. Houston)</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Practice Address Line 1</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Practice Address Line 2</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>City</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>State/Region/Province</mat-label>
+              <mat-select>
+                <mat-option>state Name</mat-option>
+                <mat-option>state Name</mat-option>
+                <mat-option>state Name</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Postal/Zip Code</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Country</mat-label>
+              <mat-select>
+                <mat-option>United States</mat-option>
+                <mat-option>Canada</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Timezone</mat-label>
+              <mat-select>
+                <mat-option>UTC </mat-option>
+                <mat-option>UTC Pacific</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Office Phone</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Email</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Website URL</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>Practice Management Software (PMS)</mat-label>
+              <mat-select>
+                <mat-option value="AbelDent">AbelDent</mat-option>
+                <mat-option value="ClearDent">ClearDent</mat-option>
+                <mat-option value="Curve">Curve</mat-option>
+                <mat-option value="Denticon">Denticon</mat-option>
+                <mat-option value="Dentrix">Dentrix</mat-option>
+                <mat-option value="Dentrix Ascend">Dentrix Ascend</mat-option>
+                <mat-option value="Eaglesoft">Eaglesoft</mat-option>
+                <mat-option value="Easy Dental">Easy Dental</mat-option>
+                <mat-option value="OpenDental">OpenDental</mat-option>
+                <mat-option value="PracticeWorks">PracticeWorks</mat-option>
+                <mat-option value="Practice Web">Practice Web</mat-option>
+                <mat-option value="Tracker">Tracker</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>POC Name (Point-of-Contact)</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>POC Email</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>POC Work Number</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label>POC Cell Number</mat-label>
+              <input type="text" matInput />
+            </mat-form-field>
+          </div>
+        </form>
+        <div class="btnClass">
+          <button mat-raised-button class="nextbtn">Next</button>
+        </div>
+      </div>
+      <div class="card review-order">
+        <h1>Step 4: Review Your Order</h1>
+        <h2>Order Summary</h2>
+        <div class="summary-topinfo">
+          <div class="practice-name">
+            <span class="practice">Practice</span>
+            <span class="p-values">
+              <span class="p-name"><strong>Practice_Name</strong></span>
+              <span class="p-loc">practice_location</span>
+            </span>
+          </div>
+          <div class="about-package">
+            <span class="titles">
+              <span>Package:</span>
+              <span>Pay Cycle:</span>
+              <span>Amount:</span>
+            </span>
+            <span class="values">
+              <span>Analytics Bundle</span>
+              <span>Annually</span>
+              <span>$5,988</span>
+            </span>
+          </div>
+        </div>
+        <div class="bllling-start">
+          <strong> Billing Start: </strong>For all annual billing, the total
+          yearly fee will be charged within one business day of sign date.
+          Subsequent billing will occur 1 year + 45 days of sign date, annually.
+          Any necessary, prorated refunds of annual charges will incur a 3%
+          processing fee.
+        </div>
+        <div class="compliance">
+          <strong> 10DLC Charges & FCC Compliance:</strong> As mandated by the
+          Federal Communications Commission, 10DLC Campaign Charges(mandatory)
+          and Text Messaging Surcharges(if applicable) will be charged monthly
+          on top of the subscription fees to the payment method on file. The
+          average customer pays ~$18 per month.
+        </div>
+        <div class="signature">
+          <strong>Signature</strong>
+          <mat-tab-group>
+            <mat-tab label="Draw">
+              <div style="border: 2px solid var(--primary-color)">
+                <canvas width="800" height="300" #signatureCanvas></canvas>
+              </div>
+             
+              <!-- <button (click)="saveSignature()">Save</button> -->
+            </mat-tab>
+            <mat-tab label="Upload">
+              <div style="border: 2px dotted var(--primary-color)">
+                <div 
+                  class="upload-container"
+                  (dragover)="onDragOver($event)"
+                  (dragleave)="onDragLeave($event)"
+                  (drop)="onDrop($event)">
+                  @if(!previewImage){
+                    <p>Drag & drop a signature image</p>
+                    <p>or</p>
+  
+                    <label class="upload-button">
+                      <input
+                        type="file"
+                        (change)="onFileSelected($event)"
+                        accept="image/*"
+                        hidden
+                      />
+                      Select Image
+                    </label>
+                  }
+                  @if(previewImage){
+                  <div class="preview">
+                    <img [src]="previewImage" alt="Signature Preview" />
+                  </div>
+                  }
+                </div>
+              </div>
+            </mat-tab>
+          </mat-tab-group>
+          <div class="belowSignature">
+            <div class="nameOfSignatory">
+              <p>Name of signatory:</p>
+                <input  type="text">
+            </div>
+            <button mat-flat-button (click)="clearPad()"> <mat-icon class="deleteIcon">delete</mat-icon> Clear</button>
+
+            
+          </div>
+          <div class="terms">
+            <input class="checkBox" type="checkbox"> <span>I accept the Terms and Conditions outlined at <a href="https://adit.com/terms">https://adit.com/terms</a> </span>
+          </div>
+          <div class="terms">
+            <input class="checkBox" type="checkbox"> <span>I accept that Adit will need access to our server and/or EHR occasionally to ensure the best product experience. Details outlined at <a href="https://adit.com/terms"> https://adit.com/terms</a></span> 
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-card">
+      <div class="toggle-container">
+        <button
+          [class]="{ active: isAnnually }"
+          (click)="toggleView('annually')"
+          class="toggle-btn"
+        >
+          Annually
+        </button>
+        <button
+          [class]="{ active: !isAnnually }"
+          (click)="toggleView('monthly')"
+          class="toggle-btn"
+        >
+          Monthly
+        </button>
+      </div>
+      <div class="short-card">
+        <h2>One time payment Due Today <mat-icon>check</mat-icon></h2>
+        <!-- add line -->
+        <p class="context">
+          <span class="title">Activation Fee <mat-icon>info</mat-icon></span>
+          <span class="value"> $500 </span>
+        </p>
+        <p class="context">
+          <span class="title">Subscription Fee</span>
+          <span class="value">$5,988 </span>
+        </p>
+        <p class="context">
+          <span class="title">Hardware Fees</span>
+          <span class="value"> $0 </span>
+        </p>
+        <p class="context">
+          <span class="title"
+            >Hardware Credit Applied <mat-icon>info</mat-icon></span
+          >
+          <span class="value"> -$0 </span>
+        </p>
+        <!-- add line -->
+        <h2 class="context">
+          <span class="title">TotaL Payment Today</span>
+          <span class="value"> $6,488 </span>
+        </h2>
+        <!-- if condtion for annual and monthly -->
+        <span class="subtext">Saved By Going Annual $600</span>
+      </div>
+      <div class="short-card">
+        <h2 class="context">
+          <span class="title">Next Annual Payment</span>
+          <span class="value">$5,988 </span>
+        </h2>
+        <span class="subtext">On APR 28, 2026</span>
+      </div>
+      <button mat-raised-button>Accept & Pay</button>
+    </div>
+  </div>
+</div>
