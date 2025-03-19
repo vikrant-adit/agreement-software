@@ -1,0 +1,27 @@
+<mat-form-field>
+    <mat-select [(ngModel)]="userSearched" placeholder="Select user" #singleSelect (selectionChange)="addUser($event)">
+      <mat-option>
+        <ngx-mat-select-search (input)="search($event)" [placeholderLabel]="'Search user...'"></ngx-mat-select-search>
+      </mat-option>
+  
+      @for(user of users; track user.id) {
+        <mat-option [value]="user">
+          {{ user.name }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <h2>Event Reps</h2>
+<ul>
+    @if (userList.length> 0) {
+        @for (user of userList; track user.id) {
+          <li>
+            {{ user.name }}
+            <button (click)="deleteUser(user.id)">Delete</button>
+          </li>
+        }
+      } @else {
+        <li class="empty-state">No users added.</li>
+      }
+</ul>

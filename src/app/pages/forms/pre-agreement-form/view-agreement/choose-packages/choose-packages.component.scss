@@ -1,0 +1,244 @@
+.container{
+    .check{
+        display: flex;
+        justify-content: space-between;
+     width: 100%;
+    text-align: right;
+    mat-icon{
+      color: #16de6c;
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+  
+    .title-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        h4{
+            font-size: larger;
+        }
+       .toggles{
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ddd;
+            border-radius: 60px;
+            .toggle-btn {
+              padding: 10px 47px;
+              border: none;
+              background-color: #ddd;
+              cursor: pointer;
+              font-size: 26px;
+              font-weight: 600;
+              transition: background-color 0.3s, color 0.3s;
+              color: var(--primary-color);
+              &.active {
+                background-color: var(--primary-color);
+                color: white;
+                border-radius: 10px;
+              }
+          
+              &:last-child {
+                border-top-right-radius: 60px;
+                border-bottom-right-radius: 60px;
+              }
+          
+              &:not(:last-child) {
+                border-top-left-radius: 60px;
+                border-bottom-left-radius: 60px;
+              }
+            }
+          }
+          p{
+            margin: 5px 0;
+            font-weight: 600;
+            color: grey;
+          }
+       }
+       .total{
+        background-color: var(--primary-color);
+        color: white;
+        background-color: #F28820;
+        border-radius: 50px 0px 0px 50px;
+        padding: 0 85px 0 20px;
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.3rem;
+        
+        .titles{
+          font-size: 20px;  
+          font-weight: 700;
+        }
+        .price-value{
+            font-size: 35px;
+            font-weight: 700;
+        }
+       }
+        .save{
+          display: flex;
+          align-items: center;
+        }
+      }
+      .offer-banner{
+        background-image: url('https://demo.enfolytics.com/assets/images/core-blackfriday-strip-bgimg.jpg');
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+        p{
+            font-size: 30px;
+            font-weight: 700;
+        }
+        button{
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+      }
+      .save{
+        margin-block-start: 2rem;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+        h2{
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #00AF4B;
+            color: white;
+            width: 40%;
+            height: 3rem;
+            margin: 0;
+        }
+      }
+      .about-package{
+        margin-top: 10px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        .adit-core{
+            width: 80%;
+            border-radius: 16px;
+            border: 2px solid rgb(0, 0, 181);
+            overflow: hidden;
+            display: flex;
+            .heading{
+                background-color: #42C1C7;
+                display: flex;
+                flex-direction: column;
+                color: white;
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+
+                h2{
+                    text-align: center;
+                    margin: 0;
+                    span{
+                        font-size: medium;
+                    }
+                }
+                .subtext{
+                    margin-left: -10px;
+                    font-size: 14px;
+                    background-color: white;
+                    color: #00AF4B;
+                    padding: 5px 20px;
+                }
+            }
+            .stacks{
+                display: grid;
+                width: 80%;
+                grid-template-columns: 1fr 1fr 1fr;
+                .col{
+                    display: flex;
+                    flex-direction: column;
+                    p{
+                        mat-icon{
+                            color: var(--secondary-color);
+                        }
+                        margin: 4px;
+                        display: flex;
+                        align-items: center;
+                    }
+                }
+            }
+        }
+        .all-package{
+            width: 100%;
+            border-radius: 30px;
+            text-align: center;
+            background-color: #E9FEFF;
+            border: 1px solid rgb(9, 210, 255);
+           .package{
+            display: flex;
+            justify-content: space-evenly;
+          
+            p{
+                width: 100%;
+                margin: 5px;
+                display: flex;
+               align-items: center;
+
+               }
+            .phone-package{
+                .heading{
+                background-color: #D3EEF9;
+                padding: 20px;
+                h2{
+                    margin: 0; 
+                }
+                }
+                width: fit-content;
+                border-radius: 30px;
+                overflow: hidden;
+                border: 2px solid blue;
+            }
+            .analytic-pacakge{
+                .heading{
+                    background-color: #FFF1E7;
+                    padding: 20px;
+                    h2{
+                        margin: 0; 
+                    }
+                    }
+                    width: fit-content;
+                    border-radius: 30px;
+                    overflow: hidden;
+                    border: 2px solid blue;
+                // flex-grow:1 ;
+                border: 2px solid rgb(255, 157, 0);
+                .stack{
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                     
+                   }
+            }
+            .verification-package{
+                .heading{
+                    background-color: #F0E7FF;
+                    padding: 20px;
+                    h2{
+                        margin: 0; 
+                    }
+                    }
+                    width: fit-content;
+                    border-radius: 30px;
+                    overflow: hidden;
+                border: 2px solid #6118d6;
+            }
+           }
+        }
+      }
+}

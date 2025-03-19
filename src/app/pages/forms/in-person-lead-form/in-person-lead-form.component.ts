@@ -5,7 +5,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { HeaderComponent } from "../../../header/header.component";
-import { EventzService } from '../../../../services/eventz/eventz.service';
 @Component({
   selector: 'app-in-person-lead-form',
   standalone: true,
@@ -16,7 +15,7 @@ import { EventzService } from '../../../../services/eventz/eventz.service';
 export class InPersonLeadFormComponent implements OnInit {
   practiceForm: FormGroup;
 
-  constructor(private fb: FormBuilder,private eventzSevice:EventzService) {
+  constructor(private fb: FormBuilder) {
     this.practiceForm = this.fb.group({
       practiceName: ['', Validators.required],
       selectEvent: [''],
@@ -33,7 +32,7 @@ export class InPersonLeadFormComponent implements OnInit {
   }
   eventz:any[]=[];
   ngOnInit(): void {
-    this.getEventz()
+    // this.getEventz()
   }
   onSubmit() {
     if (this.practiceForm.valid) {
@@ -41,12 +40,12 @@ export class InPersonLeadFormComponent implements OnInit {
       // Handle form submission here
     }
   }
-  getEventz(){
-    this.eventzSevice.getEventz().subscribe({
-      next:res=>{
-        console.log(res)
-        this.eventz=res
-      }
-    })
-  }
+  // getEventz(){
+  //   this.eventzSevice.getEventz().subscribe({
+  //     next:res=>{
+  //       console.log(res)
+  //       this.eventz=res
+  //     }
+  //   })
+  // }
 }

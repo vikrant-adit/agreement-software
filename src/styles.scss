@@ -35,10 +35,7 @@ $demo-enfolytics-theme: mat.define-theme((
 // Comment out the line below if you want to use the deprecated `color` inputs.
 // @include mat.color-variants-backwards-compatibility($demo-enfolytics-theme);
 /* You can add global styles to this file, and also import other style files */
-body{
-  margin: 0;
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-}
+
 :root {
   --primary-color: #f48a1f;   // orange
   --secondary-color: #22a9e1; // light blue
@@ -46,7 +43,7 @@ body{
 }
 
 html, body { height: 100%; width: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family:'Ubuntu', sans-serif; }
 .mdc-text-field--filled:not(.mdc-text-field--disabled){
   background-color: white !important;
 }

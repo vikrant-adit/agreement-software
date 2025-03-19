@@ -7,9 +7,6 @@ import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
   MatDialogRef,
   
 } from '@angular/material/dialog';
@@ -121,4 +118,8 @@ export class SelectProviderComponent implements OnInit {
         result
       )
     }
+    //to reset value
+    // reset(){
+    //   this.dialogRef.close('reset')
+    // }
 }

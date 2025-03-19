@@ -1,7 +1,25 @@
 .container {
+  .saveBtn{
+    position: absolute;
+    top: 12px;
+    z-index: 10;
+    right: 230px;
+    background-color: var(--primary-color);
+    border:1px solid var(--primary-color);
+    color: white;
+  }
+  .edit{
+    position: absolute;
+    top: 12px;
+    z-index: 10;
+    right: 130px;
+    background-color: white;
+    border:1px solid var(--primary-color);
+    color: var(--primary-color);
+  }
   .card {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    width: 80%;
+    width: 90%;
     margin: 2rem auto;
     border-radius: 10px;
     padding: 5px 10px;
@@ -53,7 +71,7 @@
         flex-direction: column;
         background-color: rgb(22, 42, 52);
         color: white;
-        align-items: center;
+        // align-items: center;
         width: 90%;
         margin: auto;
         margin-bottom: 10px;
@@ -188,6 +206,16 @@
       }
     }
   }
+  .org-form{
+    .form-field{
+      display: flex;
+      width: 100%;
+      gap: 1rem;
+      .field{
+        width: 100%;
+      }
+    }
+  }
   .about-practice{
     form{
       width: 100%;
@@ -211,9 +239,12 @@
     .left-card {
       // flex-grow: 1;
       width: 75%;
+      .card{
+        width: 96%;
+      }
     }
     .right-card {
-      width: 25%;
+      width: 23%;
       margin: 2rem auto;
       position: sticky;
       top: 0; /* This makes the right card stick to the top when it reaches the top of the viewport */
@@ -232,8 +263,55 @@
         background-color: #f5f3f3;
         padding: 5px 10px;
         border-radius: 10px;
-        h2 {
-          margin: 0;
+        h3 {
+          margin: 10px 0;
+          width: 100%;
+          display:inline-flex;
+          justify-content: space-between;
+          mat-icon{
+            color: var(--primary-color);
+          }
+        }
+        .context{
+          display: flex;
+          justify-content: space-between;
+          .title{
+            display: flex;
+            align-items: center;
+            mat-icon{
+              font-size: 20px;
+              color: grey;
+            }
+          }
+          .value{
+            color: var(--primary-color);
+            
+          }
+          .hardwareValue{
+            color: var(--secondary-color);
+          }
+        }
+        .subtext{
+         width: 100%;
+         display: block;
+         text-align: right;
+         color: #00af4b;     
+         font-size: 14px;
+         font-weight: 600;
+        }
+        .subDate{
+          font-size: 14px;
+          font-weight: 600;
+        }
+      }
+      .acceptBtn{
+        background-color: var(--primary-color);
+        color: white;
+        font-size: larger;
+        height: 3rem;
+        &:disabled{
+          background-color: #f5f3f3;
+          color: rgb(149, 149, 149);
         }
       }
     }
@@ -286,6 +364,10 @@
   justify-content: space-evenly;
   align-items: center;
   margin-bottom: 10px;
+  .save{
+    display: flex;
+    align-items: center;
+  }
 }
 .content {
   display: flex;
@@ -379,8 +461,9 @@
   width: 100%;
   text-align: center;
   .nextbtn {
-    margin: auto;
-    width: 12rem;
+    margin: auto 10px;
+    min-width: 12rem;
+    width: fit-content;
     background-color: var(--primary-color) !important;
     color: white !important;
     font-size: 26px;
@@ -565,4 +648,30 @@
     height: auto;
     border-radius: 5px;
   }
+}
+.gapNames{
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  max-width: 15.5rem;
+  gap: 5px;
+  mat-icon{
+    font-size: 20px;
+  }
+}
+
+.check{
+  width: 100%;
+  text-align: right;
+  mat-icon{
+    color: #16de6c;
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+::ng-deep  .mat-mdc-tooltip-surface{
+  background-color: white !important;
+  color: rgb(0, 0, 0) !important;
 }

@@ -26,6 +26,51 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 10px;
+        align-items: center;
+        
+        .upload {      
+          h4 {
+            margin: 0;
+              font-size: 16px;
+              color: var(--secondary-color);
+              margin-bottom: 2px;
+          }
+          .file-upload-label{
+            padding: 5px;
+            // margin-right: 5px;
+            border-right: 1px solid var(--secondary-color);
+            border-bottom: 1px solid var(--secondary-color);
+            &:hover {
+              background-color: #d0d2d3; // Darker blue on hover
+          }
+          }
+          .file-upload-container {
+              display: flex;
+              align-items: center;
+              gap: 10px; // Space between elements
+          }
+      
+          .file-upload-name {
+              color: #666;
+              padding: 5px;
+              font-size: 16px;
+              border-bottom: 1px solid var(--secondary-color);
+          }
+      
+          input[type="file"] {
+              display: none; // Hide the default file input
+          }
+      }
+      .sample_file{
+        span{
+          color: #144fc7;
+          font-size: 18px;
+          cursor: pointer;
+          &:hover{
+            text-decoration: underline;
+          }
+        }
+      }
       }
       .form-row > * {
         flex: 1;

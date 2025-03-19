@@ -222,3 +222,14 @@ background-color: var(--primary-color) !important;
   }
 
 }
+
+.gapNames{
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  max-width: 15.5rem;
+  gap: 5px;
+  mat-icon{
+    font-size: 20px;
+  }
+}

@@ -22,7 +22,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Forms PDF Posts in PMS',
   ],
 
-  Cooper_Vision: [
+  'Cooper Vision': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -56,14 +56,14 @@ export const arrFeatures: { [key: string]: string[] } = {
     '2-Way Patient Logs Sync',
   ],
 
-  Dear_Doc: [
+  'Dear Doc': [
     'Review Software',
     'Filter Out Unhappy Patients',
     'Respond to Reviews',
     'Digital Forms',
   ],
 
-  Demand_Force: [
+  'Demand Force': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -79,9 +79,9 @@ export const arrFeatures: { [key: string]: string[] } = {
     'See Schedule Anytime',
   ],
 
-  Dental_Symphony: ['Digital Forms', 'Treatment Plans', 'Text to Pay'],
+  'Dental Symphony': ['Digital Forms', 'Treatment Plans', 'Text to Pay'],
 
-  Dentrix_Hub: [
+  'Dentrix Hub': [
     'Digital Forms',
     'Forms Integrate with PMS',
     '2-Way Forms Sync',
@@ -101,13 +101,13 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Digital Forms',
   ],
 
-  Enlive_Forms: [
+  'Enlive Forms': [
     'Review Software',
     'Digital Forms',
     'Forms Integrate with PMS',
   ],
 
-  Flex_Dental: [
+  'Flex Dental': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -151,7 +151,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Patient Texting on Mobile',
   ],
 
-  Lighthouse_360: [
+  'Lighthouse 360': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -168,7 +168,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Text to Pay',
   ],
 
-  M_Consent: [
+  'M Consent': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -182,7 +182,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Text to Pay',
   ],
 
-  DI_Modento_LocalMed: [
+  'DI Modento LocalMed': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -286,7 +286,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Internal Chat',
   ],
 
-  Opera_DDS: [
+  'Opera DDS': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -305,7 +305,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Internal Chat',
   ],
 
-  Patient_Activator: [
+  'Patient Activator': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -313,7 +313,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Filter Out Unhappy Patients',
   ],
 
-  Dentrix_Patient_Engage: [
+  'Dentrix Patient Engage': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -325,14 +325,14 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Forms Integrate with PMS',
   ],
 
-  Patient_Viewer: [
+  'Patient Viewer': [
     'Appt Reminders',
     'Auto Confirmations',
     'Real-Time Online Scheduling',
     'Appts Book Directly into PMS',
   ],
 
-  Patient_Xpress: [
+  'Patient Xpress': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -355,7 +355,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Take Payments on Mobile',
   ],
 
-  Practice_By_Numbers: [
+  'Practice By Numbers': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -440,7 +440,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Text to Pay',
   ],
 
-  Solution_Reach: [
+  'Solution Reach': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -617,7 +617,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Check Voicemails and eFaxes',
   ],
 
-  Peer_Logic: [
+  'Peer Logic': [
     'VoIP Phones',
     'Visual Voicemails',
     'Integrated Caller ID',
@@ -653,7 +653,7 @@ export const arrFeatures: { [key: string]: string[] } = {
     'Check Voicemails and eFaxes',
   ],
   OTHER: [],
-  Dental_Intel: [
+  'Dental Intel': [
     'Appt Reminders',
     'Auto Confirmations',
     'Patient Recall',
@@ -706,7 +706,7 @@ export const arrFeatures: { [key: string]: string[] } = {
 export const verificationArrFeatures: { [key: string]: string[] } = {
   Zuub: ['Full Insurance Portal Verification'],
   AirPay: ['Full Insurance Portal Verification'],
-  E_Assist: ['Full Insurance Portal Verification'],
+  'E-Assist': ['Full Insurance Portal Verification'],
   Vyne: ['Eligilibility PDF Attached to Patient File'],
   Weave: ['Eligilibility PDF Attached to Patient File'],
 };

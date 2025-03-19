@@ -3,106 +3,303 @@
 
   <mat-tab-group class="tab-group">
     <mat-tab label="Tech Stack" class="tabs">
-      <form [formGroup]="techStackForm" style="padding-top: 10px; padding-inline: 10px">
+      <form
+        [formGroup]="techStackForm"
+        style="padding-top: 10px; padding-inline: 10px">
+        <div class="tech_selecter">
+          <label for="current_phone_proivder" class="provider-label">
+            Current Phone Provider?</label>
+          <input
+            class="select-provider"
+            placeholder="Select"
+            type="text"
+            id="current_phone_proivder"
+            formControlName="current_phone_proivder"
+            (click)="
+              openSelectProvider(
+                'Current Phone Provider?',
+                'current_phone_proivder'
+              )
+            "
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="current_phone_proivder_price"
+            formControlName="current_phone_proivder_price"
+          />
+          <span>/mo</span>
+        </div>
 
-          <div class="tech_selecter">
-            <label for="current_phone_proivder" class="provider-label">Current Phone Provider?</label>
-            <input class="select-provider" placeholder="Select" type="text" id="current_phone_proivder" formControlName="current_phone_proivder" (click)="openSelectProvider('Current Phone Provider?','current_phone_proivder')">
-            <span>$</span>
-            <input class="select-price" type="number" id="current_phone_proivder_price" formControlName="current_phone_proivder_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter" >
-            <label for="patient_texting"  class="provider-label">Patient Texting?</label>
-            <input class="select-provider" (click)="openSelectProvider('Patient Texting?','patient_texting')" placeholder="Select" type="text" id="patient_texting" formControlName="patient_texting">
-            <span>$</span>
-            <input class="select-price" type="number" id="patient_texting_price" formControlName="patient_texting_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="reminder_recall">Reminder/Recall?</label>
-            <input class="select-provider" (click)="openSelectProvider('Reminders & Recall?','reminder_recall')" placeholder="Select" type="text" id="reminder_recall" formControlName="reminder_recall">
-            <span>$</span>
-            <input class="select-price" type="number" id="reminder_recall_price" formControlName="reminder_recall_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="digital_froms">Digital Forms?</label>
-            <input class="select-provider" (click)="openSelectProvider('Digital Forms?','digital_froms')" placeholder="Select" type="text" id="digital_froms" formControlName="digital_froms">
-            <span>$</span>
-            <input class="select-price" type="number" id="digital_froms_price" formControlName="digital_froms_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="treatment_presentation_payment_plans">Treatment Presentations & Payment Plans?</label>
-            <input class="select-provider" (click)="openSelectProvider('Treatment Presentations & Payment Plans?','treatment_presentation_payment_plans')" placeholder="Select" type="text" id="treatment_presentation_payment_plans" formControlName="treatment_presentation_payment_plans">
-            <span>$</span>
-            <input class="select-price" type="number" id="treatment_presentation_payment_plans_price" formControlName="treatment_presentation_payment_plans_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="current_payement_provider">Current Payments Provider?</label>
-            <input class="select-provider" (click)="openSelectProvider('Current Payments Provider?','current_payement_provider')" placeholder="Select" type="text" id="current_payement_provider" formControlName="current_payement_provider">
-            <span>$</span>
-            <input class="select-price" type="number" id="current_payement_provider_price" formControlName="current_payement_provider_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="review">Reviews?</label>
-            <input class="select-provider" (click)="openSelectProvider('Reviews?','review')" placeholder="Select" type="text" id="review" formControlName="review">
-            <span>$</span>
-            <input class="select-price" type="number" id="review_price" formControlName="review_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="online_scheduling">Online Scheduling?</label>
-            <input class="select-provider" (click)="openSelectProvider('Online Scheduling?','online_scheduling')" placeholder="Select" type="text" id="online_scheduling" formControlName="online_scheduling">
-            <span>$</span>
-            <input class="select-price" type="number" id="online_scheduling_price" formControlName="online_scheduling_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="mass_texting">Mass Texting?</label>
-            <input class="select-provider" (click)="openSelectProvider('Mass Texting?','mass_texting')" placeholder="Select" type="text" id="mass_texting" formControlName="mass_texting">
-            <span>$</span>
-            <input class="select-price" type="number" id="mass_texting_price" formControlName="mass_texting_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="mass_emailing">Mass Emailing?</label>
-            <input class="select-provider" (click)="openSelectProvider('Mass Emailing?','mass_emailing')" placeholder="Select" type="text" id="mass_emailing" formControlName="mass_emailing">
-            <span>$</span>
-            <input class="select-price" type="number" id="mass_emailing_price" formControlName="mass_emailing_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="analytics_morning_huddle">Analytics & Morning Huddle?</label>
-            <input class="select-provider" (click)="openSelectProvider('Analytics & Morning Huddle?','analytics_morning_huddle')" placeholder="Select" type="text" id="analytics_morning_huddle" formControlName="analytics_morning_huddle">
-            <span>$</span>
-            <input class="select-price" type="number" id="analytics_morning_huddle_price" formControlName="analytics_morning_huddle_price">
-            <span>/mo</span>
-          </div>
-        
-          <div class="tech_selecter">
-            <label  class="provider-label" for="verification_provider">Verification Provider</label>
-            <input class="select-provider" (click)="openSelectProvider('Verification Provider','verification_provider')" placeholder="Select" type="text" id="verification_provider" formControlName="verification_provider">
-            <span>$</span>
-            <input class="select-price" type="number" id="verification_provider_price" formControlName="verification_provider_price">
-            <span>/mo</span>
-          </div>
-        
+        <div class="tech_selecter">
+          <label for="patient_texting" class="provider-label"
+            >Patient Texting?</label
+          >
+          <input
+            class="select-provider"
+            (click)="openSelectProvider('Patient Texting?', 'patient_texting')"
+            placeholder="Select"
+            type="text"
+            id="patient_texting"
+            formControlName="patient_texting"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="patient_texting_price"
+            formControlName="patient_texting_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="reminder_recall"
+            >Reminder/Recall?</label
+          >
+          <input
+            class="select-provider"
+            (click)="
+              openSelectProvider('Reminders & Recall?', 'reminder_recall')
+            "
+            placeholder="Select"
+            type="text"
+            id="reminder_recall"
+            formControlName="reminder_recall"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="reminder_recall_price"
+            formControlName="reminder_recall_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="digital_froms"
+            >Digital Forms?</label
+          >
+          <input
+            class="select-provider"
+            (click)="openSelectProvider('Digital Forms?', 'digital_froms')"
+            placeholder="Select"
+            type="text"
+            id="digital_froms"
+            formControlName="digital_froms"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="digital_froms_price"
+            formControlName="digital_froms_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label
+            class="provider-label"
+            for="treatment_presentation_payment_plans"
+            >Treatment Presentations & Payment Plans?</label
+          >
+          <input
+            class="select-provider"
+            (click)="
+              openSelectProvider(
+                'Treatment Presentations & Payment Plans?',
+                'treatment_presentation_payment_plans'
+              )
+            "
+            placeholder="Select"
+            type="text"
+            id="treatment_presentation_payment_plans"
+            formControlName="treatment_presentation_payment_plans"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="treatment_presentation_payment_plans_price"
+            formControlName="treatment_presentation_payment_plans_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="current_payement_provider"
+            >Current Payments Provider?</label
+          >
+          <input
+            class="select-provider"
+            (click)="
+              openSelectProvider(
+                'Current Payments Provider?',
+                'current_payement_provider'
+              )
+            "
+            placeholder="Select"
+            type="text"
+            id="current_payement_provider"
+            formControlName="current_payement_provider"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="current_payement_provider_price"
+            formControlName="current_payement_provider_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="review">Reviews?</label>
+          <input
+            class="select-provider"
+            (click)="openSelectProvider('Reviews?', 'review')"
+            placeholder="Select"
+            type="text"
+            id="review"
+            formControlName="review"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="review_price"
+            formControlName="review_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="online_scheduling"
+            >Online Scheduling?</label
+          >
+          <input
+            class="select-provider"
+            (click)="
+              openSelectProvider('Online Scheduling?', 'online_scheduling')
+            "
+            placeholder="Select"
+            type="text"
+            id="online_scheduling"
+            formControlName="online_scheduling"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="online_scheduling_price"
+            formControlName="online_scheduling_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="mass_texting">Mass Texting?</label>
+          <input
+            class="select-provider"
+            (click)="openSelectProvider('Mass Texting?', 'mass_texting')"
+            placeholder="Select"
+            type="text"
+            id="mass_texting"
+            formControlName="mass_texting"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="mass_texting_price"
+            formControlName="mass_texting_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="mass_emailing"
+            >Mass Emailing?</label
+          >
+          <input
+            class="select-provider"
+            (click)="openSelectProvider('Mass Emailing?', 'mass_emailing')"
+            placeholder="Select"
+            type="text"
+            id="mass_emailing"
+            formControlName="mass_emailing"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="mass_emailing_price"
+            formControlName="mass_emailing_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="analytics_morning_huddle"
+            >Analytics & Morning Huddle?</label
+          >
+          <input
+            class="select-provider"
+            (click)="
+              openSelectProvider(
+                'Analytics & Morning Huddle?',
+                'analytics_morning_huddle'
+              )
+            "
+            placeholder="Select"
+            type="text"
+            id="analytics_morning_huddle"
+            formControlName="analytics_morning_huddle"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="analytics_morning_huddle_price"
+            formControlName="analytics_morning_huddle_price"
+          />
+          <span>/mo</span>
+        </div>
+
+        <div class="tech_selecter">
+          <label class="provider-label" for="verification_provider"
+            >Verification Provider</label
+          >
+          <input
+            class="select-provider"
+            (click)="
+              openSelectProvider(
+                'Verification Provider',
+                'verification_provider'
+              )
+            "
+            placeholder="Select"
+            type="text"
+            id="verification_provider"
+            formControlName="verification_provider"
+          />
+          <span>$</span>
+          <input
+            class="select-price"
+            type="number"
+            id="verification_provider_price"
+            formControlName="verification_provider_price"
+          />
+          <span>/mo</span>
+        </div>
       </form>
       <div class="total">
+        <div>
+          <button mat-raised-button (click)="reset()" type="button">Reset</button>
+        </div>
         <div>
           <span>Total Tech Stack Spend&nbsp;&nbsp;:&nbsp;&nbsp;</span>
           <span>
@@ -158,48 +355,118 @@
       @if(totalCost>0){
       <div class="spending">
         <div class="spend-title">
-          <h2>So You’re Spending <span>${{ totalCost }}</span> Per Month On</h2>
+          <h2>
+            So You’re Spending <span>${{ totalCost }}</span> Per Month On
+          </h2>
         </div>
         <div class="logo-img"></div>
         <div class="gaps-in-your-tech">
           <div class="head">
-            <img src="https://demo.enfolytics.com/assets/images/tech-stack-summary-icon.svg" alt=""/>
+            <img
+              src="https://demo.enfolytics.com/assets/images/tech-stack-summary-icon.svg"
+              alt=""
+            />
             <h2>Current Gaps in Your Tech Stack</h2>
-            <button mat-raised-button type="button">  <mat-icon>add_circle</mat-icon> Expand</button>
+            <button mat-raised-button type="button" (click)="expand=!expand">
+              <mat-icon>{{expand?'add_circle':'remove_circle'}}</mat-icon>
+               {{expand?'Expand':'Collapse'}}
+            </button>
           </div>
           <div class="techs">
-             <div class="batch">
+            <div class="batch">
               <h3 class="heading">Communications</h3>
               <div class="communication">
                 @for (column of communicationsList; track column) {
-                 <p> <mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+                  @if(column.value){
+                    <p class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                  }
                 }
               </div>
-             </div>
-             <div class="batch">
+            </div>
+            <div class="batch">
               <h3 class="heading">Operations</h3>
               <div class="operations">
                 @for (column of operations; track column) {
-                 <p> <mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+               @if(column.value){
+                    <p class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                    
+                  }
                 }
               </div>
-             </div>
-              <div class="batch">
-                <h3 class="heading">Analytics</h3>
-                <div class="analytics">
-                  @for (column of analytics; track column) {
-                   <p> <mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+            </div>
+            <div class="batch">
+              <h3 class="heading">Analytics</h3>
+              <div class="analytics">
+                @for (column of analytics; track column) {
+               @if(column.value){
+                    <p class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                    
                   }
-                </div>
+                }
               </div>
-              <div class="batch">
-                <h3 class="heading">Mobile</h3>
+            </div>
+            <div class="batch">
+              <h3 class="heading">Mobile</h3>
               <div class="mobile">
                 @for (column of mobile; track column) {
-                  <p> <mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+               @if(column.value){
+                    <p class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                    
+                  }
                 }
-            </div>
               </div>
+            </div>
+            <div class="batch">
+              <h3 class="heading">Verification</h3>
+              <div class="verifications">
+                @for (column of verifications; track column) {
+               @if(column.value){
+                    <p class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                    
+                  }
+                }
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -217,6 +484,5 @@
 
       }
     </mat-tab>
- 
   </mat-tab-group>
 </div>

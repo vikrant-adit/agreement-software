@@ -1,9 +1,12 @@
 <div class="container">
   <app-header></app-header>
+  <button class="saveBtn" mat-flat-button type="button" (click)="saveForm()">Save</button>
+
+  <button class="edit" mat-flat-button type="button" (click)="editForm()">Edit</button>
   <div class="card">
     <div class="spending">
       <div class="check">
-        <mat-icon>check_circle_outline</mat-icon>
+        <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
       </div>
       <div class="spend-title">
         <h2>
@@ -15,11 +18,11 @@
         <div class="head">
           <img
             src="https://demo.enfolytics.com/assets/images/tech-stack-summary-icon.svg"
-            alt=""
-          />
+            alt=""/>
           <h2>Current Gaps in Your Tech Stack</h2>
-          <button mat-raised-button type="button">
-            <mat-icon>add_circle</mat-icon> Expand
+          <button mat-raised-button type="button" (click)="expand=!expand">
+            <mat-icon>{{expand?'add_circle':'remove_circle'}}</mat-icon>
+             {{expand?'Expand':'Collapse'}}
           </button>
         </div>
         <div class="techs">
@@ -27,7 +30,17 @@
             <h3 class="heading">Communications</h3>
             <div class="communication">
               @for (column of communicationsList; track column) {
-              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              @if(column.value){
+                    <p class="gapNames" matTooltip="{{column.toolTip}}">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                  }
               }
             </div>
           </div>
@@ -35,7 +48,17 @@
             <h3 class="heading">Operations</h3>
             <div class="operations">
               @for (column of operations; track column) {
-              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              @if(column.value){
+                    <p class="gapNames" matTooltip="{{column.toolTip}}">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                  }
               }
             </div>
           </div>
@@ -43,7 +66,17 @@
             <h3 class="heading">Analytics</h3>
             <div class="analytics">
               @for (column of analytics; track column) {
-              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              @if(column.value){
+                    <p class="gapNames" matTooltip="{{column.toolTip}}">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                  }
               }
             </div>
           </div>
@@ -51,22 +84,53 @@
             <h3 class="heading">Mobile</h3>
             <div class="mobile">
               @for (column of mobile; track column) {
-              <p><mat-icon>check_circle_outline</mat-icon> {{ column.text }}</p>
+              @if(column.value){
+                    <p class="gapNames" matTooltip="{{column.toolTip}}">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                  }
               }
             </div>
           </div>
+          <!-- <div class="batch">
+            <h3 class="heading">Verification</h3>
+            <div class="verifications">
+              @for (column of verifications; track column) {
+              @if(column.value){
+                    <p class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
+                    </p>
+                  }@else {
+                    @if(!expand){
+                      <p class="gapNames" style="opacity: 0.5;">
+                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
+                      </p>
+                    }
+                  }
+              }
+            </div>
+          </div> -->
         </div>
       </div>
     </div>
   </div>
   <div class="card">
+    <app-choose-packages></app-choose-packages>
+  </div>
+  <div class="card">
     <div class="check">
-      <mat-icon>check_circle_outline</mat-icon>
+      <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
     </div>
     <div class="head">
       <h1>Step 1: Choose a Package</h1>
       <div class="title-head">
-        <span>How would you like to pay?</span>
+        <h3>How would you like to pay?</h3>
         <div class="toggle-container">
           <button
             [class]="{ active: isAnnually }"
@@ -83,26 +147,14 @@
             Monthly
           </button>
         </div>
-        <!-- @if(isAnnually){
-                <div class="content">
-                    <h2>Annually Content</h2>
-                    <p>This is the content for the annually view.</p>
-                </div>
-              }
-              @if(!isAnnually){
-                <div class="content">
-                    <h2>Monthly Content</h2>
-                    <p>This is the content for the monthly view.</p>
-                </div>
-              } -->
-        <span>Save $1050 When You Pay Annually!</span>
+        <span class="save"> <mat-icon>keyboard_backspace</mat-icon> <h2> {{!isAnnually?'You Can Save $1050 By Paying Annual':'Save $1050 When You Pay Annually!'}}</h2></span>
       </div>
       <div class="content">
         <div class="mini-card tech">
           <h1>Tech Bundle</h1>
           <h2>
-            Reg Price <span class="striked">$549</span>
-            <span class="org_price">$399</span>
+            Reg Price <span class="striked">${{techBundle_strike_price}}</span>
+            <span class="org_price">${{!isAnnually? techBundle_price_annual:techBundle_price_monthly}}</span>
           </h2>
           <div style="margin-block: 5px">
             <p>$600 Saved By Going Annual</p>
@@ -143,8 +195,8 @@
           <div class="popular-tag">Most Popular</div>
           <h1>Analytics Bundle</h1>
           <h2>
-            Reg Price <span class="striked">$649</span>
-            <span class="org_price">$499</span>
+            Reg Price <span class="striked">${{analyticsBundle_strike_price}}</span>
+            <span class="org_price">${{!isAnnually?analyticsBundle_price_annual : analyticsBundle_price_monthly}}</span>
           </h2>
           <div style="margin-block: 5px">
             <p>$600 Saved By Going Annual</p>
@@ -170,38 +222,31 @@
               >
               <span> <mat-icon>check_circle_outline</mat-icon>Follow Ups</span>
               <span>
-                <mat-icon>check_circle_outline</mat-icon> Patient Lists</span
-              >
+                <mat-icon>check_circle_outline</mat-icon> Patient Lists</span>
               <span>
                 <mat-icon>check_circle_outline</mat-icon>Track Provider
-                Hours</span
-              >
+                Hours</span>
               <span>
                 <mat-icon>check_circle_outline</mat-icon>Practice
-                Performance</span
-              >
-              <span
-                ><mat-icon>check_circle_outline</mat-icon>Provider
-                Performance</span
-              >
+                Performance</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Provider
+                Performance</span>
             </div>
             <div class="tech_column">
               <span>
                 <mat-icon>check_circle_outline</mat-icon> Hygiene
-                Performance</span
-              >
+                Performance</span>
               <span>
                 <mat-icon>check_circle_outline</mat-icon> Operatory
-                Utilization</span
-              >
+                Utilization</span>
               <span>
                 <mat-icon>check_circle_outline</mat-icon> Growth
-                Dashboards</span
-              >
+                Dashboards</span>
               <span>
                 <mat-icon>check_circle_outline</mat-icon> Collections
-                Dashboards</span
-              >
+                Dashboards
+              </span>
             </div>
           </div>
         </div>
@@ -221,15 +266,13 @@
             <button
               [class]="{ active: selectPhone }"
               (click)="selectPhone = true"
-              class="toggle-btn"
-            >
+              class="toggle-btn">
               Yes
             </button>
             <button
               [class]="{ active: !selectPhone }"
               (click)="selectPhone = false"
-              class="toggle-btn"
-            >
+              class="toggle-btn">
               No
             </button>
           </div>
@@ -241,10 +284,7 @@
               two 2616s.
             </span>
             <div class="phones-grid">
-              <div
-                class="phone-content"
-                [class]="count > 0 ? 'active-content' : ''"
-              >
+              <div class="phone-content" [class.active-content]="counts[0] > 0">
                 <img
                   src="https://demo.enfolytics.com/assets/images/grandstream-grp-2616.png"
                   alt=""
@@ -252,19 +292,17 @@
                 <p class="phone-name">Grandstream <strong> GRP 2616</strong></p>
                 <span class="price">$150</span>
                 <span class="description"
-                  >Best for workstations handling more than 10 calls per day.
-                  (Recommended for front desk, call centers, etc.)</span
+                  >Best for workstations handling more than 10 calls per day. (Recommended for
+                  front desk, call centers, etc.)</span
                 >
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(0)">−</button>
+                  <span>{{ counts[0] }}</span>
+                  <button (click)="increment(0)">+</button>
                 </div>
               </div>
-              <div
-                class="phone-content"
-                [class]="count > 0 ? 'active-content' : ''"
-              >
+              
+              <div class="phone-content" [class.active-content]="counts[1] > 0">
                 <img
                   src="https://demo.enfolytics.com/assets/images/grandstream-grp-2613.png"
                   alt=""
@@ -272,19 +310,17 @@
                 <p class="phone-name">Grandstream <strong> GRP 2613</strong></p>
                 <span class="price">$100</span>
                 <span class="description"
-                  >Best for workstations handling less than 10 calls per day.
-                  (Typically in Operatories and Hallways)</span
+                  >Best for workstations handling less than 10 calls per day. (Typically in
+                  Operatories and Hallways)</span
                 >
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(1)">−</button>
+                  <span>{{ counts[1] }}</span>
+                  <button (click)="increment(1)">+</button>
                 </div>
               </div>
-              <div
-                class="phone-content"
-                [class]="count > 0 ? 'active-content' : ''"
-              >
+              
+              <div class="phone-content" [class.active-content]="counts[2] > 0">
                 <img
                   src="https://demo.enfolytics.com/assets/images/grandstream-dp-720.png"
                   alt=""
@@ -292,18 +328,18 @@
                 <p class="phone-name">Grandstream <strong> DP 720</strong></p>
                 <span class="price">$100</span>
                 <span class="description"
-                  >Best for staff who are constantly on their feet and handle
-                  less than 10 calls per day.</span
+                  >Best for staff who are constantly on their feet and handle less than 10
+                  calls per day.</span
                 >
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(2)">−</button>
+                  <span>{{ counts[2] }}</span>
+                  <button (click)="increment(2)">+</button>
                 </div>
               </div>
               <div
                 class="phone-content"
-                [class]="count > 0 ? 'active-content' : ''"
+                [class.active-content]="counts[3] > 0"
               >
                 <img
                   src="https://demo.enfolytics.com/assets/images/grp-2616-wall-mount.png"
@@ -312,14 +348,14 @@
                 <p class="phone-name">GRP 2616 Wall Mount</p>
                 <span class="price">$10</span>
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(3)">−</button>
+                  <span>{{ counts[3] }}</span>
+                  <button (click)="increment(3)">+</button>
                 </div>
               </div>
               <div
                 class="phone-content"
-                [class]="count > 0 ? 'active-content' : ''"
+                [class.active-content]="counts[4] > 0"
               >
                 <img
                   src="https://demo.enfolytics.com/assets/images/grp-2613-wall-mount.png"
@@ -328,14 +364,14 @@
                 <p class="phone-name">GRP 2613 Wall Mount</p>
                 <span class="price">$10</span>
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(4)">−</button>
+                  <span>{{ counts[4] }}</span>
+                  <button (click)="increment(4)">+</button>
                 </div>
               </div>
               <div
                 class="phone-content"
-                [class]="count > 0 ? 'active-content' : ''"
+                [class.active-content]="counts[5] > 0"
               >
                 <img
                   src="https://demo.enfolytics.com/assets/images/headset-adapter.png"
@@ -344,9 +380,9 @@
                 <p class="phone-name">Headset + Adapter</p>
                 <span class="price">$275</span>
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(5)">−</button>
+                  <span>{{ counts[5] }}</span>
+                  <button (click)="increment(5)">+</button>
                 </div>
               </div>
             </div>
@@ -383,7 +419,7 @@
             <div class="terminal-grid">
               <div
                 class="terminal-content"
-                [class]="count > 0 ? 'active-content' : ''"
+                [class.active-content]="counts[6] > 0"
               >
                 <img
                   src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e.png"
@@ -397,14 +433,14 @@
                   (Recommended for front desk, call centers, etc.)</span
                 >
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(6)">−</button>
+                  <span>{{ counts[6] }}</span>
+                  <button (click)="increment(6)">+</button>
                 </div>
               </div>
               <div
                 class="terminal-content"
-                [class]="count > 0 ? 'active-content' : ''"
+                [class.active-content]="counts[7] > 0"
               >
                 <img
                   src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e-dock.png"
@@ -418,9 +454,9 @@
                   (Typically in Operatories and Hallways)</span
                 >
                 <div class="counter-container">
-                  <button (click)="decrement()">−</button>
-                  <span>{{ count }}</span>
-                  <button (click)="increment()">+</button>
+                  <button (click)="decrement(7)">−</button>
+                  <span>{{ counts[7] }}</span>
+                  <button (click)="increment(7)">+</button>
                 </div>
               </div>
             </div>
@@ -443,120 +479,260 @@
           To sign up for Adit, please begin by filling out the below
           information.
         </p>
-        <form>
+        @if(multiple_location=='yes'){
+        <div class="org-form">
           <div class="form-field">
             <mat-form-field class="field" appearance="fill">
-              <mat-label>Practice Name</mat-label>
-              <input type="text" matInput />
+              <mat-label> Organization Name</mat-label>
+              <input type="text" [(ngModel)]="organization_name" matInput />
+            </mat-form-field>
+            <span>
+              The Organization Name is the name your entire group of practices
+              is referred to as. Example: Heartland Dental
+            </span>
+          </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label> Org. POC Name (Point-of-Contact)</mat-label>
+              <input type="text" [(ngModel)]="organization_poc_name" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label> Org. POC Email</mat-label>
+              <input type="text" [(ngModel)]="organization_poc_email" matInput />
             </mat-form-field>
           </div>
+          <div class="form-field">
+            <mat-form-field class="field" appearance="fill">
+              <mat-label> Org. POC Work Number</mat-label>
+              <input type="text" [(ngModel)]="organization_poc_work_number" matInput />
+            </mat-form-field>
+            <mat-form-field class="field" appearance="fill">
+              <mat-label> Org. POC Cell Number</mat-label>
+              <input type="text" [(ngModel)]="organization_poc_cell_number" matInput />
+            </mat-form-field>
+          </div>
+        </div>
+        }
 
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Location Short Name (ex. Houston)</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Practice Address Line 1</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Practice Address Line 2</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>City</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>State/Region/Province</mat-label>
-              <mat-select>
-                <mat-option>state Name</mat-option>
-                <mat-option>state Name</mat-option>
-                <mat-option>state Name</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Postal/Zip Code</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Country</mat-label>
-              <mat-select>
-                <mat-option>United States</mat-option>
-                <mat-option>Canada</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Timezone</mat-label>
-              <mat-select>
-                <mat-option>UTC </mat-option>
-                <mat-option>UTC Pacific</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Office Phone</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Email</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Website URL</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>Practice Management Software (PMS)</mat-label>
-              <mat-select>
-                <mat-option value="AbelDent">AbelDent</mat-option>
-                <mat-option value="ClearDent">ClearDent</mat-option>
-                <mat-option value="Curve">Curve</mat-option>
-                <mat-option value="Denticon">Denticon</mat-option>
-                <mat-option value="Dentrix">Dentrix</mat-option>
-                <mat-option value="Dentrix Ascend">Dentrix Ascend</mat-option>
-                <mat-option value="Eaglesoft">Eaglesoft</mat-option>
-                <mat-option value="Easy Dental">Easy Dental</mat-option>
-                <mat-option value="OpenDental">OpenDental</mat-option>
-                <mat-option value="PracticeWorks">PracticeWorks</mat-option>
-                <mat-option value="Practice Web">Practice Web</mat-option>
-                <mat-option value="Tracker">Tracker</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>POC Name (Point-of-Contact)</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>POC Email</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>POC Work Number</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label>POC Cell Number</mat-label>
-              <input type="text" matInput />
-            </mat-form-field>
+        <form [formGroup]="practiceData">
+          <div formArrayName="locations">
+            @for(location of locations.controls;track location; let i = $index){
+            @if(multiple_location=='yes'){
+            <h2>
+              @if(i>0){
+              <mat-icon (click)="removeLocation(i)">delete</mat-icon>
+
+              } Location {{ i + 1 }} : {{ location.get("locationName")?.value }}
+            </h2>
+            }
+            <div [formGroupName]="i">
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Practice Name</mat-label>
+                  <input type="text" formControlName="parcticeName" matInput />
+                </mat-form-field>
+              </div>
+
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Location Short Name (ex. Houston)</mat-label>
+                  <input type="text" formControlName="locationName" matInput />
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Practice Address Line 1</mat-label>
+                  <input
+                    type="text"
+                    formControlName="practiceAdressLine_1"
+                    matInput
+                  />
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Practice Address Line 2</mat-label>
+                  <input
+                    type="text"
+                    formControlName="practiceAdressLine_2"
+                    matInput
+                  />
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>City</mat-label>
+                  <input type="text" formControlName="practice_city" matInput />
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>State/Region/Province</mat-label>
+                  <mat-select formControlName="practice_state">
+                    <mat-option value="Alabama">Alabama </mat-option>
+                    <mat-option value="Alaska">Alaska</mat-option>
+                    <mat-option value="Arizona">Arizona</mat-option>
+                    <mat-option value="Arkansas">Arkansas</mat-option>
+                    <mat-option value="California">California</mat-option>
+                    <mat-option value="Colorado">Colorado</mat-option>
+                    <mat-option value="Connecticut">Connecticut</mat-option>
+                    <mat-option value="Delaware">Delaware</mat-option>
+                    <mat-option value="District of Columbia"
+                      >District of Columbia</mat-option
+                    >
+                    <mat-option value="Florida">Florida</mat-option>
+                    <mat-option value="Georgia">Georgia</mat-option>
+                    <mat-option value="Hawaii">Hawaii</mat-option>
+                    <mat-option value="Idaho">Idaho</mat-option>
+                    <mat-option value="Illinois">Illinois</mat-option>
+                    <mat-option value="Indiana">Indiana</mat-option>
+                    <mat-option value="Iowa">Iowa</mat-option>
+                    <mat-option value="Kansas">Kansas</mat-option>
+                    <mat-option value="Kentucky">Kentucky</mat-option>
+                    <mat-option value="Louisiana">Louisiana</mat-option>
+                    <mat-option value="Maine">Maine</mat-option>
+                    <mat-option value="Maryland">Maryland</mat-option>
+                    <mat-option value="Massachusetts">Massachusetts</mat-option>
+                    <mat-option value="Michigan">Michigan</mat-option>
+                    <mat-option value="Minnesota">Minnesota</mat-option>
+                    <mat-option value="Mississippi">Mississippi</mat-option>
+                    <mat-option value="Missouri">Missouri</mat-option>
+                    <mat-option value="Montana">Montana</mat-option>
+                    <mat-option value="Nebraska">Nebraska</mat-option>
+                    <mat-option value="Nevada">Nevada</mat-option>
+                    <mat-option value="New Hampshire">New Hampshire</mat-option>
+                    <mat-option value="New Jersey">New Jersey</mat-option>
+                    <mat-option value="New Mexico"> New Mexico</mat-option>
+                    <mat-option value="New York">New York</mat-option>
+                    <mat-option value="North Carolina"
+                      >North Carolina</mat-option
+                    >
+                    <mat-option value="North Dakota">North Dakota</mat-option>
+                    <mat-option value="Ohio">Ohio</mat-option>
+                    <mat-option value="Oklahoma">Oklahoma</mat-option>
+                    <mat-option value="Oregon">Oregon</mat-option>
+                    <mat-option value="Pennsylvania">Pennsylvania</mat-option>
+                    <mat-option value="Puerto Rico">Puerto Rico</mat-option>
+                    <mat-option value="Rhode Island">Rhode Island</mat-option>
+                    <mat-option value="South Carolina"
+                      >South Carolina</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Postal/Zip Code</mat-label>
+                  <input
+                    type="text"
+                    formControlName="practice_postal_zip_code"
+                    matInput
+                  />
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Country</mat-label>
+                  <mat-select formControlName="practice_country">
+                    <mat-option value="UnitedStates">United States</mat-option>
+                    <mat-option value="Canada">Canada</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Timezone</mat-label>
+                  <mat-select formControlName="practice_timezone">
+                    <mat-option value="utc">UTC </mat-option>
+                    <mat-option value="utc_pacific">UTC Pacific</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Office Phone</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    formControlName="practice_office_phone"
+                  />
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Email</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    formControlName="practice_email"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Website URL</mat-label>
+                  <input
+                    type="text"
+                    matInput
+                    formControlName="practice_website_url"
+                  />
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>Practice Management Software (PMS)</mat-label>
+                  <mat-select formControlName="practice_management_software">
+                    <mat-option value="AbelDent">AbelDent</mat-option>
+                    <mat-option value="ClearDent">ClearDent</mat-option>
+                    <mat-option value="Curve">Curve</mat-option>
+                    <mat-option value="Denticon">Denticon</mat-option>
+                    <mat-option value="Dentrix">Dentrix</mat-option>
+                    <mat-option value="Dentrix Ascend"
+                      >Dentrix Ascend</mat-option
+                    >
+                    <mat-option value="Eaglesoft">Eaglesoft</mat-option>
+                    <mat-option value="Easy Dental">Easy Dental</mat-option>
+                    <mat-option value="OpenDental">OpenDental</mat-option>
+                    <mat-option value="PracticeWorks">PracticeWorks</mat-option>
+                    <mat-option value="Practice Web">Practice Web</mat-option>
+                    <mat-option value="Tracker">Tracker</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>POC Name (Point-of-Contact)</mat-label>
+                  <input type="text" formControlName="practice_poc" matInput />
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>POC Email</mat-label>
+                  <input
+                    type="text"
+                    formControlName="practice_poc_email"
+                    matInput
+                  />
+                </mat-form-field>
+              </div>
+              <div class="form-field">
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>POC Work Number</mat-label>
+                  <input
+                    type="text"
+                    formControlName="practice_poc_work_number"
+                    matInput
+                  />
+                </mat-form-field>
+                <mat-form-field class="field" appearance="fill">
+                  <mat-label>POC Cell Number</mat-label>
+                  <input
+                    type="text"
+                    formControlName="pracitce_poc_cell_number"
+                    matInput
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+            }
           </div>
         </form>
+
         <div class="btnClass">
-          <button mat-raised-button class="nextbtn">Next</button>
+          <!-- @if(multiple_location=='yes'){ -->
+          <button mat-raised-button class="nextbtn" (click)="addLocation()">
+            Add Location
+          </button>
+          <!-- } -->
+          <button mat-raised-button class="nextbtn" (click)="onSubmit()">
+            Next
+          </button>
         </div>
       </div>
       <div class="card review-order">
@@ -604,31 +780,31 @@
               <div style="border: 2px solid var(--primary-color)">
                 <canvas width="800" height="300" #signatureCanvas></canvas>
               </div>
-             
+
               <!-- <button (click)="saveSignature()">Save</button> -->
             </mat-tab>
             <mat-tab label="Upload">
               <div style="border: 2px dotted var(--primary-color)">
-                <div 
+                <div
                   class="upload-container"
                   (dragover)="onDragOver($event)"
                   (dragleave)="onDragLeave($event)"
-                  (drop)="onDrop($event)">
+                  (drop)="onDrop($event)"
+                >
                   @if(!previewImage){
-                    <p>Drag & drop a signature image</p>
-                    <p>or</p>
-  
-                    <label class="upload-button">
-                      <input
-                        type="file"
-                        (change)="onFileSelected($event)"
-                        accept="image/*"
-                        hidden
-                      />
-                      Select Image
-                    </label>
-                  }
-                  @if(previewImage){
+                  <p>Drag & drop a signature image</p>
+                  <p>or</p>
+
+                  <label class="upload-button">
+                    <input
+                      type="file"
+                      (change)="onFileSelected($event)"
+                      accept="image/*"
+                      hidden
+                    />
+                    Select Image
+                  </label>
+                  } @if(previewImage){
                   <div class="preview">
                     <img [src]="previewImage" alt="Signature Preview" />
                   </div>
@@ -640,17 +816,25 @@
           <div class="belowSignature">
             <div class="nameOfSignatory">
               <p>Name of signatory:</p>
-                <input  type="text">
+              <input type="text" [(ngModel)]="signature_name" />
             </div>
-            <button mat-flat-button (click)="clearPad()"> <mat-icon class="deleteIcon">delete</mat-icon> Clear</button>
-
-            
+            <button mat-flat-button (click)="clearPad()">
+              <mat-icon class="deleteIcon">delete</mat-icon> Clear
+            </button>
           </div>
           <div class="terms">
-            <input class="checkBox" type="checkbox"> <span>I accept the Terms and Conditions outlined at <a href="https://adit.com/terms">https://adit.com/terms</a> </span>
+            <input class="checkBox" type="checkbox" #tooltip="matTooltip" matTooltip="Please accepet these terms to continuse" />
+            <span> I accept the Terms and Conditions outlined at
+              <a href="https://adit.com/terms">https://adit.com/terms</a>
+            </span>
           </div>
           <div class="terms">
-            <input class="checkBox" type="checkbox"> <span>I accept that Adit will need access to our server and/or EHR occasionally to ensure the best product experience. Details outlined at <a href="https://adit.com/terms"> https://adit.com/terms</a></span> 
+            <input class="checkBox" type="checkbox" matTooltip="Please accept these EHR terms to continue" />
+            <span> I accept that Adit will need access to our server and/or EHR
+              occasionally to ensure the best product experience. Details
+              outlined at
+              <a href="https://adit.com/terms"> https://adit.com/terms</a></span
+            >
           </div>
         </div>
       </div>
@@ -673,11 +857,13 @@
         </button>
       </div>
       <div class="short-card">
-        <h2>One time payment Due Today <mat-icon>check</mat-icon></h2>
+        <h3>One time payment Due Today <mat-icon>shopping_cart</mat-icon></h3>
         <!-- add line -->
+        <mat-divider></mat-divider>
+
         <p class="context">
           <span class="title">Activation Fee <mat-icon>info</mat-icon></span>
-          <span class="value"> $500 </span>
+          <span class="value"> ${{activation_fee}} </span>
         </p>
         <p class="context">
           <span class="title">Subscription Fee</span>
@@ -691,24 +877,28 @@
           <span class="title"
             >Hardware Credit Applied <mat-icon>info</mat-icon></span
           >
-          <span class="value"> -$0 </span>
+          <span class="hardwareValue"> -$0 </span>
         </p>
         <!-- add line -->
-        <h2 class="context">
-          <span class="title">TotaL Payment Today</span>
+        <mat-divider></mat-divider>
+
+        <H3 class="context">
+          <span class="title">Total Payment Today</span>
           <span class="value"> $6,488 </span>
-        </h2>
+        </H3>
         <!-- if condtion for annual and monthly -->
         <span class="subtext">Saved By Going Annual $600</span>
       </div>
       <div class="short-card">
-        <h2 class="context">
+        <H3 class="context">
           <span class="title">Next Annual Payment</span>
           <span class="value">$5,988 </span>
-        </h2>
-        <span class="subtext">On APR 28, 2026</span>
+        </H3>
+        <span class="subDate">On APR 28, 2026</span>
       </div>
-      <button mat-raised-button>Accept & Pay</button>
+      <button mat-raised-button class="acceptBtn" [disabled]="true">
+        Accept & Pay
+      </button>
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import {ActivatedRoute, Router } from '@angular/router';
 import {
   FormBuilder,
   FormControl,
@@ -18,6 +18,9 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { TechStackComparisonComponent } from './tech-stack-comparison/tech-stack-comparison.component';
 import { OnlineFormAgreementService } from '../../../../services/online form/online-form-agreement.service';
 import { promotionPricing } from './pricingArr';
+import { ToastrModule,ToastrService } from 'ngx-toastr';
+import { EventRepsService } from '../../../../services/system-setting/event-reps.service';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 @Component({
   selector: 'app-pre-agreement-form',
   standalone: true,
@@ -32,6 +35,7 @@ import { promotionPricing } from './pricingArr';
     ReactiveFormsModule,
     HeaderComponent,
     TechStackComparisonComponent,
+    ToastrModule
   ],
   templateUrl: './pre-agreement-form.component.html',
   styleUrl: './pre-agreement-form.component.scss',
@@ -42,17 +46,18 @@ export class PreAgreementFormComponent implements OnInit {
   dental_or_optometry = '';
   formService=inject(OnlineFormAgreementService);
   receivedForm!: FormGroup;
-
+  private eventService = inject(EventRepsService)
+  private activeRouter =inject(ActivatedRoute)
   onFormChanged(form: FormGroup) {
     this.receivedForm = form;
     // console.log('Received Form:', this.receivedForm.value);
   }
-  constructor(private fb: FormBuilder, private router:Router) {
+  constructor(private fb: FormBuilder, private router:Router,private toastr:ToastrService) {
     this.preAgreementForm = this.fb.group({
       practiceIndustry: ['', Validators.required],
       newOrExistingClient: ['', Validators.required],
       multipleLocations: ['', Validators.required],
-      accountId: ['', Validators.required],
+      accountId: ['', [Validators.required, Validators.pattern(/^\d{19}$/)]],
       currency: ['', Validators.required],
       pms: ['', Validators.required],
       displayPricing: [false],
@@ -67,9 +72,27 @@ export class PreAgreementFormComponent implements OnInit {
   createPricingFormGroup(): FormGroup {
     return this.fb.group({});
   }
-
+  agreementId:any;
   ngOnInit(): void {
+    let id =  this.activeRouter.snapshot.params['id']
+    if(id){
+      this.agreementId=id
+      this.formService.getAgreement(this.agreementId).subscribe(res=>{
+        console.log(res)
+        this.preAgreementForm.patchValue(res)
+      })
+    }
     // this.onPromotionChange();
+    this.preAgreementForm.get('accountId')?.valueChanges.pipe(
+        debounceTime(300), // Wait for 300ms after the user stops typing
+        distinctUntilChanged(), // Only emit if the value has changed
+        filter(value => value.length === 19) // Only proceed if the input is exactly 19 digits
+      )
+      .subscribe(value => {
+        if (this.preAgreementForm.get('accountId')?.valid) {
+          this.fetchDeals(value);
+        }
+      });
   }
   onSubmit() {
     // Set the techStack value from receivedForm
@@ -104,10 +127,11 @@ export class PreAgreementFormComponent implements OnInit {
       this.formService.saveForm(formData).subscribe({
         next: (response) => {
           console.log('Form submitted successfully:', response);
-          alert('Form submitted successfully!');
+          this.router.navigate(['/view-agreement'])
+          this.toastr.success('Form submitted successfully!');
           this.preAgreementForm.reset(); // Reset the form
           this.selectedFile = null; // Clear the selected file
-          this.router.navigate(['/view_agreement'])
+          this.router.navigate(['/view-agreement/'+response.agreementId])
         },
         error: (error) => {
           console.error('Error submitting form:', error);
@@ -127,7 +151,7 @@ export class PreAgreementFormComponent implements OnInit {
 
   loading: boolean = false;
   selectedPromotion: string | null = null;
-  eventOptions: string[] = ['Ali Jhaver', 'Ralin Varghese'];
+  eventOptions: any[] = [];
 
   
   onPromotionChange() {
@@ -138,7 +162,11 @@ export class PreAgreementFormComponent implements OnInit {
       'pricingDetails'
     ) as FormGroup;
     this.selectedPromotion = selectedPromo; // Capture selected promotion type
-
+    if(this.selectedPromotion === 'Event'){
+      this.eventService.getUsers().subscribe(res=>{
+       this.eventOptions = res
+      })
+    }
     if (!this.promotionPricing[selectedPromo]) {
       return;
     }
@@ -302,4 +330,42 @@ export class PreAgreementFormComponent implements OnInit {
     }
   }
   
+  downloadSampleFile(): void {
+    this.formService.downloadSampleFile().subscribe({
+        next: (file: Blob) => {
+            const a = document.createElement('a');
+            const objectUrl = URL.createObjectURL(file);
+            a.href = objectUrl;
+            a.download = 'Muliple-Location-Data-Sample.csv';
+            a.click();
+            URL.revokeObjectURL(objectUrl); // Clean up
+        },
+        error: (error) => {
+            console.error('Error downloading file:', error);
+        },
+        complete: () => {
+            console.log('File download completed.');
+        }
+    });
+}
+deals: any[] = [];
+errorMessage: string = '';
+successMsg!:string
+fetchDeals(accountId: string): void {
+  this.formService.fetchDeal(accountId).subscribe({
+   next: (response: any) => {
+      if (response.deals && response.deals.length > 0) {
+        this.deals = response.deals;
+       this.successMsg='Account Validated'
+      } else {
+        this.deals = [];
+        this.errorMessage = 'No deals found for the given account ID';
+      }
+    },
+    error: (error) => {
+      this.deals = [];
+      this.errorMessage = 'An error occurred while fetching deals';
+    }
+});
+}
 }

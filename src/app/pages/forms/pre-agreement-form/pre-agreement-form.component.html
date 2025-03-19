@@ -52,21 +52,66 @@
         </div>
         @if(preAgreementForm.get('multipleLocations')?.value == 'yes'){
           <div class="form-row">
-            <div>
-              <label for="fileInput">Upload multiple locations data: </label>
-            <input id="fileInput"  type="file" (change)="onFileSelected($event)">
-            @if(selectedFile){
-              <p>{{ selectedFile.name }}</p>
-            }
+            <div class="upload">
+            <h4>Upload multiple locations data</h4>
+              <label for="fileInput" class="file-upload">
+                  <span class="file-upload-label">Choose File</span>
+                  @if(selectedFile){
+                    <span class="file-upload-name">  &nbsp; {{ selectedFile.name }}</span>
+
+                  }@else {
+                    <span class="file-upload-name"> &nbsp; No file chosen</span>
+
+                  }
+              </label>
+                <input id="fileInput" type="file" (change)="onFileSelected($event)">
             </div>
-           
+            <div class="sample_file" (click)="downloadSampleFile()">
+              <span >Download Sample File</span>
+            </div>
           </div>
         }
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Account ID</mat-label>
-            <input matInput formControlName="accountId" />
+            <input matInput formControlName="accountId"/>
+            <!-- Validation errors -->
+             @if(this.preAgreementForm.get('accountId')?.hasError('required')){
+              <mat-error>
+                Account ID is required.
+              </mat-error>
+             }
+             @if(this.preAgreementForm.get('accountId')?.hasError('pattern')){
+              <mat-error>
+                Account ID must be exactly 19 digits.
+              </mat-error>
+             }
+            @if(errorMessage){
+              <mat-error>
+                {{ errorMessage }}
+              </mat-error>
+            }
+            @if(successMsg){
+              <mat-hint >{{successMsg}}</mat-hint>
+              <!-- <span>{{successMsg}}</span> -->
+            }
+            
           </mat-form-field>
+          
+          @if(deals.length>0){
+            <mat-form-field appearance="fill">
+              <mat-label>Select a Deal</mat-label>
+              <mat-select>
+                @for(deal of deals;track deal){
+                  <mat-option [value]="deal">
+                    {{ deal.deal_name }} 
+                  </mat-option>
+                }
+               
+              </mat-select>
+            </mat-form-field>
+          }
+   
           <mat-form-field appearance="fill">
             <mat-label>Select Currency</mat-label>
             <mat-select formControlName="currency">
@@ -156,10 +201,9 @@
                     <mat-select formControlName="event_type">
                       @for(event of eventOptions; track event){
                         <mat-option [value]="event">
-                          {{ event }}
+                          {{ event.name }}
                         </mat-option>
                       }
-                      
                     </mat-select>
                   </mat-form-field>
                 }

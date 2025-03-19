@@ -74,7 +74,13 @@ export const routes: Routes = [
      data: { permission: 'add_agreements' }
   },
   {
-    path:'view-agreement',
+    path:'pre-agreement-form/:id',
+    component:PreAgreementFormComponent,
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
+  },
+  {
+    path:'view-agreement/:agreementId',
     component:ViewAgreementComponent,
     //  canActivate:[AuthGuard],
     //  data: { permission: 'add_agreements' }

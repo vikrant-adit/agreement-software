@@ -1,30 +1,196 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { HeaderComponent } from "../../../../header/header.component";
+import { HeaderComponent } from '../../../../header/header.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import SignaturePad from 'signature_pad';
-
+import { MatDividerModule } from '@angular/material/divider';
+import { ActivatedRoute,Router } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  ReactiveFormsModule,
+  FormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators,
+  FormArray,
+} from '@angular/forms';
+import {
+  verifications,
+  communicationsList,
+  mobile,
+  operations,
+  analytics,
+} from '../tech-stack-comparison/tech-stack-gaps';
+import { OnlineFormAgreementService } from '../../../../../services/online form/online-form-agreement.service';
+import { ChoosePackagesComponent } from "./choose-packages/choose-packages.component";
 @Component({
   selector: 'app-view-agreement',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, HeaderComponent,MatFormFieldModule,MatInputModule,MatSelectModule,MatTabsModule],
+  imports: [
+    MatTooltipModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatButtonModule,
+    MatDividerModule,
+    MatIconModule,
+    HeaderComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatTabsModule,
+    ChoosePackagesComponent
+],
   templateUrl: './view-agreement.component.html',
-  styleUrl: './view-agreement.component.scss'
+  styleUrl: './view-agreement.component.scss',
 })
-export class ViewAgreementComponent {
-  count: number = 0;
+export class ViewAgreementComponent implements OnInit, AfterViewInit {
   signatureNeeded!: boolean;
+  communicationsList = communicationsList;
+  operations = operations;
+  analytics = analytics;
+  mobile = mobile;
+  verifications = verifications;
   @ViewChild('signatureCanvas') signatureCanvas!: ElementRef<HTMLCanvasElement>;
   private signaturePad!: SignaturePad;
+  private activeRoute = inject(ActivatedRoute);
+  private router = inject(Router)
+  agreementId!: string;
+  totalCost: any = 0;
+  isAnnually: boolean = true;
+  selectPhone: boolean = false;
+  selectTerminal: boolean = false;
+  private agreementService = inject(OnlineFormAgreementService);
+  multiple_location: string = 'no'; // Toggle for multiple locations
+  practiceData!: FormGroup;
+
+  organization_name: any;
+  organization_poc_name: any;
+  organization_poc_email: any;
+  organization_poc_work_number: any;
+  organization_poc_cell_number: any;
+  signature_name: any;
+
+  techBundle_strike_price: any = 549;
+  techBundle_price_annual: any = 399;
+  techBundle_price_monthly: any = 349;
+
+  analyticsBundle_strike_price: any = 649;
+  analyticsBundle_price_annual: any = 499;
+  analyticsBundle_price_monthly: any = 449;
+
+  constructor(private fb: FormBuilder) {
+    this.practiceData = this.fb.group({
+      locations: this.fb.array([this.createLocationGroup()]), // Initialize with one location
+    });
+  }
+  expand:boolean=true
+  activation_fee:any;
+  ngOnInit(): void {
+    this.agreementId = this.activeRoute.snapshot.params['agreementId'];
+    this.agreementService.getAgreement(this.agreementId).subscribe((res) => {
+      this.totalCost = res.tech_stack_total_price;
+      this.multiple_location = res.multipleLocations;
+      this.activation_fee=res.activation_fee
+      console.log(res);
+      const featuresArray = JSON.parse(res.features);
+      this.updateArrayWithFeatures(this.communicationsList, featuresArray);
+
+      this.updateArrayWithFeatures(this.analytics, featuresArray);
+    
+      this.updateArrayWithFeatures(this.mobile, featuresArray);
+      this.updateArrayWithFeatures(this.operations, featuresArray);
+      // this.updateArrayWithFeatures(this.verifications, featuresArray);
+    });
+  }
+  updateArrayWithFeatures(array: { text: string; value: boolean }[], featuresArray: string[]) {
+    featuresArray.forEach((feature) => {
+        const matchingItem = array.find((item) => item.text === feature);
+        if (matchingItem) {
+            matchingItem.value = false;
+        }
+    });
+}
+  // Getter for the locations FormArray
+  get locations(): FormArray {
+    return this.practiceData.get('locations') as FormArray;
+  }
+
+  // Method to create a location form group
+  createLocationGroup(): FormGroup {
+    return this.fb.group({
+      parcticeName: ['', Validators.required],
+      locationName: ['', Validators.required],
+      practiceAdressLine_1: ['', Validators.required],
+      practiceAdressLine_2: [''],
+      practice_city: ['', Validators.required],
+      practice_state: ['', Validators.required],
+      practice_postal_zip_code: ['', Validators.required],
+      practice_country: ['', Validators.required],
+      practice_timezone: ['', Validators.required],
+      practice_office_phone: ['', Validators.required],
+      practice_email: ['', Validators.required],
+      practice_website_url: [''],
+      practice_management_software: ['', Validators.required],
+      practice_poc: ['', Validators.required],
+      practice_poc_email: ['', Validators.required],
+      practice_poc_work_number: ['', Validators.required],
+      pracitce_poc_cell_number: ['', Validators.required],
+    });
+  }
+
+  // Method to add a new location form group
+  addLocation(): void {
+    if (this.multiple_location) {
+      this.locations.push(this.createLocationGroup());
+    }
+  }
+
+  // Method to remove a location form group
+  removeLocation(index: number): void {
+    this.locations.removeAt(index);
+  }
+
+
+  onSubmit(): void {
+    if (this.practiceData.valid) {
+      console.log('Form Data:', this.practiceData.value);
+      this.saveSignature()
+      let formData = {
+        organization_name: this.organization_name,
+        organization_poc_name: this.organization_poc_name,
+        organization_poc_email: this.organization_poc_email,
+        organization_poc_work_number: this.organization_poc_work_number,
+        organization_poc_cell_number: this.organization_poc_cell_number,
+        signature_url: this.signaturePad.toDataURL(),
+        signatory_name: this.signature_name,
+        practice_data: this.practiceData.value,
+      };
+      this.agreementService
+        .add_practice_data(formData, this.agreementId)
+        .subscribe((res) => {
+          console.log(res);
+        });
+    } else {
+      console.log('Form is invalid');
+    }
+  }
+
 
   ngAfterViewInit() {
     this.signaturePad = new SignaturePad(this.signatureCanvas.nativeElement, {
       backgroundColor: 'white',
-      penColor: 'black'
+      penColor: 'black',
     });
 
     // Resize canvas to fit parent
@@ -50,115 +216,22 @@ export class ViewAgreementComponent {
       console.warn('No signature to save!');
     }
   }
-  increment() {
-    this.count++;
+
+  counts: number[] = [0, 0, 0, 0, 0, 0, 0, 0]; // Initialize counts for each item
+
+  increment(index: number) {
+    this.counts[index]++;
   }
 
-  decrement() {
-    if (this.count > 1) {
-      this.count--;
+  decrement(index: number) {
+    if (this.counts[index] > 0) {
+      this.counts[index]--;
     }
   }
-  totalCost:any=0
-  isAnnually: boolean = true;
-  selectPhone:boolean = true
-  selectTerminal:boolean=true
+
   toggleView(view: 'annually' | 'monthly') {
     this.isAnnually = view === 'annually';
   }
-  communicationsList: { text: string; value: boolean }[] = [
-    { text: 'VoIP Phones', value: true },
-    { text: 'Softphone (Mobile, Web, Desktop)', value: true },
-    { text: 'Integrated Caller ID', value: true },
-    { text: 'Integrated eFax', value: true },
-    { text: 'Visual Voicemails', value: true },
-    { text: 'Missed Call Text', value: true },
-    { text: 'Missed Call Insights', value: true },
-    { text: '1 Main Number', value: true },
-    { text: 'Call Recording', value: true },
-    { text: 'Easy Call Override', value: true },
-    { text: 'Text from Office #', value: true },
-    { text: 'All Comms Post to Patient Logs', value: true }];
-
-  operations: { text: string; value: boolean }[] = [
-    { text: 'Appt Reminders', value: true },
-    { text: 'Auto Confirmations', value: true },
-    { text: 'Patient Recall', value: true },
-    { text: 'Mass Texting', value: true },
-    { text: 'Reminders in Spanish', value: true },
-    { text: 'ASAP Lists', value: true },
-    { text: 'Eyewear Ready', value: true },
-    { text: 'Email Marketing', value: true },
-    { text: 'Drip Campaigns', value: true },
-    { text: 'Multi-location Emails', value: true },
-    { text: 'Real-Time Online Scheduling', value: true },
-    { text: 'Appts Book Directly into PMS', value: true },
-    { text: 'Dynamic Appt Requests', value: true },
-    { text: 'Bulk Appt Requests', value: true },
-    { text: 'Review Software', value: true },
-    { text: 'Filter Out Unhappy Patients', value: true },
-    { text: 'Respond to Reviews', value: true },
-    { text: 'Digital Forms', value: true },
-    { text: 'Forms Integrate with PMS', value: true },
-    { text: 'Auto-Assign Forms', value: true },
-    { text: 'Incomplete Form Reminders', value: true },
-    { text: '2-Way Forms Sync', value: true },
-    { text: 'Forms PDF Posts in PMS', value: true },
-    { text: 'Forms Autofills Allergies', value: true },
-    { text: 'Forms Autofills Medical History', value: true },
-    { text: 'Forms Autofills Medications', value: true },
-    { text: 'Treatment Plans', value: true },
-    { text: 'All-In-One Tx Acceptance', value: true },
-    { text: 'Credit Card Terminal', value: true },
-    { text: 'Text to Pay', value: true },
-    { text: 'Payment Plans', value: true },
-    { text: 'In-House Insurance', value: true },
-    { text: 'Payments Post in Ledger', value: true },
-    { text: 'Payment Reminders', value: true },
-    { text: '2-Way Patient Logs Sync', value: true },
-    { text: 'Internal Chat', value: true },
-    { text: 'Desktop Notifications', value: true },
-  ];
-
-  analytics: { text: string; value: boolean }[] = [
-    { text: 'Practice Analytics', value: true },
-    { text: 'Daily Huddle', value: true },
-    { text: 'Patient Lists', value: true },
-    { text: 'Bulk Requests', value: true },
-    { text: 'Follow Ups', value: true },
-    { text: 'Provider-level Metrics', value: true },
-    { text: 'Operatory-level Metrics', value: true },
-    { text: 'Multi-location Roll Up Views', value: true },
-    { text: 'Analytics on Mobile', value: true },
-    { text: 'Data Refreshes Every 5 Mins', value: true },
-    { text: 'Multi-Year Growth Dashboards', value: true },
-    { text: 'Patient Churn Reports', value: true },
-    { text: 'Patient Lifetime Value', value: true },
-    { text: 'Unscheduled Family Members', value: true },
-    { text: 'Collections Dashboards', value: true },
-  ];
-  mobile: { text: string; value: boolean }[] = [
-    { text: 'Take Calls on Mobile', value: true },
-    { text: 'Check Voicemails and eFaxes', value: true },
-    { text: 'IP Address & Geo Restrictions', value: true },
-    { text: 'Patient Texting on Mobile', value: true },
-    { text: 'See Schedule Anytime', value: true },
-    { text: 'Internal Chat on Mobile', value: true },
-    { text: 'Mobile Notifications', value: true },
-    { text: 'Take Payments on Mobile', value: true },
-    { text: 'Request Review on Mobile', value: true },
-    { text: 'Request Appts, Forms, Reviews', value: true },
-    { text: 'Practice Metrics on the Go', value: true },
-    { text: 'Morning Huddle on the Go', value: true },
-  ];
-  verifications: { text: string; value: boolean }[] = [
-    { text: 'Full Insurance Portal Verification', value: true },
-    { text: 'Eligilibility PDF Attached to Patient File', value: true },
-    { text: 'Automate Eligilibty Summary to Patients Notes', value: true },
-    { text: 'Customize Treatment Codes', value: true },
-    { text: 'Customize Frequency of Verification', value: true },
-    { text: 'Automate Insurance Requests to Patients', value: true },
-  ];
 
   previewImage: string | ArrayBuffer | null = null;
 
@@ -193,10 +266,17 @@ export class ViewAgreementComponent {
   private handleFile(file: File) {
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
-      reader.onload = () => this.previewImage = reader.result;
+      reader.onload = () => (this.previewImage = reader.result);
       reader.readAsDataURL(file);
     } else {
       alert('Only image files are allowed!');
     }
   }
+
+  editForm(){
+     this.router.navigate(['/pre-agreement-form',this.agreementId])
+  }
+  saveForm(){
+    this.router.navigate(['/dashboard',])
+ }
 }
