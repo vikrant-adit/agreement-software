@@ -46,12 +46,11 @@ export class PreAgreementFormComponent implements OnInit {
   dental_or_optometry = '';
   formService=inject(OnlineFormAgreementService);
   receivedForm!: FormGroup;
+  sendForm:any;
+
   private eventService = inject(EventRepsService)
   private activeRouter =inject(ActivatedRoute)
-  onFormChanged(form: FormGroup) {
-    this.receivedForm = form;
-    // console.log('Received Form:', this.receivedForm.value);
-  }
+  agreementId:any;
   constructor(private fb: FormBuilder, private router:Router,private toastr:ToastrService) {
     this.preAgreementForm = this.fb.group({
       practiceIndustry: ['', Validators.required],
@@ -69,17 +68,29 @@ export class PreAgreementFormComponent implements OnInit {
       techStack:[[]]
     });
   }
+
+  onFormChanged(form: FormGroup) {
+    this.receivedForm = form;
+    // console.log('Received Form:', this.receivedForm.value);
+  }
+
+ 
   createPricingFormGroup(): FormGroup {
     return this.fb.group({});
   }
-  agreementId:any;
+
   ngOnInit(): void {
+    this.onPromotionChange()
+    this.getPricingControls()
     let id =  this.activeRouter.snapshot.params['id']
     if(id){
       this.agreementId=id
       this.formService.getAgreement(this.agreementId).subscribe(res=>{
-        console.log(res)
-        this.preAgreementForm.patchValue(res)
+        this.preAgreementForm.patchValue(res);
+        this.onPromotionChange()
+        this.getPricingControls()
+        this.sendForm=res.techStack
+        console.log(this.sendForm)
       })
     }
     // this.onPromotionChange();
@@ -96,10 +107,62 @@ export class PreAgreementFormComponent implements OnInit {
   }
   onSubmit() {
     // Set the techStack value from receivedForm
-    this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
-    console.log("Updated techStack:", this.preAgreementForm.get('techStack')?.value);
-  
+    
+    if(this.phoneState==false){
+      const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_phones');
+        if(addOnVerificationControl){
+          addOnVerificationControl.setValue(null)
+
+        }
+    }
+    if(this.analyticsState==false){
+      const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_analytic');
+        if(addOnVerificationControl){
+          addOnVerificationControl.setValue(null)
+
+        }
+    }
+    if(this.verificationState==false){
+      const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_verification');
+        if(addOnVerificationControl){
+          addOnVerificationControl.setValue(null)
+
+        }
+    }
+    if(this.pozativeState==false){
+      const addOnVerificationControl1 = this.preAgreementForm.get('pricingDetails.pozative_Only_Monthly');
+      const addOnVerificationControl2 = this.preAgreementForm.get('pricingDetails.pozative_Only_Annually');
+
+        if(addOnVerificationControl1 && addOnVerificationControl2){
+          addOnVerificationControl1.setValue(null)
+          addOnVerificationControl2.setValue(null)
+
+        }
+    }
+    if(this.aditCoreState==false){
+      const addOnVerificationControl1 = this.preAgreementForm.get('pricingDetails.aditCore_monthly');
+      const addOnVerificationControl2 = this.preAgreementForm.get('pricingDetails.aditCore_annually');
+
+        if(addOnVerificationControl1 && addOnVerificationControl2){
+          addOnVerificationControl1.setValue(null)
+          addOnVerificationControl2.setValue(null)
+
+        }
+    }
+    if(this.verificationOnlyState==false){
+      const addOnVerificationControl1 = this.preAgreementForm.get('pricingDetails.verifications_Only_Monthly');
+      const addOnVerificationControl2 = this.preAgreementForm.get('pricingDetails.verifications_Only_Annually');
+
+        if(addOnVerificationControl1 && addOnVerificationControl2){
+          addOnVerificationControl1.setValue(null)
+          addOnVerificationControl2.setValue(null)
+
+        }
+    }
+    
+    console.log('Priceing',this.preAgreementForm.get('pricingDetails')?.value)
     // Check if the form is valid
+    this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
     if (this.preAgreementForm.valid) {
       const formData = new FormData();
   
@@ -124,20 +187,37 @@ export class PreAgreementFormComponent implements OnInit {
       console.log("Data that is submitted:", formData);
   
       // Submit the form data to the API
-      this.formService.saveForm(formData).subscribe({
-        next: (response) => {
-          console.log('Form submitted successfully:', response);
-          this.router.navigate(['/view-agreement'])
-          this.toastr.success('Form submitted successfully!');
-          this.preAgreementForm.reset(); // Reset the form
-          this.selectedFile = null; // Clear the selected file
-          this.router.navigate(['/view-agreement/'+response.agreementId])
-        },
-        error: (error) => {
-          console.error('Error submitting form:', error);
-          alert('Error submitting form. Please try again.');
-        }
-      });
+      if(this.agreementId){
+        this.formService.updateForm(formData,this.agreementId).subscribe({
+          next: (response) => {
+            console.log('Form updated successfully:', response);
+            this.router.navigate(['/view-agreement'])
+            this.toastr.success('Form submitted successfully!');
+            this.preAgreementForm.reset(); // Reset the form
+            this.selectedFile = null; // Clear the selected file
+            this.router.navigate(['/view-agreement/'+response.agreementId])
+          },
+          error: (error) => {
+            console.error('Error submitting form:', error);
+            alert('Error submitting form. Please try again.');
+          }
+        });
+      }else{
+        this.formService.saveForm(formData).subscribe({
+          next: (response) => {
+            console.log('Form submitted successfully:', response);
+            this.router.navigate(['/view-agreement'])
+            this.toastr.success('Form submitted successfully!');
+            this.preAgreementForm.reset(); // Reset the form
+            this.selectedFile = null; // Clear the selected file
+            this.router.navigate(['/view-agreement/'+response.agreementId])
+          },
+          error: (error) => {
+            console.error('Error submitting form:', error);
+            alert('Error submitting form. Please try again.');
+          }
+        });
+      }
     } else {
       // If the form is invalid, show an alert
       alert('Please fill all required fields.');
@@ -152,7 +232,7 @@ export class PreAgreementFormComponent implements OnInit {
   loading: boolean = false;
   selectedPromotion: string | null = null;
   eventOptions: any[] = [];
-
+  
   
   onPromotionChange() {
     const selectedPromo = this.preAgreementForm.get(
@@ -254,26 +334,51 @@ export class PreAgreementFormComponent implements OnInit {
   getPricingControls(): string[] {
     return Object.keys(
       this.preAgreementForm.get('pricingDetails')?.value || {}
-    );
+    ).filter((key) => !key.toLowerCase().includes('hardware'));
   }
 
-  getBundleClass(control: string): string {
-    if (control.toLowerCase().includes('tech')) {
-      return 'techBundle';
-    } else if (control.toLowerCase().includes('analytic')) {
-      return 'analyticBundle';
-    } else if (control.toLowerCase().includes('aditlite')) {
-      return 'aditLiteBundle';
-    } else {
-      return 'defaultBundle'; // Optional: a fallback class
+  bundleStates: { [key: string]: boolean } = {};
+
+  isNoVendorPackage(control: string): boolean {
+    return (
+      control.startsWith('pozative') ||
+      control.startsWith('verifications') ||
+      control.startsWith('aditCore')
+    );
+  }
+  pozativeState=true
+  verificationOnlyState=true
+  aditCoreState=true
+toggleBundle(control: string) {
+  this.bundleStates[control] = !this.bundleStates[control];
+  if(this.bundleStates[control]){
+    if(control=='pozative_Only_Monthly'||control=='pozative_Only_Annually'){
+      this.pozativeState=false
+    }else   if(control=='verifications_Only_Monthly' || control=='verifications_Only_Annually' ){
+      this.verificationOnlyState=false
+    }else if(control=='aditCore_monthly' || control=='aditCore_annually'){
+      this.aditCoreState=false
+    }
+  }else{
+    if(control=='pozative_Only_Monthly'||control=='pozative_Only_Annually'){
+      this.pozativeState=true
+    }else   if(control=='verifications_Only_Monthly' || control=='verifications_Only_Annually' ){
+      this.verificationOnlyState=true
+    }else if(control=='aditCore_monthly' || control=='aditCore_annually'){
+      this.aditCoreState=true
     }
   }
+     
+}
+isBundleEnabled(control: string): boolean {
+  return this.bundleStates[control];
+}
 
   getLabel(control: string): string {
     if (control.includes('techMonthly_Disc')) {
       return 'Tech Bundle Monthly Discount';
     } else if (control.includes('techMonthly')) {
-      return 'Tech Bundle Monthly ';
+      return 'Tech Bundle Monthly';
     } else if (control.includes('techAnnual_Disc')) {
       return 'Tech Bundle Annual Discount';
     } else if (control.includes('techAnnual')) {
@@ -281,7 +386,7 @@ export class PreAgreementFormComponent implements OnInit {
     } else if (control.includes('analyticMonthly_Disc')) {
       return 'Analytic Bundle Monthly Discount';
     } else if (control.includes('analyticMonthly')) {
-      return 'Analytic Bundle Monthly ';
+      return 'Analytic Bundle Monthly';
     } else if (control.includes('analyticAnnual_Disc')) {
       return 'Analytic Bundle Annual Discount';
     } else if (control.includes('analyticAnnual')) {
@@ -294,20 +399,133 @@ export class PreAgreementFormComponent implements OnInit {
       return 'Adit Lite Annual Discount';
     } else if (control.includes('aditLiteAnnual')) {
       return 'Adit Lite Annual';
+    } else if (control.includes('aditCore_monthly')) {
+      return ' Monthly';
+    } else if (control.includes('aditCore_annually')) {
+      return ' Annually';
+    } else if (control.includes('add_on_phones')) {
+      return 'Phones';
+    } else if (control.includes('add_on_analytic')) {
+      return 'Analytics';
+    } else if (control.includes('add_on_verification')) {
+      return 'Verifications';
+    } else if (control.includes('pozative_Only_Monthly')) {
+      return ' Monthly';
+    } else if (control.includes('pozative_Only_Annually')) {
+      return ' Annually';
+    } else if (control.includes('verifications_Only_Monthly')) {
+      return ' Monthly';
+    } else if (control.includes('verifications_Only_Annually')) {
+      return 'Annually';
     } else {
-      return 'Activation Fee'; // Convert camelCase to readable text
+      return 'Activation Fee'; // Default label if none match
     }
   }
-
+  
   getBundleTitle(control: string): string {
-    if (control.toLowerCase().includes('tech')) {
+    const lowerControl = control.toLowerCase();
+  
+    if (lowerControl.includes('tech')) {
       return 'Tech Bundle';
-    } else if (control.toLowerCase().includes('analytic')) {
+    } else if (lowerControl.includes('analyticm') ||lowerControl.includes('analytica')) {
       return 'Analytic Bundle';
-    } else if (control.toLowerCase().includes('aditlite')) {
+    } else if (lowerControl.includes('aditlite')) {
       return 'Adit Lite Bundle';
+    } else if (lowerControl.includes('aditcore')) {
+      return 'Adit Core';
+    } else if (lowerControl.includes('pozative')) {
+      return 'Pozative Only';
+    } else if (lowerControl.includes('verifications')) {
+      return 'Verification Only';
+    } else if (lowerControl.includes('add')) {
+      return 'Add-Ons';
+    } else {
+      return 'Activation Fee'; // Default title if none match
     }
-    return 'Activation Fee'; // Default title if none match
+  }
+  
+  getBundleClass(control: string): string {
+    if (control.toLowerCase().includes('tech')) {
+      return 'techBundle';
+    } else if (control.toLowerCase().includes('analyticm') || control.toLowerCase().includes('analytica')) {
+      return 'analyticBundle';
+    } else if (control.toLowerCase().includes('aditlite')) {
+      return 'aditLiteBundle';
+    }  else if (control.toLowerCase().includes('aditcore')) {
+      return 'aditCoreBundle';
+    }  else if (control.toLowerCase().includes('pozative')) {
+      return 'pozativeBundle';
+    } else if (control.toLowerCase().includes('verifications')) {
+      return 'verficationBundle';
+    } else if (control.toLowerCase().includes('add')) {
+      return 'addonBundle';
+    } else {
+      return 'Activation Fee'; // Default title if none match
+    }
+  }
+  addOnStates: { [key: string]: boolean } = {};
+  phoneState:boolean=true
+  analyticsState:boolean= true
+  verificationState:boolean=true
+  isAddOnControl(control: string): boolean {
+    return control.startsWith('add_on');
+  }
+
+  // Check if the add_on control is enabled
+  isAddOnEnabled(control: string): boolean {
+    return this.addOnStates[control];
+  }
+
+  // Toggle the add_on control state
+  toggleAddOn(control: string) {
+    this.addOnStates[control] = !this.addOnStates[control];
+    const formControl = this.getFormControl(control);
+
+    // Enable/disable the form control based on the checkbox state
+    if(formControl){
+      // debugger
+      if (this.addOnStates[control]) {
+        if(control=='add_on_phones'){
+          this.phoneState=false
+        }else   if(control=='add_on_verification'){
+          this.verificationState=false
+        }else if(control=='add_on_analytic'){
+          this.analyticsState=false
+        }
+        // debugger
+        // formControl.enable();d
+        // debugger
+      } else{
+        if(control=='add_on_phones'){
+          this.phoneState=true
+          const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_phones');
+          if(addOnVerificationControl){
+            addOnVerificationControl.setValue(100)
+  
+          }
+        }else   if(control=='add_on_verification'){
+          this.verificationState=true
+          const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_verification');
+          if(addOnVerificationControl){
+            addOnVerificationControl.setValue(100)
+  
+          }
+        }else if(control=='add_on_analytic'){
+          this.analyticsState=true
+          const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_analytic');
+          if(addOnVerificationControl){
+            addOnVerificationControl.setValue(100)
+  
+          }
+        }
+      }
+      // else {
+        // formControl.disable();
+        // formControl.reset(); // Optional: Reset the value when disabled
+        // debugger
+      // }
+    }
+    
   }
 
   shouldShowTitle(control: string, index: number): boolean {
@@ -364,7 +582,7 @@ fetchDeals(accountId: string): void {
     },
     error: (error) => {
       this.deals = [];
-      this.errorMessage = 'An error occurred while fetching deals';
+      this.errorMessage = 'No deals found for the given account ID';
     }
 });
 }

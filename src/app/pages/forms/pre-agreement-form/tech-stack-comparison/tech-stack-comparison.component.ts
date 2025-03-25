@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import {
   FormControl,
@@ -40,10 +40,10 @@ type Pricing = { [key: string]: string };
   templateUrl: './tech-stack-comparison.component.html',
   styleUrl: './tech-stack-comparison.component.scss',
 })
-export class TechStackComparisonComponent {
+export class TechStackComparisonComponent implements OnInit {
   techStackForm!: FormGroup;
   @Output() formChanged = new EventEmitter<FormGroup>();
-
+ @Input() getForm:any[]=[]
   dialog = inject(MatDialog);
   onlineFormService = inject(OnlineFormAgreementService);
   expand:boolean=true
@@ -56,6 +56,7 @@ export class TechStackComparisonComponent {
   verifications=verifications
 
   constructor(private fb: FormBuilder) {
+  
     this.techStackForm = this.fb.group({
       current_phone_proivder: [],
       patient_texting: [],
@@ -90,6 +91,43 @@ export class TechStackComparisonComponent {
       this.techStackForm.get('tech_stack_totalprice')?.setValue(this.totalCost, { emitEvent: false });
       this.formChanged.emit(this.techStackForm);
     });
+  }
+  ngOnInit(): void {
+
+    if(this.getForm){
+      this.techStackForm.patchValue(this.getForm)
+      
+      const keysWithValues = Object.keys(this.getForm).filter((key:any) => this.getForm[key] !== null);
+      console.log(keysWithValues); // Print keys with non-null values
+      keysWithValues.forEach((key:any)=>{
+        if(key!=='features' && !key.includes('price')){
+          this.storeTheArray.push(this.getForm[key])
+          this.manageGapsWhileUpdating()
+        }
+      })
+     
+
+    }
+  }
+  manageGapsWhileUpdating() {
+    let falseTexts:any[]=[]
+    this.storeTheArray.forEach((data) => {
+      const featuresToUncheck = arrFeatures[data] || [];
+      const updateArray = (arr: { text: string; value: boolean }[]) => {
+        // Corrected type here
+        arr.forEach((item) => {
+          if (featuresToUncheck.includes(item.text)) {
+            item.value = false; 
+            falseTexts.push(item.text)
+          }
+        });
+      };
+      updateArray(this.communicationsList);
+      updateArray(this.operations);
+      updateArray(this.analytics);
+      updateArray(this.mobile);
+    });
+    this.techStackForm.get('features')?.setValue(falseTexts)
   }
 
   pricing: Pricing = {
@@ -192,6 +230,7 @@ export class TechStackComparisonComponent {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      console.log(result)
       if (result) {  
         if(result=='reset'){
           this.techStackForm.get(formControlName)?.reset();
@@ -258,11 +297,12 @@ export class TechStackComparisonComponent {
     let falseTexts:any[]=[]
     this.storeTheArray.forEach((data) => {
       const featuresToUncheck = arrFeatures[data] || [];
+      console.log(data)
       const updateArray = (arr: { text: string; value: boolean }[]) => {
         // Corrected type here
         arr.forEach((item) => {
           if (featuresToUncheck.includes(item.text)) {
-            item.value = false;
+            item.value = false; 
             falseTexts.push(item.text)
           } else if (!item.value) {
             item.value = true;
@@ -280,33 +320,4 @@ export class TechStackComparisonComponent {
     this.techStackForm.get('features')?.setValue(falseTexts)
     // this.featuresArray=falseTexts
   }
-  //uncheck the values
-  // manageGaps(result:string){
-  //   if (arrFeatures[result]) {
-  //     arrFeatures[result].forEach(feature => {
-  //       // Find the matching feature in other arrays and set value to false
-  //       this.communicationsList.forEach(item => {
-  //         if (item.text === feature) {
-  //           item.value = false;
-  //         }
-  //       });
-
-  //       this.operations.forEach(item => {
-  //         if (item.text === feature) {
-  //           item.value = false;
-  //         }
-  //       });
-  //       this.analytics.forEach(item => {
-  //         if (item.text === feature) {
-  //           item.value = false;
-  //         }
-  //       });
-  //       this.mobile.forEach(item => {
-  //         if (item.text === feature) {
-  //           item.value = false;
-  //         }
-  //       });
-  //     })
-  //   }
-  // }
 }

@@ -74,7 +74,7 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Account ID</mat-label>
-            <input matInput formControlName="accountId"/>
+            <input matInput formControlName="accountId" maxlength="19"/>
             <!-- Validation errors -->
              @if(this.preAgreementForm.get('accountId')?.hasError('required')){
               <mat-error>
@@ -87,9 +87,9 @@
               </mat-error>
              }
             @if(errorMessage){
-              <mat-error>
+              <mat-hint style="color: red;">
                 {{ errorMessage }}
-              </mat-error>
+              </mat-hint>
             }
             @if(successMsg){
               <mat-hint >{{successMsg}}</mat-hint>
@@ -298,27 +298,52 @@
                       <!-- Show Section Title When a New Bundle Starts -->
                        @if(shouldShowTitle(control, i)){
                         <ng-container>
-                          <h3 class="bundle-title">{{ getBundleTitle(control) }}</h3>
+                          <h3 class="bundle-title">{{ getBundleTitle(control) }}
+                            @if(selectedPromotion=='No Vendor Promo'){
+                              <input type="checkbox" (change)="toggleBundle(control)" [checked]="isAddOnEnabled(control)" class="hidden-checkbox2" />
+
+                              @if (isNoVendorPackage(control)) {
+                              <div (click)="toggleBundle(control)" [class.checked]="!isAddOnEnabled(control)" class="custom-checkbox2">
+                                {{ !isBundleEnabled(control) ? '✓' : '' }}
+                              </div>
+                              }
+                              
+                            }
+                          </h3>
+                      
                         </ng-container>
                        }
+             
                       <div [class]="getBundleClass(control)" class="bundle">
                         <mat-form-field appearance="fill" class="form-field">
                           <mat-label>{{ getLabel(control) }}</mat-label>
-                          <span matPrefix>$&nbsp;</span> 
-                          <input matInput type="number" [formControlName]="control" [min]="getMinValue(control)" [max]="getMaxValue(control)" [disabled]="isFieldDisabled(control)"/>
-                         @if(getFormControl(control)?.hasError('required')){
-                          <mat-error>
-                            This field is required.
-                          </mat-error>
-                         }@else if(getFormControl(control)?.hasError('min')){
-                          <mat-error>
-                            Value must be at least {{ getMinValue(control) }}.
-                          </mat-error>
-                         }@else if(getFormControl(control)?.hasError('max')){
-                          <mat-error>
-                            Value must not exceed {{ getMaxValue(control) }}.
-                          </mat-error>
-                         }
+                          <span matPrefix>$&nbsp;</span>
+                          <input matInput type="number" [formControlName]="control" [min]="getMinValue(control)" [max]="getMaxValue(control)" [disabled]="isFieldDisabled(control)" />
+                      
+                                        <!-- Hidden default checkbox -->
+                            <input type="checkbox" (change)="toggleAddOn(control)" [checked]="isAddOnEnabled(control)" class="hidden-checkbox" />
+
+                            <!-- Custom checkbox for add_on controls -->
+                            @if (isAddOnControl(control)) {
+                              <div (click)="toggleAddOn(control)" [class.checked]="!isAddOnEnabled(control)" class="custom-checkbox">
+                                {{ !isAddOnEnabled(control) ? '✓' : '' }}
+                              </div>
+                            }
+                      
+                          <!-- Error Messages -->
+                          @if (getFormControl(control)?.hasError('required')) {
+                            <mat-error>
+                              This field is required.
+                            </mat-error>
+                          } @else if (getFormControl(control)?.hasError('min')) {
+                            <mat-error>
+                              Value must be at least {{ getMinValue(control) }}.
+                            </mat-error>
+                          } @else if (getFormControl(control)?.hasError('max')) {
+                            <mat-error>
+                              Value must not exceed {{ getMaxValue(control) }}.
+                            </mat-error>
+                          }
                         </mat-form-field>
                       </div>
                     </ng-container>
@@ -342,7 +367,9 @@
           
       
         <mat-checkbox formControlName="displayTechStackComparison">Display Tech Stack Comparison?</mat-checkbox>
-        @if(preAgreementForm.get('displayTechStackComparison')?.value){
+         @if(agreementId && sendForm) {
+          <app-tech-stack-comparison  [getForm]="sendForm" (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
+        }@else if(!agreementId && preAgreementForm.get('displayTechStackComparison')?.value){
           <app-tech-stack-comparison (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
         }
       </div>

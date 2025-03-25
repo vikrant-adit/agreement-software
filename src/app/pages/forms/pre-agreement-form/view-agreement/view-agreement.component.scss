@@ -124,8 +124,14 @@
         span{
           font-size: 18px;
         }
+        
       }
-      
+      .info{
+        display: flex;
+        align-items: center;
+        width: fit-content;
+        background-color: #ffe6ae;
+      }
     }
     .phones-grid {
       display: grid;
@@ -201,10 +207,32 @@
     }
     .refund{
       font-size:18px;
+      p{
+        margin: 0;
+      }
       span{
         color: rgb(20, 239, 255);
       }
     }
+    .terms{
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      .checkBox{
+        height: 30px;
+        width: 30px;
+        accent-color: var(--primary-color);
+      }
+      span{
+        font-size: 18px;
+      }
+      
+    }
+  }
+  .hardware-multiple{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
   .org-form{
     .form-field{
@@ -496,6 +524,7 @@
     outline: none;
   }
 }
+
 .review-order{
   display: flex;
   flex-direction: column;
@@ -670,8 +699,109 @@
     height: 3rem;
   }
 }
-
+.check-in-multiple-location{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  mat-icon{
+    color: #16de6c;
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+  }
+}
+.multiple-card-pacakge-location{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 ::ng-deep  .mat-mdc-tooltip-surface{
   background-color: white !important;
   color: rgb(0, 0, 0) !important;
+}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #ddf8fe;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.checkbox {
+  text-align: center;
+}
+
+.money {
+  text-align: right;
+}
+
+.hidden-checkbox {
+  display: none;
+}
+
+/* Custom checkbox styling */
+.custom-checkbox {
+  // position: absolute;
+  top: 0px;
+  right: -15px;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #ccc;
+  // border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px; /* Adjust spacing as needed */
+  background-color: #fff;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Custom checkbox when checked */
+.custom-checkbox.checked {
+  background-color: var(--primary-color); /* Change to your preferred color */
+  border-color: var(--primary-color);
+  color: #fff;
+}
+.counters-multiple-hardware-table {
+  display: flex;
+  align-items: center;
+  // background-color: #e67e22;
+  // padding: 5px 5px;
+  border-radius: 25px;
+  gap: 5px;
+
+  button {
+    background: none;
+    border: none;
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  span {
+    font-size: 18px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+  }
+
+  button:focus {
+    outline: none;
+  }
 }

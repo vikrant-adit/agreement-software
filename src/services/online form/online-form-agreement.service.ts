@@ -24,6 +24,12 @@ export class OnlineFormAgreementService {
     );
   }
 
+  updateForm(formData: any,agreementId:any): Observable<any> {
+    return this.http.put<any>(this.baseUrl+'/update-form/'+agreementId, formData).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   getAgreement(agreementId:any): Observable<any>{
     return this.http.get<any>(this.baseUrl+'/get-form/'+agreementId).pipe(
       catchError(this.handleError)
