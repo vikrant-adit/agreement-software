@@ -6,7 +6,7 @@
         <!-- Username Field -->
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" placeholder="Enter Username" formControlName="username" id="username" name="username" required>
+          <input type="text" placeholder="Enter Username" formControlName="email" id="username" name="username" required>
           
           <!-- Validation Message -->
            @if(loginForm.get('username')?.invalid && loginForm.get('username')?.touched){

@@ -42,9 +42,9 @@ export class SystemSettingComponent {
   }
 
   loadUsers(): void {
-  this.eventService.getUsers().subscribe(res=>{
-    this.userList=res
-  })
+  // this.eventService.getUsers().subscribe(res=>{
+  //   this.userList=res
+  // })
   }
 
   addUser(event:any): void {

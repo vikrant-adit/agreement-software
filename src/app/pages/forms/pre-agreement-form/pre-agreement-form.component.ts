@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -20,6 +20,8 @@ import { OnlineFormAgreementService } from '../../../../services/online form/onl
 import { promotionPricing } from './pricingArr';
 import { ToastrModule,ToastrService } from 'ngx-toastr';
 import { EventRepsService } from '../../../../services/system-setting/event-reps.service';
+import { DatePipe } from '@angular/common';
+
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 @Component({
   selector: 'app-pre-agreement-form',
@@ -39,7 +41,7 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
   ],
   templateUrl: './pre-agreement-form.component.html',
   styleUrl: './pre-agreement-form.component.scss',
-  providers: provideNativeDateAdapter(),
+  providers: [provideNativeDateAdapter(),DatePipe],
 })
 export class PreAgreementFormComponent implements OnInit {
   preAgreementForm: FormGroup;
@@ -50,6 +52,7 @@ export class PreAgreementFormComponent implements OnInit {
 
   private eventService = inject(EventRepsService)
   private activeRouter =inject(ActivatedRoute)
+  private datePipe = inject(DatePipe);
   agreementId:any;
   constructor(private fb: FormBuilder, private router:Router,private toastr:ToastrService) {
     this.preAgreementForm = this.fb.group({
@@ -58,11 +61,14 @@ export class PreAgreementFormComponent implements OnInit {
       multipleLocations: ['', Validators.required],
       accountId: ['', [Validators.required, Validators.pattern(/^\d{19}$/)]],
       currency: ['', Validators.required],
+      deal: [''], 
+      deal_id: [''],
       pms: ['', Validators.required],
       displayPricing: [false],
       displayTechStackComparison: [false],
       sales_person_promotion_type: [''],
-      promotionExpiryDate:[],
+      promotionExpiryDate:[''],
+      promotionExpiryDate_display:[''],
       event_type: [''],
       pricingDetails: this.createPricingFormGroup(), // Nested FormGroup
       techStack:[[]]
@@ -73,25 +79,73 @@ export class PreAgreementFormComponent implements OnInit {
     this.receivedForm = form;
     // console.log('Received Form:', this.receivedForm.value);
   }
+  onDealSelect(event: MatSelectChange) {
+    const selectedDealId = event.value;
+    
+    const selectedDeal = this.deals.find(deal => deal.name === selectedDealId);
+    
+    console.log('Selected Deal:', event,selectedDeal);
 
+    if (selectedDeal) {
+      this.preAgreementForm.patchValue({
+        deal: selectedDeal.name,
+        deal_id: selectedDeal.id
+      });
+    }
+  }
  
   createPricingFormGroup(): FormGroup {
     return this.fb.group({});
   }
+  formPatched: boolean = false;
 
   ngOnInit(): void {
     this.onPromotionChange()
     this.getPricingControls()
     let id =  this.activeRouter.snapshot.params['id']
     if(id){
-      this.agreementId=id
-      this.formService.getAgreement(this.agreementId).subscribe(res=>{
-        this.preAgreementForm.patchValue(res);
-        this.onPromotionChange()
-        this.getPricingControls()
-        this.sendForm=res.techStack
-        console.log(this.sendForm)
-      })
+      this.agreementId = id;
+      this.formService.getAgreement(this.agreementId).subscribe(res => {
+        this.preAgreementForm.patchValue(res.data);
+        
+        // Check if deal exists in the response data
+        if (res.data.deal) {
+          // Set both deal and deal_id values
+          this.preAgreementForm.patchValue({
+            deal: res.data.deal,
+            deal_id: res.data.deal_id  // Assuming deal_id is available in the response
+          });
+
+          console.log('Form data:', res.data.deal, res.data.deal_id);
+          
+          // If you need to populate the deals array for the dropdown
+          if (res.data.accountId && !this.deals.length) {
+            // Optional: fetch deals for this account to ensure the dropdown has options
+            this.formService.fetchDeal(res.data.accountId).subscribe({
+              next: (response: any) => {
+                if (response.success && response.data.deals.length > 0) {
+                  this.deals = response.data.deals;
+                }
+              }
+            });
+          }
+        }
+        
+        this.dental_or_optometry = res.data.practiceIndustry;
+        if(res.data.displayPricing){
+          this.preAgreementForm.get('displayPricing')?.setValue(true);
+        }
+        
+        // Set the flag after patching values
+        this.formPatched = true;
+        
+        this.onPromotionChange();
+        this.getPricingControls();
+        if(res.data.displayTechStackComparison){
+          this.sendForm = res.data.techStack;
+          console.log(this.sendForm);
+        }
+      });
     }
     // this.onPromotionChange();
     this.preAgreementForm.get('accountId')?.valueChanges.pipe(
@@ -100,10 +154,19 @@ export class PreAgreementFormComponent implements OnInit {
         filter(value => value.length === 19) // Only proceed if the input is exactly 19 digits
       )
       .subscribe(value => {
-        if (this.preAgreementForm.get('accountId')?.valid) {
+        // Only fetch deals if the form is valid AND we haven't patched values from existing data
+        if (this.preAgreementForm.get('accountId')?.valid && !this.formPatched) {
           this.fetchDeals(value);
         }
       });
+  }
+
+  addVaildate(){
+    if (this.preAgreementForm.get('displayPricing')?.value == true) {
+      this.preAgreementForm.get('sales_person_promotion_type')?.setValidators([Validators.required]);
+      this.preAgreementForm.get('sales_person_promotion_type')?.updateValueAndValidity();
+      
+    }
   }
   onSubmit() {
     // Set the techStack value from receivedForm
@@ -160,23 +223,33 @@ export class PreAgreementFormComponent implements OnInit {
         }
     }
     
-    console.log('Priceing',this.preAgreementForm.get('pricingDetails')?.value)
+    console.log('Priceing',this.preAgreementForm.value)
     // Check if the form is valid
-    this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
-    if (this.preAgreementForm.valid) {
+    if(this.preAgreementForm.get('displayTechStackComparison')?.value==true){
+      this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
+      debugger
+    }
+
+    if (this.preAgreementForm.valid && this.preAgreementForm.get('displayPricing')?.value==true ||  this.preAgreementForm.get('displayTechStackComparison')?.value==true) {
       const formData = new FormData();
   
-      // Append non-file form fields
+      // Append non-file form fields except techStack
       Object.keys(this.preAgreementForm.value).forEach(key => {
+        if (key === 'techStack') return; // Skip techStack for now
         const value = this.preAgreementForm.value[key];
-  
-        // Handle nested objects (e.g., pricingDetails)
         if (typeof value === 'object' && value !== null && !(value instanceof File)) {
-          formData.append(key, JSON.stringify(value)); // Convert object to JSON string
+          formData.append(key, JSON.stringify(value));
         } else if (value !== null && value !== undefined) {
           formData.append(key, value);
         }
       });
+  
+      // Conditionally append techStack
+      if (this.preAgreementForm.get('displayTechStackComparison')?.value === true) {
+        formData.append('techStack', JSON.stringify(this.preAgreementForm.get('techStack')?.value));
+      } else {
+        formData.append('techStack', JSON.stringify([])); // Send blank array if false
+      }
   
       // Append file separately if selected
       if (this.selectedFile) {
@@ -191,11 +264,10 @@ export class PreAgreementFormComponent implements OnInit {
         this.formService.updateForm(formData,this.agreementId).subscribe({
           next: (response) => {
             console.log('Form updated successfully:', response);
-            this.router.navigate(['/view-agreement'])
             this.toastr.success('Form submitted successfully!');
             this.preAgreementForm.reset(); // Reset the form
             this.selectedFile = null; // Clear the selected file
-            this.router.navigate(['/view-agreement/'+response.agreementId])
+            this.router.navigate(['/view-agreement/'+response.data.agreementId])
           },
           error: (error) => {
             console.error('Error submitting form:', error);
@@ -203,6 +275,7 @@ export class PreAgreementFormComponent implements OnInit {
           }
         });
       }else{
+
         this.formService.saveForm(formData).subscribe({
           next: (response) => {
             console.log('Form submitted successfully:', response);
@@ -210,7 +283,7 @@ export class PreAgreementFormComponent implements OnInit {
             this.toastr.success('Form submitted successfully!');
             this.preAgreementForm.reset(); // Reset the form
             this.selectedFile = null; // Clear the selected file
-            this.router.navigate(['/view-agreement/'+response.agreementId])
+            this.router.navigate(['/view-agreement/'+response.data.agreementId])
           },
           error: (error) => {
             console.error('Error submitting form:', error);
@@ -569,12 +642,15 @@ isBundleEnabled(control: string): boolean {
 deals: any[] = [];
 errorMessage: string = '';
 successMsg!:string
+
+
+
 fetchDeals(accountId: string): void {
   this.formService.fetchDeal(accountId).subscribe({
-   next: (response: any) => {
-      if (response.deals && response.deals.length > 0) {
-        this.deals = response.deals;
-       this.successMsg='Account Validated'
+    next: (response:any) => {
+      if (response.success && response.data.deals.length > 0) {
+        this.deals = response.data.deals;
+        this.successMsg = 'Account Validated'
       } else {
         this.deals = [];
         this.errorMessage = 'No deals found for the given account ID';
@@ -582,8 +658,34 @@ fetchDeals(accountId: string): void {
     },
     error: (error) => {
       this.deals = [];
-      this.errorMessage = 'No deals found for the given account ID';
+      this.errorMessage = 'Invalid account';
+      console.log('API Error:', error.message);
     }
-});
+  });
+}
+
+disablePastDates = (date: Date | null): boolean => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+  return date ? date >= today : false;
+};
+
+ // Method to handle date change and format it
+ formattedPromotionExpiryDate: string | null = null; // Property to store the formatted date
+  dateToShow:any
+ onDateChange(event: any, picker: any): void {
+  const selectedDate = event.value; // Get the selected date
+  if (selectedDate) {
+    // Format the date to "March 27, 2025"
+    this.formattedPromotionExpiryDate = this.datePipe.transform(selectedDate, 'MMMM d, y');
+    // Store both the Date object and formatted string in the form control if needed
+    this.preAgreementForm.get('promotionExpiryDate')?.setValue(selectedDate);
+    this.preAgreementForm.get('promotionExpiryDate_display')?.setValue(this.formattedPromotionExpiryDate);
+    this.dateToShow=selectedDate
+    console.log('Selected date:', this.formattedPromotionExpiryDate,this.preAgreementForm.get('promotionExpiryDate')?.value);
+    
+    // Close the datepicker
+    picker.close();
+  }
 }
 }

@@ -19,25 +19,25 @@ export class OnlineFormAgreementService {
 
   // Function to submit form data
   saveForm(formData: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl+'/save-form', formData).pipe(
+    return this.http.post<any>(environment.baseUrl+'/agreements', formData).pipe(
       catchError(this.handleError)
     );
   }
 
   updateForm(formData: any,agreementId:any): Observable<any> {
-    return this.http.put<any>(this.baseUrl+'/update-form/'+agreementId, formData).pipe(
+    return this.http.put<any>(this.baseUrl+'/agreements/'+agreementId, formData).pipe(
       catchError(this.handleError)
     );
   }
 
   getAgreement(agreementId:any): Observable<any>{
-    return this.http.get<any>(this.baseUrl+'/get-form/'+agreementId).pipe(
+    return this.http.get<any>(this.baseUrl+'/agreements/'+agreementId).pipe(
       catchError(this.handleError)
     );
   }
 
   add_practice_data(formData: any,id:any): Observable<any> {
-    return this.http.post<any>(this.baseUrl+'/add-practice-data/'+id, formData).pipe(
+    return this.http.post<any>(this.baseUrl+'/practices-data/add-practice-data/'+id, formData).pipe(
       catchError(this.handleError)
     );
   }
@@ -61,7 +61,7 @@ downloadSampleFile(): Observable<Blob> {
 }
 fetchDeal(accountId:any){
   return this.http
-    .get<any>(this.baseUrl + '/fetch-deal/' + accountId)
+    .post(this.baseUrl + '/zoho/check-account' ,{sales_person_account_id:accountId})
     .pipe(catchError(this.handleError));
 }
 }

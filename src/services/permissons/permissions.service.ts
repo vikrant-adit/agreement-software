@@ -6,7 +6,7 @@ import { environment } from '../../environment';
   providedIn: 'root'
 })
 export class PermissionsService {
-  private baseUrl = environment.baseUrl;
+  private baseUrl = environment.baseUrl+'/permissions';
 
   constructor(private http: HttpClient) {}
 
@@ -14,16 +14,16 @@ export class PermissionsService {
     return this.http.get<any[]>(this.baseUrl+'/all-permission');
   }
 
-  addPermission(name: string, description: string): Observable<any> {
-    return this.http.post<any>(this.baseUrl+'/add-permission', { name, description });
+  addPermission(name: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl+'/', { name });
   }
 
   assignPermissions(role_id: number, permission_ids: number[]): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/assign-permission`, { role_id, permission_ids });
+    return this.http.post<any>(`${this.baseUrl}/assign-role`, { role_id, permission_ids });
   }
 
   getPermissionsForRole(role_id: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/role-permission/${role_id}`);
+    return this.http.get<any[]>(`${this.baseUrl}/role/${role_id}`);
   }
 
   udpatePermission(id: number, name:string, description:string): Observable<any[]>{

@@ -12,9 +12,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {
-  CdkDragDrop,
   DragDropModule,
-  moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
 export interface columns {

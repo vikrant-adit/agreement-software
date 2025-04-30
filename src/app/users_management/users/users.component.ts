@@ -15,7 +15,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { UsersInterface } from '../../../interfaces/users.interface';
 import { UserService } from '../../../services/users/user.service';
 import { DatePipe } from '@angular/common';
-import { debounceTime, distinctUntilChanged, map, Observable, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';

@@ -7,18 +7,18 @@
         [formGroup]="techStackForm"
         style="padding-top: 10px; padding-inline: 10px">
         <div class="tech_selecter">
-          <label for="current_phone_proivder" class="provider-label">
+          <label for="current_phone_provider" class="provider-label">
             Current Phone Provider?</label>
           <input
             class="select-provider"
             placeholder="Select"
             type="text"
-            id="current_phone_proivder"
-            formControlName="current_phone_proivder"
+            id="current_phone_provider"
+            formControlName="current_phone_provider"
             (click)="
               openSelectProvider(
                 'Current Phone Provider?',
-                'current_phone_proivder'
+                'current_phone_provider'
               )
             "
           />
@@ -26,8 +26,8 @@
           <input
             class="select-price"
             type="number"
-            id="current_phone_proivder_price"
-            formControlName="current_phone_proivder_price"
+            id="current_phone_provider_price"
+            formControlName="current_phone_provider_price"
           />
           <span>/mo</span>
         </div>
@@ -55,47 +55,44 @@
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="reminder_recall"
-            >Reminder/Recall?</label
-          >
+          <label class="provider-label" for="reminder_recall">
+            Reminder/Recall?
+            </label>
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'reminder_recall')">
+            Copy 
+          </button>
           <input
             class="select-provider"
-            (click)="
-              openSelectProvider('Reminders & Recall?', 'reminder_recall')
-            "
+            (click)="openSelectProvider('Reminders & Recall?', 'reminder_recall')"
             placeholder="Select"
             type="text"
             id="reminder_recall"
             formControlName="reminder_recall"
           />
           <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="reminder_recall_price"
-            formControlName="reminder_recall_price"
-          />
+          <input class="select-price" type="number" id="reminder_recall_price" formControlName="reminder_recall_price"/>
           <span>/mo</span>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="digital_froms"
-            >Digital Forms?</label
-          >
+          <label class="provider-label" for="digital_forms">Digital Forms?</label>
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'digital_forms')">
+            Copy 
+          </button>
           <input
             class="select-provider"
-            (click)="openSelectProvider('Digital Forms?', 'digital_froms')"
+            (click)="openSelectProvider('Digital Forms?', 'digital_forms')"
             placeholder="Select"
             type="text"
-            id="digital_froms"
-            formControlName="digital_froms"
+            id="digital_forms"
+            formControlName="digital_forms"
           />
           <span>$</span>
           <input
             class="select-price"
             type="number"
-            id="digital_froms_price"
-            formControlName="digital_froms_price"
+            id="digital_forms_price"
+            formControlName="digital_forms_price"
           />
           <span>/mo</span>
         </div>
@@ -106,6 +103,9 @@
             for="treatment_presentation_payment_plans"
             >Treatment Presentations & Payment Plans?</label
           >
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'treatment_presentation_payment_plans')">
+            Copy 
+          </button>
           <input
             class="select-provider"
             (click)="
@@ -130,34 +130,40 @@
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="current_payement_provider"
+          <label class="provider-label" for="current_payment_provider"
             >Current Payments Provider?</label
           >
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'current_payment_provider')">
+            Copy 
+          </button>
           <input
             class="select-provider"
             (click)="
               openSelectProvider(
                 'Current Payments Provider?',
-                'current_payement_provider'
+                'current_payment_provider'
               )
             "
             placeholder="Select"
             type="text"
-            id="current_payement_provider"
-            formControlName="current_payement_provider"
+            id="current_payment_provider"
+            formControlName="current_payment_provider"
           />
           <span>$</span>
           <input
             class="select-price"
             type="number"
-            id="current_payement_provider_price"
-            formControlName="current_payement_provider_price"
+            id="current_payment_provider_price"
+            formControlName="current_payment_provider_price"
           />
           <span>/mo</span>
         </div>
 
         <div class="tech_selecter">
           <label class="provider-label" for="review">Reviews?</label>
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'review')">
+            Copy 
+          </button>
           <input
             class="select-provider"
             (click)="openSelectProvider('Reviews?', 'review')"
@@ -178,8 +184,10 @@
 
         <div class="tech_selecter">
           <label class="provider-label" for="online_scheduling"
-            >Online Scheduling?</label
-          >
+            >Online Scheduling?</label>
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'online_scheduling')">
+            Copy 
+          </button>
           <input
             class="select-provider"
             (click)="
@@ -202,6 +210,9 @@
 
         <div class="tech_selecter">
           <label class="provider-label" for="mass_texting">Mass Texting?</label>
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'mass_texting')">
+            Copy 
+          </button>
           <input
             class="select-provider"
             (click)="openSelectProvider('Mass Texting?', 'mass_texting')"
@@ -224,6 +235,9 @@
           <label class="provider-label" for="mass_emailing"
             >Mass Emailing?</label
           >
+          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'mass_emailing')">
+            Copy 
+          </button>
           <input
             class="select-provider"
             (click)="openSelectProvider('Mass Emailing?', 'mass_emailing')"

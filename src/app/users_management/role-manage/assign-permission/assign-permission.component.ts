@@ -19,11 +19,11 @@ export class AssignPermissionComponent implements OnInit {
     mappedPermissions:any[]=[]
     ngOnInit(): void {
       console.log(this.data)
-      this.permissionService.getPermissionsForRole(this.data).subscribe(selectedPermissions => {
-        this.selectedPermission = selectedPermissions;
+      this.permissionService.getPermissionsForRole(this.data).subscribe((res:any) => {
+        this.selectedPermission = res.data.permissions;
       
-        this.permissionService.getPermissions().subscribe(allPermissions => {
-          this.allPermission = allPermissions;
+        this.permissionService.getPermissions().subscribe((res:any) => {
+          this.allPermission = res.data;
       
           // Transform allPermission to mark selected permissions
           this.mappedPermissions = this.allPermission.map(permission => ({

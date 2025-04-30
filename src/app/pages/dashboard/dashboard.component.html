@@ -309,14 +309,14 @@
       </table> -->
       <table mat-table [dataSource]="dataSource">
         @for (column of availableColumns; track $index) {
-          @if(column.selected){
-            <ng-container  [matColumnDef]="column.id">
+          @if (column.selected) {
+            <ng-container [matColumnDef]="column.id">
               <th mat-header-cell *matHeaderCellDef>{{ column.name }}</th>
-             @if(column.id!="created_at"){
-              <td mat-cell *matCellDef="let element">{{ element[column.id] }}</td>
-             }@else {
-              <td mat-cell *matCellDef="let element">{{ element[column.id] | date: 'MMMM d, y, h:mm a'}}</td>
-             }
+              @if (column.id != 'created_at') {
+                <td mat-cell *matCellDef="let element">{{ element[column.id] }}</td>
+              } @else {
+                <td mat-cell *matCellDef="let element">{{ element[column.id] | date: 'MMMM d, y, h:mm a' }}</td>
+              }
             </ng-container>
           }
         }
@@ -326,16 +326,17 @@
           </th>
           <td mat-cell *matCellDef="let element" class="sticky-right-2-row">
             <span class="action-bar">
-              <mat-icon>edit</mat-icon>
-              @if(element.status!='Completed'){
-                <mat-icon>remove_red_eye</mat-icon>
-                <mat-icon>cancel</mat-icon>
+              <mat-icon style="color: var(--secondary-color)" (click)="editAgreement(element.agreementId)">edit</mat-icon>
+              @if (element.status != 'Completed') {
+                <mat-icon style="color: var(--secondary-color)" (click)="viewAgreement(element.agreementId)">remove_red_eye</mat-icon>
+                @if (element.status != 'Expired') {
+                  <mat-icon style="color: var(--secondary-color)" (click)="markExpireAgreement(element.agreementId)">cancel</mat-icon>
+                }
               }
-             
             </span>
           </td>
         </ng-container>
-      
+    
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>

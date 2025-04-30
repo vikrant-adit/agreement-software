@@ -27,8 +27,8 @@ export class RoleManageComponent implements OnInit {
   }
 
   loadRoles() {
-    this.roleService.getRoles().subscribe(data => {
-      this.roles = data;
+    this.roleService.getRoles().subscribe((res: any) => {
+      this.roles = res.data;
     });
   }
 
@@ -50,6 +50,7 @@ export class RoleManageComponent implements OnInit {
     this.roleService.updateRole(this.editRoleId, this.editRoleName).subscribe(() => {
       this.editRoleId = null;
       this.editRoleName = '';
+      debugger
       this.loadRoles();
     });
   }

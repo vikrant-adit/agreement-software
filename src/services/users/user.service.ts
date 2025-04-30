@@ -48,9 +48,9 @@ export class UserService {
     .pipe(catchError(this.handleError));
   }
 
-  login(username: string, password: string): Observable<any> {
+  login(email: string, password: string): Observable<any> {
     return this.http
-      .post(`${this.baseUrl}/login`, { username, password })
+      .post(`${this.baseUrl}/users/login`, { email, password })
       .pipe(catchError(this.handleError));
   }
 

@@ -5,12 +5,17 @@ import { Observable, throwError,catchError } from 'rxjs';
   providedIn: 'root'
 })
 export class RolesService {
-  private apiUrl = 'http://localhost:5000/api/';
+  private apiUrl = 'http://localhost:5000/api/roles/';
 
   constructor(private http: HttpClient) {}
 
   getRoles(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl + 'all-roles').pipe(
+    return this.http.get<any[]>(this.apiUrl).pipe(
+        catchError(this.handleError)
+      );
+  }
+  getRoleswithPermissions(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl + 'roles-with-permissions').pipe(
         catchError(this.handleError)
       );
   }
@@ -24,13 +29,13 @@ export class RolesService {
   
 
   addRole(name: string): Observable<any> {
-    return this.http.post<any>(this.apiUrl + 'add-role', { name }).pipe(
+    return this.http.post<any>(this.apiUrl, { name }).pipe(
         catchError(this.handleError)
       );
   }
 
   updateRole(id: number, name: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/update-role/${id}`, { name }).pipe(
+    return this.http.put<any>(`${this.apiUrl}${id}`, { name }).pipe(
         catchError(this.handleError)
       );
   }

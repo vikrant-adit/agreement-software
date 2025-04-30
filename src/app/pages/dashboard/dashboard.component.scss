@@ -31,7 +31,15 @@
       width: 100%;
       overflow: auto;
       max-height: 60vh;
-
+      th {
+        position: sticky;
+        top: 0; /* Stick the header to the top */
+        background-color: var(--primary-color); /* Background color for the header */
+        z-index: 2; /* Ensure the header stays above the table rows */
+        text-align: center;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+      }
       &::-webkit-scrollbar {
         width: 10px;
         height: 10px;

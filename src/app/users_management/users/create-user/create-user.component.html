@@ -57,10 +57,10 @@
     </div> -->
 
     <div class="group">
-      <mat-form-field class="full-width">
+      <!-- <mat-form-field class="full-width">
         <mat-label>Username</mat-label>
         <input matInput formControlName="username" type="text" />
-      </mat-form-field>
+      </mat-form-field> -->
       <mat-form-field class="full-width">
         <mat-label>Password</mat-label>
         <input matInput formControlName="password" type="password" #passwordInput />
@@ -84,17 +84,16 @@
             <mat-panel-title> Roles</mat-panel-title>
           </mat-expansion-panel-header>
             <mat-radio-group formControlName="roleId"  aria-label="Select an option">
-            @for (role of roles; track role) {
-              @if(hasPermission('add_admin')&&role.name=='Super Admin'){
-                <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)" >{{role.name}}</mat-radio-button>
+              @for (role of roles; track role.id) {
+                @if(hasPermission('add_admin') && role.name === 'Super Admin'){
+                  <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
+                }
+                @if(hasPermission('add_admin') && role.name === 'Admin'){
+                  <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
+                }@else if(role.name !== 'Admin' && role.name !== 'Super Admin') {
+                  <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
+                }
               }
-              @if(hasPermission('add_admin') && role.name=='Admin'){
-                <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)" >{{role.name}}</mat-radio-button>
-              }@else if(role.name!='Admin' && role.name!='Super Admin') {
-                <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)" >{{role.name}}</mat-radio-button>
-
-              }
-            } 
            
           </mat-radio-group>
           @if(viewPermission){

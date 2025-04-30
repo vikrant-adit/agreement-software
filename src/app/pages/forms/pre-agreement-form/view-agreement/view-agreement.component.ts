@@ -17,6 +17,7 @@ import SignaturePad from 'signature_pad';
 import { MatDividerModule } from '@angular/material/divider';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ChangeDetectorRef } from '@angular/core';
 import {
   ReactiveFormsModule,
   FormsModule,
@@ -34,9 +35,13 @@ import {
 } from '../tech-stack-comparison/tech-stack-gaps';
 import { OnlineFormAgreementService } from '../../../../../services/online form/online-form-agreement.service';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-
+import { PhoneNumberFormatterDirective } from '../../../../../directives/phone-number-formatter.directive';
 import { ChoosePackagesComponent } from './choose-packages/choose-packages.component';
 import Swal from 'sweetalert2';
+import { HardwareService } from '../../../../services/hardware.service';
+import { SubscriptionService } from '../../../../services/subscription.service';
+import { PaymentCalculatorService } from '../../../../services/payment-calculator.service';
+
 @Component({
   selector: 'app-view-agreement',
   standalone: true,
@@ -54,13 +59,12 @@ import Swal from 'sweetalert2';
     MatSelectModule,
     MatTabsModule,
     ChoosePackagesComponent,
+    PhoneNumberFormatterDirective,
   ],
   templateUrl: './view-agreement.component.html',
   styleUrl: './view-agreement.component.scss',
 })
 export class ViewAgreementComponent implements OnInit, AfterViewInit {
-
-  
   signatureNeeded!: boolean;
   communicationsList = communicationsList;
   operations = operations;
@@ -71,15 +75,22 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   private signaturePad!: SignaturePad;
   private activeRoute = inject(ActivatedRoute);
   private router = inject(Router);
+
   agreementId!: string;
   totalCost: any = 0;
   isAnnually: boolean = true;
   selectPhone: any = null;
   selectTerminal: any = null;
+  private hardwareService = inject(HardwareService);
+  private subscriptionService = inject(SubscriptionService);
+  private paymentCalculator = inject(PaymentCalculatorService);
   private agreementService = inject(OnlineFormAgreementService);
+
   multiple_location: string = 'no'; // Toggle for multiple locations
   practiceData!: FormGroup;
-  expandHardware: any;
+  shippingAddressForm!: FormGroup;
+
+
   organization_name: any;
   organization_poc_name: any;
   organization_poc_email: any;
@@ -90,11 +101,22 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   totalAnnually: any;
   totalMonthly: any;
   packageToBeShown: boolean = false;
+
+  separateCard: boolean = true;
+
   // nextToHardware:boolean=false
-  constructor(private fb: FormBuilder) {
+  signatureUrlFromApi: string | null = null; // Add this property to your class
+
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
     this.practiceData = this.fb.group({
-      locations: this.fb.array([this.createLocationGroup()]), // Initialize with one location
+      locations: this.fb.array([this.createLocationGroup()]) 
     });
+    
+    // Initialize shipping form properly
+    this.shippingAddressForm = this.fb.group({
+      shippingAddress: this.fb.array([])
+    });
+    
   }
   expand: boolean = true;
   activation_fee: any;
@@ -127,33 +149,213 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   pozative_Only_Annually: any;
   verifications_Only_Monthly: any;
   verifications_Only_Annually: any;
-  hardwareCreditAnnually:any
-  hardwareCreditMonthly:any
+  hardwareCreditAnnually: any;
+  hardwareCreditMonthly: any;
   pricingArray: any;
-
+  dynamicPackages: { value: string; label: string }[] = [
+    { value: 'tech', label: 'Tech Bundle' },
+    { value: 'analytic', label: 'Analytic Bundle' },
+    { value: 'custom', label: 'Custom Package' }, // Example of additional dynamic options
+  ];
   onNextClick(next: any) {
-    console.log('Total Annually:', next);
     this.expandHardware = next;
   }
-  onTotalAnnually(total: any) {
+  onTotalAnnually(total: any, source: any) {
     this.subscriptionPriceAnnually = this.totalAnnually = total;
-    console.log(total);
+    // console.log(this.subscriptionPriceAnnually, 'this is calledd', source);
   }
   onAnnuallyorMonthlly(isAnnual: any) {
     this.isAnnually = isAnnual;
-    // console.log('Total Annually:', this.totalAnnually);
   }
   // Method to handle totalMonthly event
   onTotalMonthly(total: any) {
     this.subscriptionPriceMonthly = this.totalMonthly = total;
   }
-  getTotal() {
-    let total =
-      this.subscriptionPriceAnnually * 12 + parseInt(this.activation_fee);
-    // debugger
-    return total;
+
+  formatKeyToLabel(key: string): string {
+    // Convert camelCase or snake_case keys into readable labels
+    return key
+      .replace(/_/g, ' ') // Replace underscores with spaces
+      .replace(/([a-z])([A-Z])/g, '$1 $2') // Add space before uppercase letters
+      .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize the first letter of each word
   }
+  //shipping address
+  
+  sameAsPracticeAddress: boolean = false;
+  countries: string[] = [
+    'United States',
+    'Canada',
+    'United Kingdom',
+    'Australia',
+    'India',
+  ];
+
+  allActivePhone: boolean = true; // Separate property to track overall state of phone
+  allActiveAnalytic: boolean = true; // Separate property to track overall state of phone
+  allActiveVerification: boolean = true; // Separate property to track overall state of phone
+  ifAnyActivePhone: boolean = true;
+  addOnPhone: boolean = false;
+  addOnAnalytic: boolean = false;
+  addOnVerification: boolean = false;
+  //no vendor promo objects
+  verificationsNVPSelectedChange: boolean = false;
+  selectedAddonPhone_nvp: boolean = false;
+  selectedAddonAnalytic_nvp: boolean = false;
+  selectedAddonVerification_nvp: boolean = false;
+  pozativeSelectedChange: boolean = false;
+  iconStates: {
+    phoneActive: boolean;
+    analyticActive: boolean;
+    verificationActive: boolean;
+    phoneSelectionActive: boolean;
+    purchasePhone: boolean;
+  }[] = [];
+
+  checkConditionForHardware: boolean = false;
+
+  // Method to add a new location form group
+  addLocation(): void {
+    const newIndex = this.locations.length;
+    this.locations.push(this.createLocationGroup());
+
+    // Initialize hardware counts for the new location
+    if (!this.hardware_counts) {
+      this.hardware_counts = [];
+    }
+
+    this.hardware_counts[newIndex] = [];
+    for (let j = 0; j < this.hardwarePrices.length; j++) {
+      this.hardware_counts[newIndex][j] = {
+        count: j === 0 ? 2 : 0,
+        price: j === 0 ? 2 * this.getHardwarePrice(j) : 0,
+      };
+    }
+
+    // Initialize other arrays as needed
+    if (!this.hardwarepurchasePrices) {
+      this.hardwarepurchasePrices = [];
+    }
+    this.hardwarepurchasePrices[newIndex] = 0;
+
+    if (!this.extraharwarePrices) {
+      this.extraharwarePrices = [];
+    }
+    this.extraharwarePrices[newIndex] = 0;
+
+    // Initialize icon states after adding a location
+    this.initializeIconStates();
+  }
+
+  // Method to remove a location form group
+  removeLocation(index: number): void {
+    Swal.fire({
+      title: 'Do you want to save the changes?',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Remove the location from the locations FormArray
+        this.locations.removeAt(index);
+
+        // Remove hardware data for this location
+        this.hardware_counts.splice(index, 1);
+        this.hardwarepurchasePrices.splice(index, 1);
+        this.extraharwarePrices.splice(index, 1);
+
+        // Remove add-on selections for this location
+        this.phoneAddOnPricesByLocation.splice(index, 1);
+        this.analyticsAddOnPricesByLocation.splice(index, 1);
+        this.verificationAddOnPricesByLocation.splice(index, 1);
+
+        // Remove hardware purchase flags
+        this.purchasePhones.splice(index, 1);
+        this.purchaseTerminals.splice(index, 1);
+
+        // If using subscription plans per location, update those too
+        if (this.subscriptionPlans && this.subscriptionPlans.length > index) {
+          this.subscriptionPlans.splice(index, 1);
+        }
+
+        // After removing a location, reinitialize icon states
+        this.initializeIconStates();
+
+        // Recalculate totals
+        this.calculateTotalSubscriptionPrice();
+        this.calculateTotalHardwarePriceTotal();
+
+        Swal.fire('Deleted!', '', 'success');
+      }
+    });
+  }
+
+  updateAllActiveState(): void {
+    this.allActivePhone = this.iconStates.every(
+      (rowState) => rowState.phoneActive
+    );
+    this.ifAnyActivePhone = this.iconStates.some(
+      (rowState) => rowState.phoneActive
+    );
+
+    this.allActiveAnalytic = this.iconStates.every(
+      (rowState) => rowState.analyticActive
+    );
+    this.allActiveVerification = this.iconStates.every(
+      (rowState) => rowState.verificationActive
+    );
+  }
+
+  createShippingAddressForm() {
+    return this.fb.group({
+      address_line_1: ['', Validators.required],
+      address_line_2: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      postalCode: ['', Validators.required],
+      country: ['', Validators.required],
+    });
+  }
+
   ngOnInit(): void {
+    // Initialize hardware_counts as a 2D array
+    this.hardware_counts = [];
+
+    // Load data from API
+    this.loadAgreementData();
+    
+    // Initialize shipping forms after locations are loaded
+    setTimeout(() => {
+      this.initializeShippingForms();
+    }, 1000);
+  }
+  initializeShippingForms() {
+    // Get the shippingAddress FormArray
+    const shippingAddressArray = this.shippingAddressForm.get('shippingAddress') as FormArray;
+    
+    // Clear existing forms
+    while (shippingAddressArray.length !== 0) {
+      shippingAddressArray.removeAt(0);
+    }
+    
+    // Add a shipping form for each location
+    const locationCount = this.locations?.controls?.length || 0;
+    for (let i = 0; i < locationCount; i++) {
+      shippingAddressArray.push(this.createShippingAddressGroup());
+    }
+    
+    // console.log('Shipping address forms initialized:', shippingAddressArray.length);
+  }
+  createShippingAddressGroup(): FormGroup {
+    return this.fb.group({
+      address_line_1: ['', Validators.required],
+      address_line_2: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      postalCode: ['', Validators.required],
+      country: ['', Validators.required]
+    });
+  }
+  // Separate method for loading agreement data (keeps ngOnInit cleaner)
+  private loadAgreementData(): void {
     this.agreementId = this.activeRoute.snapshot.params['agreementId'];
 
     this.agreementService.getAgreement(this.agreementId).subscribe((res) => {
@@ -180,87 +382,483 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
         'verifications_Only_Monthly',
         'verifications_Only_Annually',
         'hardwareCreditAnnually',
-        'hardwareCreditMonthly'
+        'hardwareCreditMonthly',
       ];
-
+      let responseData = res.data; // Assuming this is the key in the response
       // Create an array of objects containing only the specified key-value pairs
       this.pricingArray = includedKeys.reduce((acc, key) => {
-        if (res.hasOwnProperty(key)) {
-          acc[key] = res[key]; // Add the key-value pair to the object
+        if (responseData.hasOwnProperty(key)) {
+          acc[key] = responseData[key]; // Add the key-value pair to the object
         }
         return acc;
       }, {} as { [key: string]: any }); // Initialize as an empty object
-      this.multiple_location = res.multipleLocations;
-      const defaultRowCount = this.locations?.controls?.length || 1; // Use 1 if no locations are added
-      this.hardware_counts = Array(defaultRowCount)
-      .fill(null)
-      .map(() =>
-        Array(this.hardwarePrices.length).fill(null).map((_, index) => ({
-          count: index === 0 ? 2 : 0, // Set count to 2 for the first hardware item
-          price: index === 0 ? 2 * this.getHardwarePrice(index) : 0, // Calculate price for the first hardware item
-        }))
-      );
 
-    // Initialize hardwarepurchasePrices with default values
-    this.hardwarepurchasePrices = this.hardware_counts.map((row) =>
-      row.reduce((total, hardware) => total + hardware.price, 0)
-    );
-      // Initialize extraharwarePrices with at least one default value
-      this.extraharwarePrices = Array(defaultRowCount).fill(0);
-  
+      const groupedKeys: {
+        [prefix: string]: { value: string; label: string };
+      } = {};
+
+      Object.keys(this.pricingArray)
+        .filter((key) => this.pricingArray[key] !== null) // Filter keys with non-null values
+        .filter((key) => !key.includes('add_on')) // Exclude keys containing 'add_on'
+        .filter((key) => !key.includes('hardware')) // Exclude keys containing 'hardware'
+        .forEach((key) => {
+          const prefix = key.replace(
+            /(_Only_Monthly|_Only_Annually|_monthly|_annually|Annual_Disc|Annual|Montly_Disc|Montly|Monthly_Disc|Monthly)$/,
+            ''
+          ); // Remove suffixes like _Monthly, _Annually, _Disc
+          if (!groupedKeys[prefix]) {
+            groupedKeys[prefix] = {
+              value: prefix,
+              label: this.formatKeyToLabel(prefix),
+            };
+          }
+        });
+
+      // Convert grouped keys to an array
+      this.dynamicPackages = Object.values(groupedKeys);
+
+      if (this.dynamicPackages[0].value == 'aditCore') {
+        this.ifPackageisAditCore = true;
+        this.selectedPackageName = 'Adit Core';
+      } else if (this.dynamicPackages[0].value == 'aditLite') {
+        this.selectedPackageName = 'Adit Lite';
+        this.ifPackageAditLite = true;
+      } else {
+        this.ifPackageisAditCore = false;
+        this.ifPackageAditLite = false;
+      }
+      // console.log('Dynamic Packages:', this.dynamicPackages);
+      this.iconStates = this.locations.controls.map(() => ({
+        phoneActive: true,
+        analyticActive: true,
+        verificationActive: true,
+        phoneSelectionActive: true,
+        purchasePhone: true,
+      }));
+
+      this.multiple_location = responseData.multipleLocations;
+      if (responseData.add_on_phones !== null) {
+        this.addOnPhone = true;
+      }
+      if (responseData.add_on_analytic != null) {
+        this.addOnAnalytic = true;
+      }
+      if (responseData.add_on_verification != null) {
+        this.addOnVerification = true;
+      }
+
       // console.log(this.pricingArray, 'EARRRRRRRRRRRRRR');
-      this.analyticAnnual = res.analyticAnnual;
-      this.techMonthly_Disc = res.techMonthly_Disc;
-      this.analyticAnnual_Disc = res.analyticAnnual_Disc;
-      this.techAnnual = res.techAnnual;
-      this.techMonthly = res.techMonthly;
-      this.techAnnual_Disc = res.techAnnual_Disc;
-      this.analyticMonthly = res.analyticMonthly;
-      this.analyticMonthly_Disc = res.analyticMonthly_Disc;
+      this.analyticAnnual = responseData.analyticAnnual;
+      this.techMonthly_Disc = responseData.techMonthly_Disc;
+      this.analyticAnnual_Disc = responseData.analyticAnnual_Disc;
+      this.techAnnual = responseData.techAnnual;
+      this.techMonthly = responseData.techMonthly;
+      this.techAnnual_Disc = responseData.techAnnual_Disc;
+      this.analyticMonthly = responseData.analyticMonthly;
+      this.analyticMonthly_Disc = responseData.analyticMonthly_Disc;
 
-      this.aditLiteMontly = res.aditLiteMontly;
-      this.aditLiteMontly_Disc = res.aditLiteMontly_Disc;
-      this.aditLiteAnnual = res.aditLiteAnnual;
-      this.aditLiteAnnual_Disc = res.aditLiteAnnual_Disc;
+      this.aditLiteMontly = responseData.aditLiteMontly;
+      this.aditLiteMontly_Disc = responseData.aditLiteMontly_Disc;
+      this.aditLiteAnnual = responseData.aditLiteAnnual;
+      this.aditLiteAnnual_Disc = responseData.aditLiteAnnual_Disc;
 
-      this.aditCore_monthly = res.aditCore_monthly;
-      this.aditCore_annually = res.aditCore_annually;
-      this.add_on_phones = res.add_on_phones;
-      this.add_on_analytic = res.add_on_analytic;
-      this.add_on_verification = res.add_on_verification;
-      this.pozative_Only_Monthly = res.pozative_Only_Monthly;
-      this.pozative_Only_Annually = res.pozative_Only_Annually;
-      this.verifications_Only_Monthly = res.verifications_Only_Monthly;
-      this.verifications_Only_Annually = res.verifications_Only_Annually;
-      this.hardwareCreditAnnually=res.hardwareCreditAnnually
-      this.hardwareCreditMonthly=res.hardwareCreditMonthly
-      if (res.displayTechStackComparison == 0) {
+      this.aditCore_monthly = responseData.aditCore_monthly;
+      this.aditCore_annually = responseData.aditCore_annually;
+      this.add_on_phones = responseData.add_on_phones;
+      this.add_on_analytic = responseData.add_on_analytic;
+      this.add_on_verification = responseData.add_on_verification;
+      this.pozative_Only_Monthly = responseData.pozative_Only_Monthly;
+      this.pozative_Only_Annually = responseData.pozative_Only_Annually;
+      this.verifications_Only_Monthly = responseData.verifications_Only_Monthly;
+      this.verifications_Only_Annually =
+        responseData.verifications_Only_Annually;
+      this.hardwareCreditAnnually = responseData.hardwareCreditAnnually;
+      this.hardwareCreditMonthly = responseData.hardwareCreditMonthly;
+      const responsefileData = responseData.fileData; // Assuming this is the key in the response
+
+      if (responsefileData && Array.isArray(responsefileData)) {
+        // Clear existing locations
+        this.locations.clear();
+
+        // Iterate over the response data and add form groups
+        responsefileData.forEach((data: any, index: number) => {
+          const locationGroup = this.fb.group({
+            practice_name: [data['Practice Name'] || '', Validators.required],
+            location_name: [
+              data['Location Short Name'] || '',
+              Validators.required,
+            ],
+            practiceAdressLine_1: [
+              data['Practice Address Line 1'] || '',
+              Validators.required,
+            ],
+            practiceAdressLine_2: [data['Practice Address Line 2'] || ''],
+            practice_city: [data['City'] || '', Validators.required],
+            practice_state: [data['State'] || '', Validators.required],
+            practice_postal_zip_code: [
+              data['Zip Code']?.toString() || '',
+              Validators.required,
+            ],
+            practice_country: [data['Country'] || '', Validators.required],
+            practice_timezone: [data['Timezone'] || '', Validators.required],
+            practice_office_phone: [
+              data['Office Phone'] || '',
+              Validators.required,
+            ],
+            practice_email: [data['Email'] || '', Validators.required],
+            practice_website_url: [data['Website'] || ''],
+            practice_management_software: [
+              data['PMS'] || '',
+              Validators.required,
+            ],
+            practice_poc: [data['POC Name'] || '', Validators.required],
+            practice_poc_email: [data['POC Email'] || '', Validators.required],
+            practice_poc_work_number: [
+              data['POC Work Number'] || '',
+              Validators.required,
+            ],
+            practice_poc_cell_number: [
+              data['POC Cell Number'] || '',
+              Validators.required,
+            ],
+          });
+          this.locations.push(locationGroup);
+        });
+
+        // Trigger change detection
+        setTimeout(() => {
+          this.locations.updateValueAndValidity();
+        });
+        this.expandForm = true;
+      }
+      if (
+        responseData.practiceData &&
+        Array.isArray(responseData.practiceData) &&
+        responseData.practiceData.length > 0
+      ) {
+        this.locations.clear();
+        this.expandForm = true;
+        this.checkConditionForHardware = true;
+        this.expandReview = true;
+        responseData.practiceData.forEach((data: any, index: number) => {
+          const locationGroup = this.fb.group({
+            practice_name: [data.practiceName || '', Validators.required],
+            location_name: [data.locationName || '', Validators.required],
+            practiceAdressLine_1: [
+              data.practiceAdressLine1 || '',
+              Validators.required,
+            ],
+            practiceAdressLine_2: [data.practiceAdressLine2 || ''],
+            practice_city: [data.practiceCity || '', Validators.required],
+            practice_state: [data.practiceState || '', Validators.required],
+            practice_postal_zip_code: [
+              data.practicePostalZipCode || '',
+              Validators.required,
+            ],
+            practice_country: [data.practiceCountry || '', Validators.required],
+            practice_timezone: [
+              data.practiceTimezone || '',
+              Validators.required,
+            ],
+            practice_office_phone: [
+              data.practiceOfficePhone || '',
+              Validators.required,
+            ],
+            practice_email: [data.practiceEmail || '', Validators.required],
+            practice_website_url: [data.practiceWebsiteUrl || ''],
+            practice_management_software: [
+              data.practice_management_software || '',
+              Validators.required,
+            ], // No mapping in API, set as empty or map if available
+            practice_poc: [data.practicePoc || '', Validators.required],
+            practice_poc_email: [
+              data.practicePocEmail || '',
+              Validators.required,
+            ],
+            practice_poc_work_number: [
+              data.practicePocWorkNumber || '',
+              Validators.required,
+            ],
+            practice_poc_cell_number: [
+              data.practicePocCellNumber || '',
+              Validators.required,
+            ],
+          });
+          const shippingAddressGroup = this.fb.group({
+            address_line_1: [data.address_line_1 || '', Validators.required],
+            address_line_2: [data.address_line_2 || ''],
+            city: [data.city || '', Validators.required],
+            state: [data.state || '', Validators.required],
+            postalCode: [data.postalCode || '', Validators.required],
+            country: [data.country || '', Validators.required],
+          });
+
+
+
+          this.locations.push(locationGroup);
+          this.shippingAddress.push(shippingAddressGroup);
+
+        });
+
+        setTimeout(() => {
+          this.locations.updateValueAndValidity();
+        });
+
+        setTimeout(() => {
+          this.signaturePad = new SignaturePad(
+            this.signatureCanvas?.nativeElement,
+            {
+              backgroundColor: 'white',
+              penColor: 'black',
+            }
+          );
+          this.resizeCanvas();
+        }, 200);
+      }
+
+      if (responseData.selectPhone != null) {
+        this.selectPhone = responseData.selectPhone;
+      }
+      if (responseData.selectTerminal != null) {
+        this.selectTerminal = responseData.selectTerminal;
+      }
+
+      if (
+        res.data.practiceData &&
+        Array.isArray(res.data.practiceData) &&
+        res.data.practiceData.length > 0 &&
+        res.data.practiceData[0].selectedPackageName
+      ) {
+        this.selectedPackageName = this.whichPackageToShow =
+          res.data.practiceData[0].selectedPackageName;
+        this.expandHardware = true;
+        // console.log(this.whichPackageToShow, 'selectedPackageName');
+        if (this.selectedPackageName == 'Adit Lite') {
+          this.ifPackageAditLite = true;
+          this.showSelection_of_phone = true;
+        }
+      } else {
+        this.whichPackageToShow = responseData.sales_person_promotion_type;
+      }
+      if (responseData.displayTechStackComparison == false) {
         this.showtechStackGap = false;
       } else {
         this.showtechStackGap = true;
+        const featuresArray = responseData.techStack[0].features;
+        this.updateArrayWithFeatures(this.communicationsList, featuresArray);
+
+        this.updateArrayWithFeatures(this.analytics, featuresArray);
+
+        this.updateArrayWithFeatures(this.mobile, featuresArray);
+        this.updateArrayWithFeatures(this.operations, featuresArray);
       }
-      this.totalCost = res.techStack.tech_stack_totalprice;
-      this.activation_fee = res.activation_fee;
-      this.whichPackageToShow = res.sales_person_promotion_type;
-      const featuresArray = res.techStack.features;
+      if (responseData.techStack.length > 0) {
+        this.totalCost = responseData.techStack[0].tech_stack_total_price;
+      }
+      this.activation_fee = responseData.activation_fee;
 
-      this.updateArrayWithFeatures(this.communicationsList, featuresArray);
+      // addon data patching
+      if (
+        responseData.priceAddons &&
+        typeof responseData.priceAddons === 'object'
+      ) {
+        // Reset add-on arrays to hold the correct state for each location
+        this.phoneAddOnPricesByLocation = [];
+        this.analyticsAddOnPricesByLocation = [];
+        this.verificationAddOnPricesByLocation = [];
 
-      this.updateArrayWithFeatures(this.analytics, featuresArray);
+        // Get all location names from the priceAddons object
+        const locationNames = Object.keys(responseData.priceAddons);
 
-      this.updateArrayWithFeatures(this.mobile, featuresArray);
-      this.updateArrayWithFeatures(this.operations, featuresArray);
+        // For each location in the form
+        this.locations.controls.forEach((locationControl, index) => {
+          const locationName = locationControl.get('location_name')?.value;
+
+          // Find the matching priceAddons entry for this location
+          if (locationName && locationNames.includes(locationName)) {
+            const locationAddons = responseData.priceAddons[locationName];
+
+            // Set add-on flags based on the API response
+            this.phoneAddOnPricesByLocation[index] =
+              locationAddons.phone_show === 'Yes';
+            this.analyticsAddOnPricesByLocation[index] =
+              locationAddons.analytics_show === 'Yes';
+            this.verificationAddOnPricesByLocation[index] =
+              locationAddons.verification_show === 'Yes';
+
+            // Update add-on prices
+            this.add_on_phones =
+              locationAddons.phone_orginal_price || this.add_on_phones;
+            this.add_on_analytic =
+              locationAddons.analytics_orginal_price || this.add_on_analytic;
+            this.add_on_verification =
+              locationAddons.verification_orginal_price ||
+              this.add_on_verification;
+
+            // Set AditCore flag if applicable
+            if (locationAddons.allow_adit_core_only === 1) {
+              this.ifPackageisAditCore = true;
+            }
+          } else {
+            // Default values for locations without priceAddons data
+            this.phoneAddOnPricesByLocation[index] = false;
+            this.analyticsAddOnPricesByLocation[index] = false;
+            this.verificationAddOnPricesByLocation[index] = false;
+          }
+        });
+
+        // For single location mode, set the NVP addon properties
+        if (this.multiple_location !== 'yes' && locationNames.length > 0) {
+          const firstLocation = responseData.priceAddons[locationNames[0]];
+          this.selectedAddonPhone_nvp = firstLocation.phone_show === 'Yes';
+          this.selectedAddonAnalytic_nvp =
+            firstLocation.analytics_show === 'Yes';
+          this.selectedAddonVerification_nvp =
+            firstLocation.verification_show === 'Yes';
+        }
+      }
+
       // this.updateArrayWithFeatures(this.verifications, featuresArray);
+      if (responseData.signature_url) {
+        this.signatureUrlFromApi = responseData.signature_url;
+      }
+      if (responseData.signatory_name) {
+        this.signature_name = responseData.signatory_name;
+      }
+      if (responseData.isAnnually == 'Monthly') {
+        this.isAnnually = false;
+      } else if (responseData.isAnnually == 'Annually') {
+        this.isAnnually = true;
+      }
+
+      if (responseData.organization_name) {
+        this.organization_name = responseData.organization_name;
+      }
+
+      if (responseData.organization_poc_name) {
+        this.organization_poc_name = responseData.organization_poc_name;
+      }
+
+      if (responseData.organization_poc_email) {
+        this.organization_poc_email = responseData.organization_poc_email;
+      }
+
+      if (responseData.organization_poc_work_number) {
+        this.organization_poc_work_number =
+          responseData.organization_poc_work_number;
+      }
+
+      if (responseData.organization_poc_cell_number) {
+        this.organization_poc_cell_number =
+          responseData.organization_poc_cell_number;
+      }
+
+      // After you receive the API response and have access to hardwareOrders:
+      if (
+        responseData.hardwareOrders &&
+        Array.isArray(responseData.hardwareOrders)
+      ) {
+        // Reset counts
+        this.counts_for_phone = [2, 0, 0, 0, 0, 0];
+        this.counts_for_terminal = [0, 0];
+
+        responseData.hardwareOrders.forEach((order: any) => {
+          // Check if it's a phone
+          const phoneIndex = this.name_of_phone.indexOf(order.hardwareName);
+          if (phoneIndex !== -1) {
+            this.counts_for_phone[phoneIndex] = order.count;
+          }
+          // Check if it's a terminal
+          const terminalNames = ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock'];
+          const terminalIndex = terminalNames.indexOf(order.hardwareName);
+          if (terminalIndex !== -1) {
+            this.counts_for_terminal[terminalIndex] = order.count;
+          }
+        });
+
+        // Update total prices after patching
+        this.calculateTotalPrice();
+      }
+
+      if (responseData.shippingAddress) {
+        // console.log('Shipping Address from API:', responseData.shippingAddress); // Debug log
+
+        // Make sure the form is initialized
+        if (!this.shippingAddressForm) {
+          this.shippingAddressForm = this.fb.group({
+            address_line_1: ['', Validators.required],
+            address_line_2: [''],
+            city: ['', Validators.required],
+            state: ['', Validators.required],
+            postalCode: ['', Validators.required],
+            country: ['', Validators.required],
+          });
+        }
+
+        // Create a patching object with a match between API and form control names
+        const patchData = {
+          address_line_1: responseData.shippingAddress.addressLine1 || '',
+          address_line_2: responseData.shippingAddress.addressLine2 || '',
+          city: responseData.shippingAddress.city || '',
+          state: responseData.shippingAddress.state || '',
+          postalCode: responseData.shippingAddress.postalCode || '',
+          country: responseData.shippingAddress.country || '',
+        };
+
+        // console.log('Data to patch:', patchData); // Debug log
+        this.shippingAddressForm.patchValue(patchData);
+
+        // Verify form was patched
+        // console.log('Form after patching:', this.shippingAddressForm.value);
+
+        // Force change detection
+        setTimeout(() => {
+          this.shippingAddressForm.updateValueAndValidity();
+        });
+      }
+
+      // Initialize hardware counts after loading locations
+      this.initializeHardwareCounts();
+
+      // After locations are loaded and initialized, initialize icon states
+      this.initializeIconStates();
     });
+    this.activatePricingForharware();
+  }
+
+  // Add this method to initialize hardware_counts properly
+  initializeHardwareCounts() {
+    // Clear the array
+    this.hardware_counts = [];
+
+    // For each location, create an array of hardware items
+    for (let i = 0; i < this.locations.length; i++) {
+      this.hardware_counts[i] = [];
+
+      // For each hardware price, create a count and price object
+      for (let j = 0; j < this.hardwarePrices.length; j++) {
+        this.hardware_counts[i][j] = {
+          count: j === 0 ? 2 : 0, // Default to 2 for the first item, 0 for others
+          price: j === 0 ? 2 * this.getHardwarePrice(j) : 0,
+        };
+      }
+    }
+  }
+
+  selectedPackageName: string = '';
+
+  onPackageSelectedChange(selected: string) {
+    this.selectedPackageName = selected;
+    // You can now use this value as needed
+    // console.log('Selected old package:', selected);
   }
   updateArrayWithFeatures(
     array: { text: string; value: boolean }[],
     featuresArray: string[]
   ) {
-    featuresArray.forEach((feature) => {
-      const matchingItem = array.find((item) => item.text === feature);
-      if (matchingItem) {
-        matchingItem.value = false;
+    array.forEach((item) => {
+      if (featuresArray.includes(item.text)) {
+        item.value = false;
       }
     });
   }
@@ -269,11 +867,16 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
     return this.practiceData.get('locations') as FormArray;
   }
 
+  // Add a getter for shippingAddress array
+  get shippingAddress(): FormArray {
+    return this.shippingAddressForm.get('shippingAddress') as FormArray;
+  }
+
   // Method to create a location form group
   createLocationGroup(): FormGroup {
     return this.fb.group({
-      parcticeName: ['', Validators.required],
-      locationName: ['', Validators.required],
+      practice_name: ['', Validators.required],
+      location_name: ['', Validators.required],
       practiceAdressLine_1: ['', Validators.required],
       practiceAdressLine_2: [''],
       practice_city: ['', Validators.required],
@@ -288,81 +891,177 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       practice_poc: ['', Validators.required],
       practice_poc_email: ['', Validators.required],
       practice_poc_work_number: ['', Validators.required],
-      pracitce_poc_cell_number: ['', Validators.required],
+      practice_poc_cell_number: ['', Validators.required],
     });
   }
 
-  // Method to add a new location form group
-  addLocation(): void {
-    if (this.multiple_location) {
-      this.locations.push(this.createLocationGroup());
-      if(this.multiple_location=='yes'){
-        this.purchasePhones = this.locations.controls.map(() => true); // Default to true for all rows
-        this.purchaseTerminals = this.locations.controls.map(() => true); // Default to true for all rows
-        this.hardware_counts = this.locations.controls.map(() =>
-          Array(8).fill(null).map(() => ({ count: 0, price: 0 }))
-        );
-        this.hardwarepurchasePrices = this.locations.controls.map(() => 0);
+  onSubmit() {
+    console.log(this.practiceData.value, 'Form Data');
+    let formData: {
+      signature_url?: string;
+      signatory_name?: any;
+      practice_data?: any;
+      shipping_address_is_same_or_not?: any;
+      shipping_addresses?: any[]; // Changed to array format
+      organization_name?: any;
+      organization_poc_name?: any;
+      organization_poc_email?: any;
+      organization_poc_work_number?: any;
+      organization_poc_cell_number?: any;
+      hardware_inventory?: any;
+      selectedPackageName?: any;
+      selectPhone?: any;
+      selectTerminal?: any;
+      isAnnually?: string;
+      aditCore?: any;
+      priceAddons?: {
+        [locationName: string]: {
+          phone_show?: string;
+          phone_orginal_price?: string;
+          phone_discnt_price?: string;
+          analytics_show?: string;
+          analytics_orginal_price?: string;
+          analytics_discnt_price?: string;
+          verification_show?: string;
+          verification_orginal_price?: string;
+          verification_discnt_price?: string;
+          allow_adit_core_only?: number;
+        };
+      };
+    } = {
+      isAnnually: this.isAnnually ? 'Annually' : 'Monthly',
+    };
+
+    // Add shipping address data based on multiple location setting
+    if (this.multiple_location === 'yes') {
+      // Set the flag indicators for each location
+      formData.shipping_address_is_same_or_not = this.sameAddressForMultipleLocation;
+      
+      // Create array to hold shipping addresses for locations with custom addresses
+      formData.shipping_addresses = [];
+      
+      // Process each location
+      this.locations.controls.forEach((locationControl, index) => {
+        const locationName = locationControl.get('location_name')?.value || `Location ${index + 1}`;
+        
+        // Only include shipping address if it's not using the practice address
+        if (!this.sameAddressForMultipleLocation[index]) {
+          // Get the shipping form for this location
+          const shippingForm = this.shippingAddress.at(index);
+          
+          // If the form is valid, add to shipping_addresses
+          // if (shippingForm.valid) {
+            formData.shipping_addresses = formData.shipping_addresses || [];
+            formData.shipping_addresses.push({
+              locationIndex: index,
+              locationName: locationName,
+              address_line_1: shippingForm.get('address_line_1')?.value,
+              address_line_2: shippingForm.get('address_line_2')?.value,
+              city: shippingForm.get('city')?.value,
+              state: shippingForm.get('state')?.value,
+              postalCode: shippingForm.get('postalCode')?.value,
+              country: shippingForm.get('country')?.value
+            });
+          }
+        // }
+      });
+    } else if (this.multiple_location === 'no') {
+      // For single location, just set the flag
+      formData.shipping_address_is_same_or_not = this.sameAsPracticeAddress;
+      
+      // Only include shipping address if it's not using the practice address
+      if (!this.sameAsPracticeAddress && this.shippingAddressForm.valid) {
+        formData.shipping_addresses = [{
+          locationIndex: 0,
+          locationName: this.locations.at(0)?.get('location_name')?.value || 'Location 1',
+          address_line_1: this.shippingAddressForm.get('address_line_1')?.value,
+          address_line_2: this.shippingAddressForm.get('address_line_2')?.value,
+          city: this.shippingAddressForm.get('city')?.value,
+          state: this.shippingAddressForm.get('state')?.value,
+          postalCode: this.shippingAddressForm.get('postalCode')?.value,
+          country: this.shippingAddressForm.get('country')?.value
+        }];
       }
     }
+
+    // Rest of your existing code...
+    // ...
+
+    console.log(formData);
   }
 
-  // Method to remove a location form group
-  removeLocation(index: number): void {
-    Swal.fire({
-      title: "Do you want to save the changes?",
-      showCancelButton: true,
-      confirmButtonText: "Delete",
-    }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        Swal.fire("Deleted!", "", "success");
-        this.locations.removeAt(index);
-      } 
-    });
-    //
-  }
-
-  onSubmit(): void {
-    if (this.practiceData.valid) {
-      console.log('Form Data:', this.practiceData.value);
-      this.saveSignature();
-      let formData = {
-        organization_name: this.organization_name,
-        organization_poc_name: this.organization_poc_name,
-        organization_poc_email: this.organization_poc_email,
-        organization_poc_work_number: this.organization_poc_work_number,
-        organization_poc_cell_number: this.organization_poc_cell_number,
-        signature_url: this.signaturePad.toDataURL(),
-        signatory_name: this.signature_name,
-        practice_data: this.practiceData.value,
-      };
-      this.agreementService
-        .add_practice_data(formData, this.agreementId)
-        .subscribe((res) => {
-          console.log(res);
-        });
-    } else {
-      console.log('Form is invalid');
+  getHardwareCountsObject(): { [key: string]: number } {
+    // If selectPhone is false, return empty object
+    if (!this.selectPhone) {
+      return {};
     }
+
+    // If selectPhone is true, return the hardware counts
+    return this.name_of_phone.reduce((acc, phoneName, index) => {
+      if (this.counts_for_phone[index] > 0) {
+        acc[phoneName] = this.counts_for_phone[index];
+      }
+      return acc;
+    }, {} as { [key: string]: number });
   }
 
+  getTerminalCountsObject(): { [key: string]: number } {
+    // If selectTerminal is false, return empty object
+    if (!this.selectTerminal) {
+      return {};
+    }
 
+    // If selectTerminal is true, return the terminal counts
+    const terminalNames = ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock']; // Replace with your actual terminal names if different
+    return terminalNames.reduce((acc, terminalName, index) => {
+      if (this.counts_for_terminal[index] > 0) {
+        acc[terminalName] = this.counts_for_terminal[index];
+      }
+      return acc;
+    }, {} as { [key: string]: number });
+  }
+  showTable: boolean = false;
   ngAfterViewInit() {
-    this.signaturePad = new SignaturePad(this.signatureCanvas.nativeElement, {
-      backgroundColor: 'white',
-      penColor: 'black',
-    });
+    setTimeout(() => {
+      // Check if the canvas element exists before creating SignaturePad
+      if (this.signatureCanvas && this.signatureCanvas.nativeElement) {
+        this.signaturePad = new SignaturePad(
+          this.signatureCanvas.nativeElement,
+          {
+            backgroundColor: 'white',
+            penColor: 'black',
+          }
+        );
 
-    // Resize canvas to fit parent
-    this.resizeCanvas();
+        this.resizeCanvas();
+
+        // Load signature if available
+        if (this.signatureUrlFromApi) {
+          this.signaturePad.fromDataURL(this.signatureUrlFromApi);
+        }
+      } else {
+        console.warn(
+          'Signature canvas element is not available. It might be conditionally hidden in the template.'
+        );
+      }
+    });
+    setTimeout(() => {
+      this.showTable = true;
+      this.activatePricingForharware();
+    }, 1000);
   }
 
   private resizeCanvas() {
-    const canvas = this.signatureCanvas.nativeElement;
+    const canvas = this.signatureCanvas?.nativeElement;
+    if (!canvas) return; // Guard clause to prevent errors
+
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
-    this.signaturePad.clear(); // Clear pad after resizing
+    this.signaturePad?.clear(); // Add optional chaining here too
+
+    if (this.signatureUrlFromApi && this.signaturePad) {
+      this.signaturePad.fromDataURL(this.signatureUrlFromApi);
+    }
   }
 
   clearPad() {
@@ -377,19 +1076,96 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       console.warn('No signature to save!');
     }
   }
+  name_of_phone: string[] = [
+    'Grandstream GRP 2616',
+    'Grandstream GRP 2613',
+    'Grandstream DP 720',
+    'GRP 2616 Wall Mount',
+    'GRP 2613 Wall Mount',
+    'Headset + Adapter',
+  ];
+  counts_for_phone: number[] = [2, 0, 0, 0, 0, 0]; // Default count for GRP 2616 is set to 2
+  counts_for_terminal: number[] = [0, 0]; // Default count for terminals
 
-  counts: number[] = [0, 0, 0, 0, 0, 0, 0, 0]; // Initialize counts for each item
-
-  increment(index: number) {
-    this.counts[index]++;
-  }
-
-  decrement(index: number) {
-    if (this.counts[index] > 0) {
-      this.counts[index]--;
+  prices_for_phone: number[] = [150, 100, 100, 10, 10, 275]; // Prices for each hardware item
+  prices_for_terminal: number[] = [250, 49]; // Prices for each hardware item
+  totalPrice_for_phone: number = 0;
+  totalPrice_for_terminal: number = 0;
+  increment(index: number, isPhone: boolean): void {
+    if (isPhone) {
+      this.counts_for_phone[index]++;
+      this.calculateTotalPrice();
+    } else {
+      this.counts_for_terminal[index]++;
+      this.calculateTotalPrice();
     }
   }
 
+  decrement(index: number, isPhone: boolean): void {
+    if (isPhone) {
+      if (index === 0 && this.counts_for_phone[index] <= 2) {
+        return; // Prevent decrementing below 2 for index 0
+      }
+      if (this.counts_for_phone[index] > 0) {
+        this.counts_for_phone[index]--;
+        this.calculateTotalPrice();
+      }
+    } else {
+      if (this.counts_for_terminal[index] > 0) {
+        this.counts_for_terminal[index]--;
+        this.calculateTotalPrice();
+      }
+    }
+  }
+
+  calculateTotalPrice(): void {
+    if (this.selectPhone == true) {
+      this.totalPrice_for_phone = this.counts_for_phone.reduce(
+        (sum, count, index) => sum + count * this.prices_for_phone[index],
+        0
+      );
+    }
+    if (this.selectTerminal == true) {
+      this.totalPrice_for_terminal = this.counts_for_terminal.reduce(
+        (sum, count, index) => sum + count * this.prices_for_terminal[index],
+        0
+      );
+    }
+
+    // Instead, directly calculate hardware total here
+    this.hardware_TotalFor_Singlecoation =
+      this.totalPrice_for_phone + this.totalPrice_for_terminal;
+  }
+
+  calculateHardwareTotalFroSinglecoation() {
+    this.hardware_TotalFor_Singlecoation =
+      this.totalPrice_for_phone + this.totalPrice_for_terminal;
+  }
+
+  removeValue_of_hardware() {
+    if (this.selectPhone == false) {
+      if (this.totalPrice_for_phone >= 300) {
+        this.totalPrice_for_phone = this.totalPrice_for_phone - 300;
+      }
+      this.counts_for_phone = [2, 0, 0, 0, 0, 0];
+      this.totalPrice_for_phone = this.counts_for_phone.reduce(
+        (sum, count, index) => sum + count * this.prices_for_phone[index],
+        0
+      );
+
+      this.calculateTotalPrice();
+    }
+    if (this.selectTerminal == false) {
+      this.counts_for_terminal = [0, 0];
+      this.totalPrice_for_terminal = this.counts_for_terminal.reduce(
+        (sum, count, index) => sum + count * this.prices_for_terminal[index],
+        0
+      );
+
+      this.calculateTotalPrice();
+    }
+    this.calculateHardwareTotalFroSinglecoation();
+  }
   toggleView(view: 'annually' | 'monthly') {
     this.isAnnually = view === 'annually';
   }
@@ -441,136 +1217,799 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/dashboard']);
   }
 
-  
-
-
-
   // Method to handle multiple location events
-  multiple_location_yes_totalTechAnnually:any
-  multiple_location_yes_totalTechMonthly:any
-  multiple_location_yes_totalanalyticAnnually:any
-  multiple_location_yes_analyticMonthly:any
+  //tech
+  multiple_location_yes_totalTechAnnually: any;
+  multiple_location_yes_totalTechMonthly: any;
+  //analytic
+  multiple_location_yes_totalanalyticAnnually: any;
+  multiple_location_yes_analyticMonthly: any;
+  //aditLite
+  multiple_location_yes_totalAditLiteAnnually: any;
+  multiple_location_yes_totalAditLiteMonthly: any;
 
-  onTotalTechAnnual(price:any){
-    console.log(price);
-    this.multiple_location_yes_totalTechAnnually=price;
+  onTotalTechAnnual(price: any) {
+    this.multiple_location_yes_totalTechAnnually = price;
+    console.log(price, 'price of tech annuaaly');
   }
-  ontotaltechMonthly(price:any){
-    console.log(price);
-    this.multiple_location_yes_totalTechMonthly=price;
+  ontotaltechMonthly(price: any) {
+    this.multiple_location_yes_totalTechMonthly = price;
   }
-  ontotalanalyticAnnually(price:any){
-    console.log(price);
-    this.multiple_location_yes_totalanalyticAnnually=price;
+  ontotalanalyticAnnually(price: any) {
+    this.multiple_location_yes_totalanalyticAnnually = price;
   }
-  ontotalanalyticMonthly(price:any){
-    console.log(price);
-    this.multiple_location_yes_analyticMonthly=price;
+  ontotalanalyticMonthly(price: any) {
+    this.multiple_location_yes_analyticMonthly = price;
   }
+
+  ontotalAditLiteMonthly(price: any) {
+    this.multiple_location_yes_totalAditLiteMonthly = price;
+  }
+  ontotalAditLiteAnnually(price: any) {
+    this.multiple_location_yes_totalAditLiteAnnually = price;
+  }
+
   // hande subscription plan when select multiple location
 
-  subscriptionPlan_annually:any
-  subscriptionPlan_monthly:any
+  subscriptionPlan_annually: any;
+  subscriptionPlan_monthly: any;
 
   //table package change events
   choosedPackagesContent: string = '';
 
-// Initialize an array to store subscription prices for each location
-subscriptionPlans: { annually: number; monthly: number }[] = [];
+  // Initialize an array to store subscription prices for each location
+  subscriptionPlans: { annually: number; monthly: number }[] = [];
 
-// Update the subscription plan when the package changes
-onPackageChange(event: any, index: number) {
-  const selectedPackage = event.target.value;
-
-  if (selectedPackage === 'tech') {
-    this.subscriptionPlans[index] = {
-      annually: this.multiple_location_yes_totalTechAnnually || 0,
-      monthly: this.multiple_location_yes_totalTechMonthly || 0,
-    };
-  } else if (selectedPackage === 'analytic') {
-    this.subscriptionPlans[index] = {
-      annually: this.multiple_location_yes_totalanalyticAnnually || 0,
-      monthly: this.multiple_location_yes_analyticMonthly || 0,
-    };
-  } else {
-    this.subscriptionPlans[index] = { annually: 0, monthly: 0 }; // Default values
+  // Update the subscription plan when the package changes
+  selectedPackage: string[] = [];
+  onPackageChange(event: any, index: number) {
+    const selectedPackage = event.target.value;
+    this.selectedPackage[index] = selectedPackage;
+    if (selectedPackage === 'tech') {
+      this.subscriptionPlans[index] = {
+        annually: Number(this.techAnnual_Disc) || 0,
+        monthly: Number(this.techMonthly_Disc) || 0,
+      };
+    } else if (selectedPackage === 'analytic') {
+      this.subscriptionPlans[index] = {
+        annually: Number(this.analyticAnnual_Disc) || 0,
+        monthly: Number(this.analyticMonthly_Disc) || 0,
+      };
+    } else if (selectedPackage === 'aditLite') {
+      this.subscriptionPlans[index] = {
+        annually: Number(this.aditLiteAnnual_Disc) || 0,
+        monthly: Number(this.aditLiteMontly_Disc) || 0,
+      };
+    } else {
+      this.subscriptionPlans[index] = { annually: 0, monthly: 0 }; // Default values
+    }
+    this.checkThePackage(selectedPackage);
+    console.log(this.selectedPackage, 'selected package');
   }
-}
 
-//handling for multiple location hardware contents
-purchasePhones: boolean[] = [];
-purchaseTerminals: boolean[] = [];
-purchasePhone=true
-hardware_counts: { count: number; price: number }[][] = [];
-hardwarepurchasePrices: number[] = [];
-hardwarePrices: number[] = [
-  150, 100, 100, 10, 10, 275, 250, 49 ];
-// Initialize an array to store extra hardware prices for each row
-extraharwarePrices: number[] = [];
-
-// Update the total hardware purchase price for a specific row
-updateHardwarePurchasePrice(rowIndex: number): void {
-  const totalHardwarePrice = this.hardware_counts[rowIndex].reduce(
-    (total, hardware) => total + hardware.price,
-    0
-  );
-
-  // Get the hardware credit based on the billing cycle
-  const hardwareCredit = this.isAnnually
-    ? this.hardwareCreditAnnually
-    : this.hardwareCreditMonthly;
-
-  // If total hardware price exceeds the credit, split the values
-  if (totalHardwarePrice > hardwareCredit) {
-    this.hardwarepurchasePrices[rowIndex] = hardwareCredit; // Cap at hardware credit
-    this.extraharwarePrices[rowIndex] = totalHardwarePrice - hardwareCredit; // Remaining goes to extra
-  } else {
-    this.hardwarepurchasePrices[rowIndex] = totalHardwarePrice; // Within credit
-    this.extraharwarePrices[rowIndex] = 0; // No extra
+  makeFirstLetterCapital(str: string): string {
+    if (!str) return ''; // Return empty string if input is null/undefined
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
-}
-// Increment the hardware count for a specific row and column
-increment_forMultiple(rowIndex: number, hardwareIndex: number): void {
-  const hardware = this.hardware_counts[rowIndex][hardwareIndex];
-  hardware.count++;
-  hardware.price = hardware.count * this.getHardwarePrice(hardwareIndex);
-  this.updateHardwarePurchasePrice(rowIndex);
-}
 
-// Decrement the hardware count for a specific row and column
-decrement_forMultiple(rowIndex: number, hardwareIndex: number): void {
-  const hardware = this.hardware_counts[rowIndex][hardwareIndex];
-  if (hardware.count > 0) {
-    hardware.count--;
+  // handling for multiple location hardware contents
+  purchasePhones: boolean[] = [];
+  purchaseTerminals: boolean[] = [];
+  hardware_counts: { count: number; price: number }[][] = [];
+  hardwarepurchasePrices: number[] = [];
+  hardwarePrices: number[] = [150, 100, 100, 10, 10, 275, 250, 49];
+  // Initialize an array to store extra hardware prices for each row
+  extraharwarePrices: number[] = [];
+  counts: number[] = [2, 0, 0, 0, 0, 0]; // Default count for GRP 2616 is set to 2
+
+  // Update the total hardware purchase price for a specific row
+  updateHardwarePurchasePrice(rowIndex: number): void {
+    const hardwareCredit = this.isAnnually
+      ? this.hardwareCreditAnnually
+      : this.hardwareCreditMonthly;
+
+    this.hardwareService.updateHardwarePurchasePrice(
+      this.hardware_counts,
+      rowIndex,
+      hardwareCredit,
+      this.hardwarepurchasePrices,
+      this.extraharwarePrices
+    );
+  }
+  // Increment the hardware count for a specific row and column
+  increment_forMultiple(rowIndex: number, hardwareIndex: number): void {
+    const hardware = this.hardware_counts[rowIndex][hardwareIndex];
+    hardware.count++;
     hardware.price = hardware.count * this.getHardwarePrice(hardwareIndex);
     this.updateHardwarePurchasePrice(rowIndex);
   }
-}
 
-// Update the total hardware purchase price for a specific row
-// updateHardwarePurchasePrice(rowIndex: number): void {
-//   this.hardwarepurchasePrices[rowIndex] = this.hardware_counts[rowIndex].reduce(
-//     (total, hardware) => total + hardware.price,
-//     0
-//   );
-// }
+  // Decrement the hardware count for a specific row and column
+  decrement_forMultiple(rowIndex: number, hardwareIndex: number): void {
+    const hardware = this.hardware_counts[rowIndex][hardwareIndex];
+    if (hardware.count > 0) {
+      hardware.count--;
+      hardware.price = hardware.count * this.getHardwarePrice(hardwareIndex);
+      this.updateHardwarePurchasePrice(rowIndex);
+    }
+  }
 
-// Get the price of a specific hardware item
-getHardwarePrice(hardwareIndex: number): number {
-  // const prices = [150, 100, 100, 10, 10, 275, 250, 49]; // Prices for each hardware item
-  return this.hardwarePrices[hardwareIndex] || 0;
-}
-calculateTotalHardwarePrice() {
-  return this.extraharwarePrices.reduce((total, price) => total + price, 0);
-}
-calculateTotalHardwarePriceTotal(): number {
-  // Sum up the hardwarepurchasePrices for all rows
-  const totalHardwarePurchasePrice = this.hardwarepurchasePrices.reduce((total, price) => total + price, 0);
+  // Get the price of a specific hardware item
+  getHardwarePrice(hardwareIndex: number): number {
+    // const prices = [150, 100, 100, 10, 10, 275, 250, 49]; // Prices for each hardware item
+    return this.hardwarePrices[hardwareIndex] || 0;
+  }
+  calculateTotalHardwarePrice() {
+    return this.extraharwarePrices.reduce((total, price) => total + price, 0);
+  }
+  calculateTotalHardwarePriceTotal(): number {
+    let totalHardwarePrice = 0;
 
-  // Sum up the extraharwarePrices for all rows
-  const totalExtraHardwarePrice = this.extraharwarePrices.reduce((total, price) => total + price, 0);
+    // console.log('Hardware purchase prices array:', this.hardwarepurchasePrices);
+    // console.log('Extra hardware prices array:', this.extraharwarePrices);
 
-  // Return the combined total
-  return totalHardwarePurchasePrice + totalExtraHardwarePrice;
-}
+    // Process each location by index, matching hardwarepurchasePrices and extraharwarePrices arrays
+    for (
+      let i = 0;
+      i <
+      Math.max(
+        this.hardwarepurchasePrices.length,
+        this.extraharwarePrices.length
+      );
+      i++
+    ) {
+      // Get hardwarepurchasePrice for this index (use 0 if undefined)
+      const purchasePrice = this.hardwarepurchasePrices[i] || 0;
+
+      // Get extraharwarePrice for this index (use 0 if undefined)
+      const extraPrice = this.extraharwarePrices[i] || 0;
+
+      // Get hardware credit for comparison
+      const hardwareCredit = this.isAnnually
+        ? Number(this.hardwareCreditAnnually) || 0
+        : Number(this.hardwareCreditMonthly) || 0;
+
+      // Log details for each location
+      // console.log(`Location ${i + 1}:`, {
+      //   purchasePrice: Number(purchasePrice),
+      //   extraPrice: Number(extraPrice),
+      //   hardwareCredit,
+      //   withinCreditLimit: purchasePrice <= hardwareCredit ? 'Yes' : 'No',
+      //   totalForLocation: Number(purchasePrice) + Number(extraPrice),
+      // });
+
+      // Add the total for this location
+      totalHardwarePrice += Number(purchasePrice) + Number(extraPrice);
+    }
+
+    // Determine total hardware credit across all locations
+    const totalLocations = this.hardwarepurchasePrices.length;
+    const totalHardwareCredit =
+      (this.isAnnually
+        ? Number(this.hardwareCreditAnnually)
+        : Number(this.hardwareCreditMonthly)) * totalLocations || 0;
+
+    // console.log('Total Hardware Price Summary:', {
+    //   rawTotalPrice: totalHardwarePrice,
+    //   totalLocationsWithHardware: totalLocations,
+    //   creditPerLocation: this.isAnnually
+    //     ? this.hardwareCreditAnnually
+    //     : this.hardwareCreditMonthly,
+    //   totalHardwareCredit,
+    //   effectivePrice: Math.max(0, totalHardwarePrice - totalHardwareCredit),
+    // });
+
+    return totalHardwarePrice;
+  }
+  getSubscriptionsTotal() {
+    if (this.multiple_location == 'yes') {
+      return (
+        this.subscriptionPlans.reduce(
+          (total, plan) => total + plan.annually,
+          0
+        ) * 12
+      );
+    } else if (this.multiple_location == 'no') {
+      return this.subscriptionPriceAnnually;
+    } else {
+      return 0;
+    }
+  }
+  getSubscriptionsTotalMonthly() {
+    if (this.multiple_location === 'yes') {
+      return this.subscriptionPlans.reduce(
+        (total, plan) => total + plan.monthly,
+        0
+      );
+    } else if (this.multiple_location === 'no') {
+      return this.subscriptionPriceMonthly;
+    } else {
+      return 0;
+    }
+  }
+
+  getTotal() {
+    let total = 0;
+
+    if (this.multiple_location === 'yes') {
+      if (this.isAnnually) {
+        total =
+          this.getSubscriptionsTotal() + parseInt(this.activation_fee, 10);
+      } else {
+        total = parseInt(this.activation_fee, 10);
+      }
+
+      let hardwareTotal = this.calculateTotalHardwarePriceTotal();
+      if (hardwareTotal > 0) {
+        total += hardwareTotal;
+
+        // Subtract hardware credit only if purchasePhones or purchaseTerminals is true
+        const hardwareCredit = this.isAnnually
+          ? this.hardwareCreditAnnually
+          : this.hardwareCreditMonthly;
+        if (hardwareCredit) {
+          const applicableCredit = Math.min(hardwareTotal, hardwareCredit); // Ensure credit does not exceed hardwareTotal
+          total -= applicableCredit;
+        }
+      }
+    } else if (this.multiple_location === 'no') {
+      if (this.isAnnually) {
+        total =
+          this.subscriptionPriceAnnually * 12 +
+          parseInt(this.activation_fee, 10);
+      } else {
+        total = parseInt(this.activation_fee, 10);
+      }
+
+      // For single location, calculate hardware and credit difference
+      let hardwareTotal =
+        this.selectPhone || this.selectTerminal
+          ? this.hardware_TotalFor_Singlecoation
+          : 0;
+
+      if (hardwareTotal > 0) {
+        const hardwareCredit = this.isAnnually
+          ? this.hardwareCreditAnnually
+          : this.hardwareCreditMonthly;
+        if (hardwareCredit) {
+          // Calculate the effective hardware cost after credit
+          const effectiveHardwareCost = Math.max(
+            0,
+            hardwareTotal - hardwareCredit
+          );
+          total += effectiveHardwareCost;
+        } else {
+          total += hardwareTotal;
+        }
+      }
+    }
+    return total;
+  }
+
+  activatePricingForharware() {
+    const defaultRowCount = this.locations?.controls?.length || 1; // Use 1 if no locations are added
+    this.hardware_counts = Array(defaultRowCount)
+      .fill(null)
+      .map(() =>
+        Array(this.hardwarePrices.length)
+          .fill(null)
+          .map((_, index) => ({
+            count: index === 0 ? 2 : 0, // Set count to 2 for the first hardware item
+            price: index === 0 ? 2 * this.getHardwarePrice(index) : 0, // Calculate price for the first hardware item
+          }))
+      );
+
+    this.hardwarepurchasePrices = this.hardware_counts.map((row) =>
+      row.reduce((total, hardware) => total + hardware.price, 0)
+    );
+    // Initialize extraharwarePrices with at least one default value
+    this.extraharwarePrices = Array(defaultRowCount).fill(0);
+  }
+
+  getMinValue(
+    value1: number | null | undefined,
+    value2: number | null | undefined
+  ): number | null {
+    // console.log(value1, value2, 'value1 and value2')
+    if (value1 != null && value2 != null) {
+      return Math.min(value1, value2);
+    }
+    if (value1 != null) {
+      return value1;
+    }
+    if (value1 == null) {
+      return 0;
+    }
+    return null;
+  }
+
+  getNextPaymentDate(): string {
+    const currentDate = new Date();
+    if (this.isAnnually) {
+      currentDate.setFullYear(currentDate.getFullYear() + 1); // Add 1 year
+    } else {
+      currentDate.setMonth(currentDate.getMonth() + 1); // Add 1 month
+    }
+
+    // Format the date as "MMM DD, YYYY"
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+    };
+    return currentDate.toLocaleDateString('en-US', options).toUpperCase();
+  }
+
+  //disable hardware phones if the pacakge is adit lite
+  disablePhones: boolean = false;
+  checkThePackage(event: any) {
+    if (event === 'aditLite') {
+      this.disablePhones = true;
+    } else {
+      this.disablePhones = false;
+    }
+  }
+  hardware_TotalFor_Singlecoation: any;
+  phoneActive: boolean = true;
+  analyticActive: boolean = true;
+  verificationActive: boolean = true;
+  ifPackageisAditCore: boolean = false;
+  ifPackageAditLite: boolean = false;
+  showSelection_of_phone: boolean = true;
+
+  onSelectedPhone(event: any) {
+    this.showSelection_of_phone = event;
+    this.phoneActive = event;
+    this.selectPhone = event;
+    this.addOnPhone = event;
+    // console.log(event, 'event of phone');
+  }
+
+  onSelectedAnalytics(event: any) {
+    this.analyticActive = event;
+    this.addOnAnalytic = event;
+  }
+
+  onSelectedVerification(event: any) {
+    this.verificationActive = event;
+    this.addOnVerification = event;
+  }
+
+  expandReview: boolean = false;
+  expandHardware: boolean = false;
+  expandForm: boolean = false;
+
+  goToExpandForm() {
+    // Special case for "Only Lite - 1st Yr Promo"
+    if (this.whichPackageToShow === 'Only Lite - 1st Yr Promo') {
+      // Only check terminal condition, not phone condition
+      if (this.selectTerminal === false) {
+        this.expandForm = true;
+      } else if (this.selectTerminal === true) {
+        // Don't check for checkConditionForHardware when selectTerminal is true
+        this.expandForm = true;
+      } else {
+        alert('Accept the conditions, check the checkbox');
+      }
+    } else {
+      // Original logic for other package types
+      if (this.selectPhone === false && this.selectTerminal === false) {
+        this.expandForm = true;
+      } else if (
+        this.selectPhone === true &&
+        this.checkConditionForHardware === true
+      ) {
+        // Only check checkConditionForHardware for phones
+        this.expandForm = true;
+      } else if (this.selectTerminal === true) {
+        // Don't check checkConditionForHardware for terminals
+        this.expandForm = true;
+      } else {
+        alert('Accept the conditions, check the checkbox');
+      }
+    }
+  }
+
+  goNextToReview() {
+    // Check if the practiceData form is valid
+    if (this.practiceData.valid) {
+      this.expandReview = true;
+
+      // Initialize signature pad after DOM is updated
+      setTimeout(() => {
+        if (this.signatureCanvas && this.signatureCanvas.nativeElement) {
+          this.signaturePad = new SignaturePad(
+            this.signatureCanvas?.nativeElement,
+            {
+              backgroundColor: 'white',
+              penColor: 'black',
+            }
+          );
+          this.resizeCanvas();
+        }
+      }, 200);
+    } else {
+      // Mark all form controls as touched to trigger validation errors
+      this.markFormGroupTouched(this.practiceData);
+
+      // Display an error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Form Validation Error',
+        text: 'Please fill in all required fields before proceeding to review.',
+        confirmButtonColor: '#3085d6',
+      });
+
+      // Scroll to the first invalid field
+      this.scrollToFirstInvalidControl();
+    }
+  }
+
+  // Helper method to mark all controls in a form group as touched
+  private markFormGroupTouched(formGroup: FormGroup | FormArray) {
+    Object.values(formGroup.controls).forEach((control) => {
+      control.markAsTouched();
+
+      if (control instanceof FormGroup || control instanceof FormArray) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  // Helper method to scroll to the first invalid form field
+  private scrollToFirstInvalidControl() {
+    const firstInvalidControl = document.querySelector('.ng-invalid');
+    if (firstInvalidControl) {
+      firstInvalidControl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }
+
+  // Add this method to properly initialize iconStates
+  initializeIconStates() {
+    // Create an icon state for each location
+    this.iconStates = Array(this.locations.length)
+      .fill(null)
+      .map(() => ({
+        phoneActive: true,
+        analyticActive: true,
+        verificationActive: true,
+        phoneSelectionActive: true,
+        purchasePhone: true,
+      }));
+
+    // Initialize related arrays
+    this.purchasePhones = this.iconStates.map((state) => state.purchasePhone);
+    this.purchaseTerminals = Array(this.locations.length).fill(false);
+
+    this.phoneAddOnPricesByLocation = Array(this.locations.length).fill(
+      this.add_on_phones || 0
+    );
+    this.analyticsAddOnPricesByLocation = Array(this.locations.length).fill(
+      this.add_on_analytic || 0
+    );
+    this.verificationAddOnPricesByLocation = Array(this.locations.length).fill(
+      this.add_on_verification || 0
+    );
+
+    // Update all states
+    this.updateAllActiveState();
+  }
+
+  getLocationHardwareInventory(): {
+    [locationId: string]: { [hardwareName: string]: number };
+  } {
+    const locationNames = this.locations.controls.map(
+      (locationControl, index) =>
+        locationControl.get('location_name')?.value || `Location ${index + 1}`
+    );
+
+    return this.hardwareService.calculateHardwareInventoryForLocation(
+      this.purchasePhones,
+      this.purchaseTerminals,
+      this.hardware_counts,
+      locationNames
+    );
+  }
+
+  // add on calculations for no vendor promos
+
+  onSelectedPhone_nvp(event: any) {
+    this.selectedAddonPhone_nvp = event.selected;
+  }
+
+  onSelectedAnalytics_nvp(event: any) {
+    this.selectedAddonAnalytic_nvp = event.selected;
+  }
+
+  onSelectedVerification_nvp(event: any) {
+    this.selectedAddonVerification_nvp = event.selected;
+  }
+
+  phoneAddOnPricesByLocation: boolean[] = [];
+  analyticsAddOnPricesByLocation: boolean[] = [];
+  verificationAddOnPricesByLocation: boolean[] = [];
+  toggleIconState(
+    rowIndex: number,
+    iconType:
+      | 'phoneActive'
+      | 'analyticActive'
+      | 'verificationActive'
+      | 'purchasePhone'
+  ): void {
+    const rowState = this.iconStates[rowIndex];
+    const previousState = rowState[iconType]; // Store previous state before toggling
+
+    // Toggle the icon state
+    rowState[iconType] = !rowState[iconType];
+
+    // Update prices based on the toggle
+    if (iconType === 'phoneActive') {
+      // Handle phone add-on price
+      if (rowState.phoneActive && !previousState) {
+        // Add price when turning on - with Number conversion
+        this.phoneAddOnPricesByLocation[rowIndex] = true;
+        debugger;
+      } else if (!rowState.phoneActive && previousState) {
+        // Remove price when turning off
+        this.phoneAddOnPricesByLocation[rowIndex] = false;
+        debugger;
+      }
+
+      // Also update purchase phone state
+      rowState.purchasePhone = rowState.phoneActive;
+      this.purchasePhones[rowIndex] = rowState.phoneActive;
+    } else if (iconType === 'analyticActive') {
+      // Handle analytics add-on price with Number conversion
+      if (rowState.analyticActive && !previousState) {
+        this.analyticsAddOnPricesByLocation[rowIndex] = true;
+      } else if (!rowState.analyticActive && previousState) {
+        this.analyticsAddOnPricesByLocation[rowIndex] = false;
+      }
+    } else if (iconType === 'verificationActive') {
+      // Handle verification add-on price with Number conversion
+      if (rowState.verificationActive && !previousState) {
+        this.verificationAddOnPricesByLocation[rowIndex] = true;
+      } else if (!rowState.verificationActive && previousState) {
+        this.verificationAddOnPricesByLocation[rowIndex] = false;
+      }
+    }
+
+    // Update the overall states
+    this.updateAllActiveState();
+
+    // Recalculate total subscription price
+    this.calculateTotalSubscriptionPrice();
+  }
+  calculateTotalSubscriptionPrice() {
+    const basePackagePrice = this.getBasePackagePrice();
+
+    // Add up all add-on prices across locations with explicit Number() conversion
+    const totalPhoneAddOns = this.phoneAddOnPricesByLocation.reduce(
+      (sum, price) => Number(sum) + Number(price || 0),
+      0
+    );
+
+    const totalAnalyticsAddOns = this.analyticsAddOnPricesByLocation.reduce(
+      (sum, price) => Number(sum) + Number(price || 0),
+      0
+    );
+
+    const totalVerificationAddOns =
+      this.verificationAddOnPricesByLocation.reduce(
+        (sum, price) => Number(sum) + Number(price || 0),
+        0
+      );
+    // console.log(
+    //   {
+    //     basePackagePrice: Number(basePackagePrice),
+    //     totalPhoneAddOns: Number(totalPhoneAddOns),
+    //     totalAnalyticsAddOns: Number(totalAnalyticsAddOns),
+    //     totalVerificationAddOns: Number(totalVerificationAddOns),
+    //     result: this.isAnnually
+    //       ? this.subscriptionPriceAnnually
+    //       : this.subscriptionPriceMonthly,
+    //   },
+    //   'Calculation values after number conversion'
+    // );
+  }
+
+  // Add this helper method to get the base package price without add-ons
+  getBasePackagePrice(): number {
+    // Get the base price depending on the selected package
+    if (this.ifPackageisAditCore) {
+      return (
+        Number(
+          this.isAnnually ? this.aditCore_annually : this.aditCore_monthly
+        ) || 0
+      );
+    } else if (this.ifPackageAditLite) {
+      return (
+        Number(this.isAnnually ? this.aditLiteAnnual : this.aditLiteMontly) || 0
+      );
+    } else if (this.selectedPackageName === 'Tech Bundle') {
+      return Number(this.isAnnually ? this.techAnnual : this.techMonthly) || 0;
+    } else if (this.selectedPackageName === 'Analytic Bundle') {
+      return (
+        Number(this.isAnnually ? this.analyticAnnual : this.analyticMonthly) ||
+        0
+      );
+    } else if (this.pozativeSelectedChange) {
+      return (
+        Number(
+          this.isAnnually
+            ? this.pozative_Only_Annually
+            : this.pozative_Only_Monthly
+        ) || 0
+      );
+    } else if (this.verificationsNVPSelectedChange) {
+      return (
+        Number(
+          this.isAnnually
+            ? this.verifications_Only_Annually
+            : this.verifications_Only_Annually
+        ) || 0
+      );
+    }
+
+    // If multiple locations and we're using subscription plans
+    if (this.multiple_location === 'yes' && this.subscriptionPlans.length > 0) {
+      return this.subscriptionPlans.reduce(
+        (sum, plan) =>
+          sum + Number(this.isAnnually ? plan.annually : plan.monthly),
+        0
+      );
+    }
+    // Default fallback
+    return 0;
+  }
+
+  calculateLocationTotal(locationIndex: number): number {
+    // Base subscription from the package
+    let baseSubscription = 0;
+    baseSubscription = this.getBasePackagePrice();
+
+    // Add-on prices for this location - use fixed prices when the boolean is true
+    const phoneAddOn = this.phoneAddOnPricesByLocation[locationIndex]
+      ? Number(this.add_on_phones || 0)
+      : 0;
+
+    const analyticsAddOn = this.analyticsAddOnPricesByLocation[locationIndex]
+      ? Number(this.add_on_analytic || 0)
+      : 0;
+
+    const verificationAddOn = this.verificationAddOnPricesByLocation[
+      locationIndex
+    ]
+      ? Number(this.add_on_verification || 0)
+      : 0;
+
+    // Calculate the annual total for this location
+    const total = this.subscriptionService.calculateLocationTotal(
+      baseSubscription,
+      this.isAnnually,
+      phoneAddOn,
+      analyticsAddOn,
+      verificationAddOn
+    );
+
+    this.calculateLocationTotalForMonthly(locationIndex);
+    return total;
+  }
+  convertStringToNumber(value: string | null): number {
+    if (value === null) {
+      return 0; // Return 0 if the value is null
+    }
+    const numberValue = Number(value);
+    return isNaN(numberValue) ? 0 : numberValue; // Return 0 if conversion fails
+  }
+  calculateLocationTotalForMonthly(locationIndex: number): number {
+    // Base subscription from the package
+    let baseSubscription = 0;
+    baseSubscription = this.subscriptionPriceMonthly;
+    // Add-on prices for this location - use fixed prices when the boolean is true
+    const phoneAddOn = this.phoneAddOnPricesByLocation[locationIndex]
+      ? Number(this.add_on_phones || 0)
+      : 0;
+
+    const analyticsAddOn = this.analyticsAddOnPricesByLocation[locationIndex]
+      ? Number(this.add_on_analytic || 0)
+      : 0;
+
+    const verificationAddOn = this.verificationAddOnPricesByLocation[
+      locationIndex
+    ]
+      ? Number(this.add_on_verification || 0)
+      : 0;
+
+    // Calculate the annual total for this location
+    const total =
+      baseSubscription + phoneAddOn + analyticsAddOn + verificationAddOn;
+
+    return total;
+  }
+
+  getSubscriptionTotalForMultipleLocations(): number {
+    let total = 0;
+    for (let i = 0; i < this.locations.length; i++) {
+      const locationTotal = this.calculateLocationTotal(i);
+      total += locationTotal;
+    }
+    return total;
+  }
+
+  getHarwareCreditTotal() {
+    const hardwareInventory = this.getLocationHardwareInventory();
+
+    const locationsWithHardware = Object.keys(hardwareInventory).length;
+
+    // Calculate hardware credit based on number of locations with hardware
+    const totalHardwareCredit =
+      Number(
+        this.isAnnually
+          ? this.hardwareCreditAnnually
+          : this.hardwareCreditMonthly
+      ) * locationsWithHardware || 0;
+
+    return totalHardwareCredit;
+  }
+  hardwareCreditDisplayValues: number[] = [];
+  getHardwarePriceInTable(index: number): number {
+    return this.hardwarepurchasePrices[index];
+  }
+  getHardwareCreditDisplay(index: number): number {
+    if (this.isAnnually) {
+      return (
+        this.getMinValue(
+          this.hardwarepurchasePrices[index],
+          this.hardwareCreditAnnually
+        ) || 0
+      );
+    } else {
+      return (
+        this.getMinValue(
+          this.hardwarepurchasePrices[index],
+          this.hardwareCreditMonthly
+        ) || 0
+      );
+    }
+  }
+  getTotalPayment() {
+    let subscriptionTotal = 0;
+    if (this.ifPackageisAditCore) {
+      subscriptionTotal = this.getSubscriptionTotalForMultipleLocations() * 12;
+    } else {
+      subscriptionTotal = this.isAnnually
+        ? this.getSubscriptionsTotal()
+        : this.getSubscriptionsTotalMonthly();
+    }
+
+    return this.paymentCalculator.getTotalPayment(
+      this.isAnnually,
+      this.ifPackageisAditCore,
+      this.multiple_location,
+      subscriptionTotal,
+      this.hardwarepurchasePrices,
+      this.extraharwarePrices,
+      this.hardware_TotalFor_Singlecoation,
+      this.activation_fee,
+      this.hardwareCreditAnnually,
+      this.hardwareCreditMonthly
+    );
+  }
+  showSameAddressPractice() {
+    this.sameAsPracticeAddress = !this.sameAsPracticeAddress;
+        this.cdr.detectChanges();
+  }
+  sameAddressForMultipleLocation: boolean[] = [];
+  showSameAddressPracticeForMultipleLocation(index: number) {
+    // Toggle the same address state for the specific location
+    this.sameAddressForMultipleLocation[index] =
+      !this.sameAddressForMultipleLocation[index];
+      console.log(this.sameAddressForMultipleLocation[index]);
+    // this.sameAsShippingAddress = !this.sameAsShippingAddress;
+  }
+
 }

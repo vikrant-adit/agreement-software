@@ -27,6 +27,9 @@ import { DatePipe } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import {MatDialogModule, MatDialog} from '@angular/material/dialog'
 import { SelectColumnDialogComponent } from './select-column-dialog/select-column-dialog.component';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -98,7 +101,7 @@ export class DashboardComponent {
     end: new FormControl<Date | null>(null),
   });
   availableColumns = [
-    { id: 'created_at', name: 'Date Requested', selected: false },
+    { id: 'created_at', name: 'Date Requested', selected: true },
     { id: 'sales_person_account_name', name: 'Sales Person Account Name', selected: true },
     { id: 'sales_person_name', name: 'Sales Person Name', selected: true },
     { id: 'multipleLocations', name: 'Multi Location', selected: true },
@@ -109,14 +112,20 @@ export class DashboardComponent {
     { id: 'sales_person_email', name: 'Sales Person Email', selected: true },
     { id: 'user_type', name: 'User Type', selected: true },
     { id: 'activation_fee', name: 'Activation Fee', selected: true },
-    { id: 'techMonthly', name: 'Tech Bundle Price (Monthly)', selected: true },
-    { id: 'techMonthly_Disc', name: 'Disc. Tech Bundle Price (Monthly)', selected: true },
-    { id: 'analyticMonthly', name: 'Analytic Bundle Price (Monthly)', selected: true },
-    { id: 'analyticMonthly_Disc', name: 'Disc. Analytic Bundle Price (Monthly)', selected: true },
-    { id: 'techAnnual', name: 'Tech Bundle Price (Annual)', selected: true },
-    { id: 'techAnnual_Disc', name: 'Disc. Tech Bundle Price (Annual)', selected: true },
-    { id: 'analyticAnnual', name: 'Analytic Bundle Price (Annual)', selected: true },
-    { id: 'analyticAnnual_Disc', name: 'Disc. Analytic Bundle Price (Annual)', selected: true },
+    { id: 'techMonthly', name: 'Tech Price (Monthly)', selected: true },
+    { id: 'techMonthly_Disc', name: 'Disc. Tech Price (Monthly)', selected: true },
+    { id: 'analyticMonthly', name: 'Analytic Price (Monthly)', selected: true },
+    { id: 'analyticMonthly_Disc', name: 'Disc. Analytic Price (Monthly)', selected: true },
+    { id: 'techAnnual', name: 'Tech Price (Annual)', selected: true },
+    { id: 'techAnnual_Disc', name: 'Disc. Tech Price (Annual)', selected: true },
+    { id: 'analyticAnnual', name: 'Analytic Price (Annual)', selected: true },
+    { id: 'analyticAnnual_Disc', name: 'Disc. Analytic Price (Annual)', selected: true },
+    { id: 'aditLiteMontly', name: 'Adit Lite Price (Monthly)', selected: true },
+    { id: 'aditLiteMontly_Disc', name: 'Disc. Adit Lite Price (monthly)', selected: true },
+    { id: 'aditLiteAnnual', name: 'Adit Lite Price (Annual)', selected: true },
+    { id: 'aditLiteAnnual_Disc', name: 'Disc. Adit Lite Price (Annual)', selected: true },
+    { id: 'aditCore_monthly', name: 'Adit Core Price (monthly)', selected: true },
+    { id: 'aditCore_annually', name: 'Adit Core Price (Annual)', selected: true },
     { id: 'status', name: 'Status', selected: true }
   ];
 
@@ -134,10 +143,30 @@ export class DashboardComponent {
         }
     })
     this.displayedColumns=[...col_array,'action']
+    localStorage.setItem('displayedColumns', JSON.stringify(this.displayedColumns));
 
   }
+
   ngOnInit() {
-    this.displayedColumns=[...this.displayedColumns,'action']
+    const storedColumns = localStorage.getItem('displayedColumns');
+    if (storedColumns) {
+      const displayedColumns = JSON.parse(storedColumns);
+
+      // Update availableColumns based on displayedColumns
+      this.availableColumns = this.availableColumns.map((col) => ({
+        ...col,
+        selected: displayedColumns.includes(col.id), // Set selected to true if the column is in displayedColumns
+      }));
+  
+      // Set displayedColumns to include only those stored in localStorage
+      this.displayedColumns = displayedColumns;
+    } else {
+      // Default columns if no stored columns are found
+      this.displayedColumns = this.availableColumns
+        .filter((col) => col.selected)
+        .map((col) => col.id);
+      this.displayedColumns = [...this.displayedColumns, 'action'];
+    }
     // Subscribe to the searchSubject to trigger search with debounce
     this.readDateRange();
     this.searchSubject
@@ -296,4 +325,41 @@ export class DashboardComponent {
       this.updateDisplayedColumns()
     });
   }
+
+
+  //edit dagreement
+  editAgreement(agreementId:any){
+      this.route.navigate(['/pre-agreement-form',agreementId]);
+  }
+  viewAgreement(agreementId:any){
+      this.route.navigate(['/view-agreement',agreementId]);
+  }
+
+  markExpireAgreement(agreementId: any): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to mark this agreement as expired?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, mark as expired!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Call the service to mark the agreement as expired
+        this.dashboardService.updateAgreementStatus(agreementId, 'Expired').subscribe({
+          next: (res) => {
+            Swal.fire('Marked as Expired!', 'The agreement has been marked as expired.', 'success');
+            console.log(res);
+            // Optionally refresh the data or update the UI
+            this.loadData(this.currentPage, this.pageSize, this.searchTerm, this.selected);
+          },
+          error: (err) => {
+            Swal.fire('Error!', 'Failed to mark the agreement as expired.', 'error');
+            console.error(err);
+          },
+        });
+      }
+    });
+  }
+  
 }

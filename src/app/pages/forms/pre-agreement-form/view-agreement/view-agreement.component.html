@@ -1,8 +1,9 @@
 <div class="container">
-  <app-header></app-header>
-  <button class="saveBtn" mat-flat-button type="button" (click)="saveForm()">
+  <button class="saveBtn" mat-flat-button type="button" (click)="onSubmit()">
     Save
   </button>
+  <app-header class="header"></app-header>
+ 
 
   <button class="edit" mat-flat-button type="button" (click)="editForm()">
     Edit
@@ -40,7 +41,8 @@
               <p class="gapNames" matTooltip="{{ column.toolTip }}">
                 <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
               </p>
-              }@else { @if(!expand){
+              }@else { 
+                @if(!expand){
               <p class="gapNames" style="opacity: 0.5">
                 <mat-icon style="color: var(--secondary-color)"
                   >check_circle_outline</mat-icon
@@ -74,15 +76,14 @@
               <p class="gapNames" matTooltip="{{ column.toolTip }}">
                 <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
               </p>
-              }@else {
-                 @if(!expand){
+              }@else { @if(!expand){
               <p class="gapNames" style="opacity: 0.5">
-                <mat-icon style="color: var(--secondary-color)">check_circle_outline</mat-icon>
+                <mat-icon style="color: var(--secondary-color)"
+                  >check_circle_outline</mat-icon
+                >
                 {{ column.text }}
               </p>
-              } 
-            } 
-          }
+              } } }
             </div>
           </div>
           <div class="batch">
@@ -107,23 +108,34 @@
     </div>
   </div>
   } 
+  <!-- -------------------------------------------------------------------- -->
   @if(multiple_location=='no'){ 
-    @if(whichPackageToShow){
-  <div class="card">
-    <app-choose-packages
-      [item]="whichPackageToShow"
-      [pricingArray]="pricingArray"
-      [annulaOrMonth]="isAnnually"
-      (totalAnnually)="onTotalAnnually($event)"
-      (totalMonthly)="onTotalMonthly($event)"
-      (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)">
-    </app-choose-packages>
-    <div class="btnClass">
-      <button mat-raised-button class="nextbtn" (click)="onNextClick(true)">Next</button>
-    </div>
-  </div>
-  } 
-}@else{
+      @if(whichPackageToShow){
+          <div class="card">
+            <app-choose-packages
+              [item]="whichPackageToShow"
+              [pricingArray]="pricingArray"
+              [annulaOrMonth]="isAnnually"
+              (totalAnnually)="onTotalAnnually($event,whichPackageToShow+' single')"
+              (totalMonthly)="onTotalMonthly($event)"
+              (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
+              (selectedPhone)="onSelectedPhone($event)"
+              (selectedAnalytics)="onSelectedAnalytics($event)"
+              (selectedVerification)="onSelectedVerification($event)"
+              (packageSelectedChange)="onPackageSelectedChange($event)">
+               
+
+            </app-choose-packages>
+            <div class="btnClass">
+              @if(totalAnnually>0){
+                <button mat-raised-button class="nextbtn" (click)="onNextClick(true)">
+                  Next
+                </button>
+              }
+            </div>
+          </div>
+          } 
+        }@else{
   <div class="card">
     <!-- <app-choose-packages
       #choosePackages
@@ -135,8 +147,45 @@
       (totalMonthly)="onTotalMonthly($event)"
       (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
     </app-choose-packages> -->
+    @if(ifPackageisAditCore){
+      <app-choose-packages
+      #choosePackages
+      [item]="whichPackageToShow"
+      [multiple_location]="multiple_location"
+      [pricingArray]="pricingArray"
+      [annulaOrMonth]="isAnnually"
+      (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
+      (totalAnnually)="onTotalAnnually($event,'aditcore')"
+      (totalMonthly)="onTotalMonthly($event)"
+      (selectedPhone_nvp)="onSelectedPhone_nvp($event)"
+      (selectedAnalytics_nvp)="onSelectedAnalytics_nvp($event)"
+      (selectedVerification_nvp)="onSelectedVerification_nvp($event)"
+      (phoneSelectedChange)="allActivePhone = $event"
+      (verificationSelectedChange)="allActiveVerification = $event"
+      (analyticsSelectedChange)="allActiveAnalytic = $event"
+      [phoneSelected]="allActivePhone"
+      [verificationSelected]="allActiveVerification"
+      [analyticsSelected]="allActiveAnalytic"
+      (packageSelectedChange)="onPackageSelectedChange($event)"
+    >
+    </app-choose-packages>
+    }@else {
+      <!-- <app-choose-packages
+      #choosePackages
+      [item]="whichPackageToShow"
+      [multiple_location]="multiple_location"
+      (totaltechAnnually)="onTotalTechAnnual($event)"
+      (totaltechMonthly)="ontotaltechMonthly($event)"
+      (totalanalyticAnnually)="ontotalanalyticAnnually($event)"
+      (totalanalyticMonthly)="ontotalanalyticMonthly($event)"
+      (totalAditLiteAnnually)="ontotalAditLiteAnnually($event)"
+      (totalAditLiteMonthly)="ontotalAditLiteMonthly($event)"
+      (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
+      (totalAnnually)="onTotalAnnually($event)"
+      (totalMonthly)="onTotalMonthly($event)"
+    >
+    </app-choose-packages> -->
     <app-choose-packages
-    #choosePackages
     [item]="whichPackageToShow"
     [multiple_location]="multiple_location"
     [pricingArray]="pricingArray"
@@ -145,13 +194,24 @@
     (totaltechMonthly)="ontotaltechMonthly($event)"
     (totalanalyticAnnually)="ontotalanalyticAnnually($event)"
     (totalanalyticMonthly)="ontotalanalyticMonthly($event)"
-    (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)">
+    (totalAditLiteAnnually)="ontotalAditLiteAnnually($event)"
+    (totalAditLiteMonthly)="ontotalAditLiteMonthly($event)"
+    (totalAnnually)="onTotalAnnually($event,'not adit core')"
+    (totalMonthly)="onTotalMonthly($event)"
+    (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
+    (selectedPhone)="onSelectedPhone($event)"
+    (selectedAnalytics)="onSelectedAnalytics($event)"
+    (selectedVerification)="onSelectedVerification($event)"
+    (packageSelectedChange)="onPackageSelectedChange($event)">
   </app-choose-packages>
-  <div class="btnClass">
-    <button mat-raised-button class="nextbtn" (click)="onNextClick(true)">Next</button>
+    }
+    <!-- <div class="btnClass">
+      <button mat-raised-button class="nextbtn" (click)="onNextClick(true)">
+        Next
+      </button>
+    </div> -->
   </div>
-  </div>
-
+<!-- -------------------------------------------------------------------- -->
   <div class="card about-practice">
     <h1>Step 1: Tell Us About Your Practice</h1>
     <p>
@@ -185,6 +245,7 @@
           <input
             type="text"
             [(ngModel)]="organization_poc_work_number"
+            appPhoneNumberFormatter
             matInput
           />
         </mat-form-field>
@@ -193,6 +254,7 @@
           <input
             type="text"
             [(ngModel)]="organization_poc_cell_number"
+            appPhoneNumberFormatter
             matInput
           />
         </mat-form-field>
@@ -208,21 +270,21 @@
           @if(i>0){
           <mat-icon (click)="removeLocation(i)">delete</mat-icon>
 
-          } Location {{ i + 1 }} : {{ location.get("locationName")?.value }}
+          } Location {{ i + 1 }} : {{ location.get("location_name")?.value }}
         </h2>
         }
         <div [formGroupName]="i">
           <div class="form-field">
             <mat-form-field class="field" appearance="fill">
               <mat-label>Practice Name</mat-label>
-              <input type="text" formControlName="parcticeName" matInput />
+              <input type="text" formControlName="practice_name" matInput />
             </mat-form-field>
           </div>
 
           <div class="form-field">
             <mat-form-field class="field" appearance="fill">
               <mat-label>Location Short Name (ex. Houston)</mat-label>
-              <input type="text" formControlName="locationName" matInput />
+              <input type="text" formControlName="location_name" matInput />
             </mat-form-field>
             <mat-form-field class="field" appearance="fill">
               <mat-label>Practice Address Line 1</mat-label>
@@ -259,9 +321,7 @@
                 <mat-option value="Colorado">Colorado</mat-option>
                 <mat-option value="Connecticut">Connecticut</mat-option>
                 <mat-option value="Delaware">Delaware</mat-option>
-                <mat-option value="District of Columbia"
-                  >District of Columbia</mat-option
-                >
+                <mat-option value="District of Columbia">District of Columbia</mat-option>
                 <mat-option value="Florida">Florida</mat-option>
                 <mat-option value="Georgia">Georgia</mat-option>
                 <mat-option value="Hawaii">Hawaii</mat-option>
@@ -329,6 +389,7 @@
                 type="text"
                 matInput
                 formControlName="practice_office_phone"
+                appPhoneNumberFormatter
               />
             </mat-form-field>
             <mat-form-field class="field" appearance="fill">
@@ -383,6 +444,7 @@
               <input
                 type="text"
                 formControlName="practice_poc_work_number"
+                appPhoneNumberFormatter
                 matInput
               />
             </mat-form-field>
@@ -390,7 +452,8 @@
               <mat-label>POC Cell Number</mat-label>
               <input
                 type="text"
-                formControlName="pracitce_poc_cell_number"
+                formControlName="practice_poc_cell_number"
+                appPhoneNumberFormatter
                 matInput
               />
             </mat-form-field>
@@ -411,100 +474,225 @@
       </button>
     </div>
   </div>
+
+<!-- -------------------------------------------------------------------- -->
+
   <div class="card multiple-card-pacakge-location">
     <div class="check-in-multiple-location">
-        <h1>Step 2: Choose a Package</h1>
-        <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
+      <h1>Step 2: Choose a Package</h1>
+      <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
     </div>
-    <app-choose-packages
-    [item]="whichPackageToShow"
-    [multiple_location]="multiple_location"
-    [pricingArray]="pricingArray"
-    [annulaOrMonth]="isAnnually"
-    (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)">
-
-    ></app-choose-packages>
+    @if(ifPackageisAditCore){
+      <app-choose-packages
+      [item]="whichPackageToShow"
+      [multiple_location]="multiple_location"
+      [pricingArray]="pricingArray"
+      [annulaOrMonth]="isAnnually"
+      [phoneSelected]="allActivePhone"
+      [verificationSelected]="allActiveVerification"
+      [analyticsSelected]="allActiveAnalytic"
+      (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
+      (selectedPhone)="onSelectedPhone($event)"
+      (selectedAnalytics)="onSelectedAnalytics($event)"
+      (selectedVerification)="onSelectedVerification($event)"
+      (phoneSelectedChange)="allActivePhone = $event"
+      (verificationSelectedChange)="allActiveVerification = $event"
+      (analyticsSelectedChange)="allActiveAnalytic = $event"
+      (verificationsNVPSelectedChange)="verificationsNVPSelectedChange=$event"
+      (pozativeSelectedChange)="pozativeSelectedChange=$event"
+      ></app-choose-packages>
+    }@else {
+      <app-choose-packages
+      [item]="whichPackageToShow"
+      [multiple_location]="multiple_location"
+      [pricingArray]="pricingArray"
+      [annulaOrMonth]="isAnnually"
+      (totaltechAnnually)="onTotalTechAnnual($event)"
+      (totaltechMonthly)="ontotaltechMonthly($event)"
+      (totalanalyticAnnually)="ontotalanalyticAnnually($event)"
+      (totalanalyticMonthly)="ontotalanalyticMonthly($event)"
+      (totalAditLiteAnnually)="ontotalAditLiteAnnually($event)"
+      (totalAditLiteMonthly)="ontotalAditLiteMonthly($event)"
+      (totalAnnually)="onTotalAnnually($event,'not adit core,call second')"
+      (totalMonthly)="onTotalMonthly($event)"
+      (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
+      (selectedPhone)="onSelectedPhone($event)"
+      (selectedAnalytics)="onSelectedAnalytics($event)"
+      (selectedVerification)="onSelectedVerification($event)"
+      (packageSelectedChange)="onPackageSelectedChange($event)">
+    </app-choose-packages>
+    }
+    
     <mat-divider></mat-divider>
-    <table>
-      <thead>
-        <tr>
-          <th>Location</th>
-          <th>Package</th>
-          <th>Add-On</th>
-          <th>Activation Fee</th>
-          <th>Hardware Credit</th>
-          <th>First Payment Due</th>
-          <th>Next Payment Due</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- @for(location of locations.controls;track location; let i = $index){
-        <tr>
-          <td>{{ location.get("locationName")?.value }}</td>
-          <td>
-            <select (change)="onPackageChange($event)">
-              <option value="select">select package</option>
-              <option value="tech">Tech Bundle</option>
-              <option value="analytic">Analytic Bundle</option>
-            </select>
-          </td>
-          <td>
-            <mat-icon>settings_phone</mat-icon> 
-            <mat-icon>analytics</mat-icon>
-          </td>
-          <td>{{ activation_fee }}</td>
-          <td>+750</td>
-          <td>{{isAnnually?'Today $'+subscriptionPlan_annually * 12:'Today $0'}}</td>
-          <td>{{isAnnually?'May 9, 2026 -- $'+subscriptionPlan_annually * 12:'May 9, 2025 -- $'+subscriptionPlan_monthly}}</td>
-        </tr>
-        } -->
-        @for(location of locations.controls; track location; let i = $index) {
+    @if(ifPackageisAditCore){
+      <table>
+        <thead>
           <tr>
-            <td>{{ location.get("locationName")?.value }}</td>
+            <th>Location</th>
+            <th>Add-On</th>
+            <th>Activation Fee</th>
+            <th>Hardware Credit</th>
+            <th>First Payment Due</th>
+            <th>Next Payment Due</th>
+          </tr>
+        </thead>
+        <tbody>
+  
+          @for(location of locations.controls; track location; let i = $index) {
+          <tr>
+            <td>{{ location.get("location_name")?.value }}</td>
+            @if(verificationsNVPSelectedChange){
+              <td style="display: flex; gap: 0.5rem;">
+                <button
+                  mat-icon-button
+                  [class.verification_active_icon]="true"
+                  (click)="toggleIconState(i, 'phoneActive')">
+                  <mat-icon>price_check</mat-icon>
+                </button>
+                </td>
+            }@else if(pozativeSelectedChange){
+              <td style="display: flex; gap: 0.5rem;">
+                <button
+                  mat-icon-button
+                  style="background-color: rgb(255, 218, 83); color: white;"
+                  (click)="toggleIconState(i, 'phoneActive')">
+                  <mat-icon>stars</mat-icon>
+                </button>
+                </td>
+            }@else{
+              <td style="display: flex; gap: 0.5rem;">
+                @if(iconStates && iconStates[i]) {
+                  <button
+                    mat-icon-button
+                    [class.phone_active_icon]="iconStates[i].phoneActive"
+                    (click)="toggleIconState(i, 'phoneActive')">
+                    <mat-icon>settings_phone</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    [class.analytic_active_icon]="iconStates[i].analyticActive"
+                    (click)="toggleIconState(i, 'analyticActive')">
+                    <mat-icon>analytics</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    [class.verification_active_icon]="iconStates[i].verificationActive"
+                    (click)="toggleIconState(i, 'verificationActive')">
+                    <mat-icon>price_check</mat-icon>
+                  </button>
+                }
+              </td>
+            }
+            <td>{{"$"+ activation_fee }}</td>
             <td>
-              <select (change)="onPackageChange($event, i)">
-                <option value="select">select package</option>
-                <option value="tech">Tech Bundle</option>
-                <option value="analytic">Analytic Bundle</option>
-              </select>
+              ${{ isAnnually ? hardwareCreditAnnually || 0 : hardwareCreditMonthly || 0 }}
             </td>
-            <td>
-              <mat-icon>settings_phone</mat-icon>
-              <mat-icon>analytics</mat-icon>
-            </td>
-            <td>{{ activation_fee }}</td>
-            <td>${{isAnnually?hardwareCreditAnnually:hardwareCreditMonthly}}</td>
             <td>
               {{
                 isAnnually
-                  ? 'Today $' + (subscriptionPlans[i]?.annually || 0) * 12
-                  : 'Today $' +  0
+                  ? "Today $" + (calculateLocationTotal(i) + convertStringToNumber(activation_fee))
+                  : "Today $" + activation_fee || 0
               }}
             </td>
             <td>
               {{
                 isAnnually
-                  ? 'May 9, 2026 -- $' + (subscriptionPlans[i]?.annually || 0) * 12
-                  : 'May 9, 2025 -- $' + (subscriptionPlans[i]?.monthly || 0)
+                  ? getNextPaymentDate() + " -- $" + calculateLocationTotal(i)*12
+                  : getNextPaymentDate() + " -- $" + calculateLocationTotalForMonthly(i)
               }}
             </td>
           </tr>
           }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    }@else{
+      <table>
+        <thead>
+          <tr>
+            <th>Location</th>
+            @if(!ifPackageAditLite){
+              <th>Package</th>
+            }
+            <th>Activation Fee</th>
+            <th>Hardware Credit</th>
+            <th>First Payment Due</th>
+            <th>Next Payment Due</th>
+          </tr>
+        </thead>
+        <tbody>
+  
+          @for(location of locations.controls; track location; let i = $index) {
+          <tr>
+            <td>{{ location.get("location_name")?.value }}</td>
+              @if(!ifPackageAditLite){
+                <td>
+                  <select (change)="onPackageChange($event, i)">
+                    <option value="select">Select Package</option>
+                    @for(package of dynamicPackages;track package){
+                      <option [value]="package.value">
+                        {{ package.label }}
+                      </option> 
+                    }
+                  </select>
+                </td>
+              }
+            <td>{{ activation_fee }}</td>
+            <td>
+              ${{ isAnnually ? hardwareCreditAnnually ||0 : hardwareCreditMonthly||0 }}
+            </td>
+            @if(!ifPackageAditLite){
+              <td>
+                {{
+                  isAnnually
+                    ? "Today $" + (subscriptionPlans[i]?.annually || 0) * 12
+                    : "Today $" + 0
+                }}
+              </td>
+            }@else {
+              <td>
+                {{
+                  isAnnually
+                    ? "Today $" + (subscriptionPriceAnnually || 0) * 12
+                    : "Today $" + 0
+                }}
+              </td>
+            }
+         
+            <td>
+              @if(!ifPackageAditLite){
+                {{
+                  isAnnually
+                    ? getNextPaymentDate() + " -- $" + (subscriptionPlans[i]?.annually || 0) * 12
+                    : getNextPaymentDate() + " -- $" + (subscriptionPlans[i]?.monthly || 0)
+                }}
+              }@else {
+                {{
+                  isAnnually
+                    ? "Today $" + (subscriptionPriceAnnually || 0) * 12
+                    : "Today $" + (subscriptionPriceMonthly || 0)
+                }}
+              }
+              
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    }
+  
     <div class="btnClass">
-      <button mat-raised-button class="nextbtn" (click)="onNextClick(true)">Next</button>
+      <button mat-raised-button class="nextbtn" type="button" (click)="onNextClick(true)">
+        Next
+      </button>
     </div>
   </div>
-  }
-  @if(multiple_location=='yes'){
-    <div class="card  hardware-multiple">
+  } @if(multiple_location=='yes'){
+  <div class="card hardware-multiple">
     <h1>Step 3: Select Your Hardware</h1>
     <div class="phone hardware">
       <div class="phone-context">
-      
-        <div class="phones-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
-          <div class="phone-content" [class.active-content]="counts[0] > 0">
+        <div class="phones-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr">
+          <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone"  [class.active-content]="counts[0] > 2">
             <img
               src="https://demo.enfolytics.com/assets/images/grandstream-grp-2616.png"
               alt=""
@@ -517,7 +705,7 @@
             >
           </div>
 
-          <div class="phone-content" [class.active-content]="counts[1] > 0">
+          <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone" [class.active-content]="counts[1] > 0">
             <img
               src="https://demo.enfolytics.com/assets/images/grandstream-grp-2613.png"
               alt=""
@@ -530,7 +718,7 @@
             >
           </div>
 
-          <div class="phone-content" [class.active-content]="counts[2] > 0">
+          <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone" [class.active-content]="counts[2] > 0">
             <img
               src="https://demo.enfolytics.com/assets/images/grandstream-dp-720.png"
               alt=""
@@ -538,11 +726,11 @@
             <p class="phone-name">Grandstream <strong> DP 720</strong></p>
             <span class="price">$100</span>
             <span class="description"
-              >Best for staff who are constantly on their feet and handle
-              less than 10 calls per day.</span
+              >Best for staff who are constantly on their feet and handle less
+              than 10 calls per day.</span
             >
           </div>
-          <div class="phone-content" [class.active-content]="counts[3] > 0">
+          <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone" [class.active-content]="counts[3] > 0">
             <img
               src="https://demo.enfolytics.com/assets/images/grp-2616-wall-mount.png"
               alt=""
@@ -550,7 +738,7 @@
             <p class="phone-name">GRP 2616 Wall Mount</p>
             <span class="price">$10</span>
           </div>
-          <div class="phone-content" [class.active-content]="counts[4] > 0">
+          <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone" [class.active-content]="counts[4] > 0">
             <img
               src="https://demo.enfolytics.com/assets/images/grp-2613-wall-mount.png"
               alt=""
@@ -558,7 +746,7 @@
             <p class="phone-name">GRP 2613 Wall Mount</p>
             <span class="price">$10</span>
           </div>
-          <div class="phone-content" [class.active-content]="counts[5] > 0">
+          <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone" [class.active-content]="counts[5] > 0">
             <img
               src="https://demo.enfolytics.com/assets/images/headset-adapter.png"
               alt=""
@@ -566,156 +754,163 @@
             <p class="phone-name">Headset + Adapter</p>
             <span class="price">$275</span>
           </div>
-       
-    
-  
-        <div
-          class="phone-content"
-          [class.active-content]="counts[6] > 0"
-        >
-          <img
-            src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e.png"
-            alt=""
-          />
-          <p class="sub">Stripe</p>
-          <p class="phone-name">BBPOS WisePOS E</p>
-          <span class="price">$250</span>
-      
-        </div>
-        <div
-          class="phone-content"
-          [class.active-content]="counts[7] > 0"
-        >
-          <img
-            src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e-dock.png"
-            alt=""
-          />
-          <p class="sub">Stripe</p>
-          <p class="terminal-name">BBPOS WisePOS E Dock</p>
-          <span class="price">$49</span>
-        </div>
-      </div>
-      <span class="info">
-        <mat-icon>info</mat-icon>To ensure optimal phone experience, we
-        require all customers who opt for hard phones to purchase at least
-        two 2616s.
-      </span>
-    </div>
-  </div>
 
-      
-      <!-- } -->
-   
-    <table>
-      <thead>
-        <tr>
-          <th>Location</th>
-          <th>Purchase Phones?</th>
-          <th>Payment Terminal?</th>
-          <th>GRP 2616</th>
-          <th>GRP 2613</th>
-          <th>DP 720</th>
-          <th>GRP 2616 Wall Mount</th>
-          <th>GRP 2613 Wall Mount</th>
-          <th>Headset + Adapter</th>
-          <th>BBPOS WisePOS E</th>
-          <th>Term Do</th>
-          <th>Hardware Credit Used / Credit</th>
-          <th>Total Hardware Cost</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for(location of locations.controls;track location; let i = $index){
-        <tr>
-          <!-- <td>{{ location.get("locationName")?.value }}</td> -->
-          <td>{{ i }}</td>
-          <td>
-            <input
+          <div class="phone-content"  [class.active-content]="counts[6] > 0">
+            <img
+              src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e.png"
+              alt=""
+            />
+            <p class="sub">Stripe</p>
+            <p class="phone-name">BBPOS WisePOS E</p>
+            <span class="price">$250</span>
+          </div>
+          <div class="phone-content"  [class.active-content]="counts[7] > 0">
+            <img
+              src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e-dock.png"
+              alt=""
+            />
+            <p class="sub">Stripe</p>
+            <p class="terminal-name">BBPOS WisePOS E Dock</p>
+            <span class="price">$49</span>
+          </div>
+        </div>
+        <span class="info">
+          <mat-icon>info</mat-icon>To ensure optimal phone experience, we
+          require all customers who opt for hard phones to purchase at least two
+          2616s.
+        </span>
+      </div>
+    </div>
+
+    <!-- } -->
+@if(showTable){
+  <table>
+    <thead>
+      <tr>
+        <th>Location</th>
+        <th>Purchase Phones?</th>
+        <th>Payment Terminal?</th>
+        <th>GRP 2616</th>
+        <th>GRP 2613</th>
+        <th>DP 720</th>
+        <th>GRP 2616 Wall Mount</th>
+        <th>GRP 2613 Wall Mount</th>
+        <th>Headset + Adapter</th>
+        <th>BBPOS WisePOS E</th>
+        <th>Term Do</th>
+        <th>Hardware Credit Used / Credit</th>
+        <th>Total Hardware Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for(location of locations.controls;track location; let i = $index){
+      <tr>
+        <td>{{ location.get("location_name")?.value }}</td>
+        <td>
+          @if(!disablePhones){
+            @if(iconStates[i].phoneActive){
+              <input
               type="checkbox"
               [checked]="purchasePhones[i]"
               class="hidden-checkbox"
             />
-            <div [class.checked]="purchasePhones[i]" (click)="purchasePhones[i]=!purchasePhones[i]"  class="custom-checkbox">
+            <div
+              [class.checked]="purchasePhones[i]"
+              (click)="purchasePhones[i] = !purchasePhones[i]"
+              (click)="activatePricingForharware()"
+              class="custom-checkbox">
               {{ purchasePhones[i] ? "✓" : "" }}
             </div>
-          </td>
-          <td>
-            <input
-              type="checkbox"
-              [checked]="purchaseTerminals[i]"
-              class="hidden-checkbox"
-              
-            />
-            <div [class.checked]="purchaseTerminals[i]" (click)="purchaseTerminals[i]=!purchaseTerminals[i]" class="custom-checkbox">
-              {{ purchaseTerminals[i] ? "✓" : "" }}
-            </div>
-          </td>
-          @for(hardware of hardwarePrices; track hardware; let j = $index) {
-            @if(j < 6) { <!-- First 6 columns for phones -->
-              @if(purchasePhones[i]){
-              <td >
-                <div class="counters-multiple-hardware-table">
-                  <button (click)="decrement_forMultiple(i, j)">−</button>
-                  <span>{{ hardware_counts[i][j].count }}</span>
-                  <button (click)="increment_forMultiple(i, j)">+</button>
-                </div>
-              </td>
-              @if(!purchasePhones[i]){
-              <td style="background-color: rgb(227, 227, 227); padding:10px; min-width:4rem">
-                --
-              </td>
             }
-            }
-            }
-            @if(j >= 6) { <!-- Last 2 columns for terminals -->
-              @if(purchaseTerminals[i]){
-              <td >
-                <div class="counters-multiple-hardware-table">
-                  <button (click)="decrement_forMultiple(i, j)">−</button>
-                  <span>{{ hardware_counts[i][j].count }}</span>
-                  <button (click)="increment_forMultiple(i, j)">+</button>
-                </div>
-              </td>
-              @if(!purchaseTerminals[i]){
-                <td style="background-color: rgb(227, 227, 227); padding:10px; min-width:4rem">
-                  --
-                </td>
-              }
-             
-            }
-            }
-            <!-- @if(!purchasePhones[i]){
-              <td style="background-color: rgb(227, 227, 227); padding:10px; min-width:4rem">
-                --
-              </td>
-            } -->
-            <!-- @if(!purchaseTerminals[i]){
-              <td style="background-color: rgb(227, 227, 227); padding:10px; min-width:4rem">
-                --
-              </td>
-            } -->
+          
           }
-          <td class="money">${{hardwarepurchasePrices[i]||0}} / ${{isAnnually?hardwareCreditAnnually:hardwareCreditMonthly}}</td>
-          <td class="money">  ${{ extraharwarePrices[i] || 0 }}</td>
-        </tr>
-        }
-        <tr>
-          <td>Total</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td  style="text-align: right;">${{ calculateTotalHardwarePrice() }}</td>
-        </tr>
-      </tbody>
-    </table>
+        </td>
+        <td>
+          <input
+            type="checkbox"
+            [checked]="purchaseTerminals[i]"
+            class="hidden-checkbox"
+          />
+          <div
+            [class.checked]="purchaseTerminals[i]"
+            (click)="purchaseTerminals[i] = !purchaseTerminals[i]"
+            class="custom-checkbox"
+          >
+            {{ purchaseTerminals[i] ? "✓" : "" }}
+          </div>
+        </td>
+        @for(hardware of hardwarePrices; track $index; let j = $index) {
+        @if(j < 6) { @if(purchasePhones[i]){
+        <td>
+          <div class="counters-multiple-hardware-table">
+            <button (click)="decrement_forMultiple(i, j)">−</button>
+            <span>{{ hardware_counts[i][j].count }}</span>
+            <button (click)="increment_forMultiple(i, j)">+</button>
+          </div>
+        </td>
+
+        }@else {
+
+        <td
+          style="
+            background-color: rgb(227, 227, 227);
+            padding: 10px;
+            min-width: 4rem;
+          "
+        >
+          --
+        </td>
+
+        } } @if(j >= 6) { @if(purchaseTerminals[i]){
+        <td>
+          <div class="counters-multiple-hardware-table">
+            <button (click)="decrement_forMultiple(i, j)">−</button>
+            <span>{{ hardware_counts[i][j].count }}</span>
+            <button (click)="increment_forMultiple(i, j)">+</button>
+          </div>
+        </td>
+
+        }@else {
+        <td
+          style="
+            background-color: rgb(227, 227, 227);
+            padding: 10px;
+            min-width: 4rem;">
+          --
+        </td>
+        } } }
+        <td class="money">
+          @if(purchasePhones[i] || purchaseTerminals[i]){
+             ${{ getHardwarePriceInTable(i) || 0 }} 
+            }@else{
+              0
+            }
+               / ${{getHardwareCreditDisplay(i)}}
+        </td>
+        <td class="money">${{ extraharwarePrices[i] || 0 }}</td>
+      </tr>
+      }
+      <tr>
+        <td>Total</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-align: right">
+          ${{ calculateTotalHardwarePrice() }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+}
+    
     <div class="terms">
       <input
         class="checkBox"
@@ -724,21 +919,122 @@
         matTooltip="Please accepet these terms to continuse"
       />
       <span>
-        I understand that our practice needs to have an ethernet outlet available at every location where a phone needs to be installed.
+        I understand that our practice needs to have an ethernet outlet
+        available at every location where a phone needs to be installed.
       </span>
     </div>
-   <div>
-    <p class="refund">
-      <span>Phone Refund Policy:</span>  Please keep the original packaging for at least 90 days in the event of refunds/exchanges. Phones without original packaging and/or are damaged will not be refunded/exchanged. Phone accessories (i.e. wall mounts) are not refundable. You can read more about our return policy at www.adit.com/return-policy.
-    </p>
-    <p class="refund">
-      <span>Terminal Return Policy:</span> Please note that you will be receiving your terminals and docks selected from our vendor Stripe. All terminal sales with Stripe are non-refundable after 30 days from when you receive the shipment.
-    </p>
-   </div>
-    <div class="btnClass">
-      <button mat-raised-button class="nextbtn">Next</button>
+    <div>
+      <p class="refund">
+        <span>Phone Refund Policy:</span> Please keep the original packaging for
+        at least 90 days in the event of refunds/exchanges. Phones without
+        original packaging and/or are damaged will not be refunded/exchanged.
+        Phone accessories (i.e. wall mounts) are not refundable. You can read
+        more about our return policy at www.adit.com/return-policy.
+      </p>
+      <p class="refund">
+        <span>Terminal Return Policy:</span> Please note that you will be
+        receiving your terminals and docks selected from our vendor Stripe. All
+        terminal sales with Stripe are non-refundable after 30 days from when
+        you receive the shipment.
+      </p>
     </div>
+    <div class="shipping-address-container">
+      <h3>Where would you like your hardware shipped?</h3>
+      @if(multiple_location!='yes'){
+      <div style="display: flex;">
+        <input
+        type="checkbox"
+        [checked]="!sameAsPracticeAddress"
+        (click)="showSameAddressPractice()"
+        style="accent-color: var(--primary-color);"/>
+          Shipping address same as practice address
+      </div>
+      }
+      @if(sameAsPracticeAddress || multiple_location=='yes'){
+        <form [formGroup]="shippingAddressForm">
+            <div formArrayName="shippingAddress">
+              @for(shipping of shippingAddress.controls; track shipping; let i = $index){
 
+              <div [formGroupName]="i">
+                @if(multiple_location=='yes'){
+                 <h2> Shipping Address {{ i + 1 }}</h2>
+                 <div style="display: flex;">
+                  <input
+                  type="checkbox"
+                  [checked]="!sameAddressForMultipleLocation[i]"
+                  (click)="showSameAddressPracticeForMultipleLocation(i)"
+                  style="accent-color: var(--primary-color);"/>
+                    Shipping address same as practice address
+                </div>
+                }
+               @if (!sameAddressForMultipleLocation[i]) {
+                <div class="form-row">
+                  <mat-form-field appearance="fill" class="form-field">
+                    <mat-label>Shipping Address Line 1</mat-label>
+                    <input matInput formControlName="	address_line_1" placeholder="Enter a Shipping Address" />
+                    @if(shippingAddressForm.get('address_line_1')?.invalid){
+                      <mat-error>Enter a Shipping Address</mat-error>
+                    }
+                  </mat-form-field>
+            
+                  <mat-form-field appearance="fill" class="form-field">
+                    <mat-label>Shipping Address Line 2</mat-label>
+                    <input matInput formControlName="address_line_2" placeholder="Enter a Shipping Address (Optional)" />
+                  </mat-form-field>
+                </div>
+            
+                <div class="form-row">
+                  <mat-form-field appearance="fill" class="form-field">
+                    <mat-label>City*</mat-label>
+                    <input matInput formControlName="city" placeholder="Enter a City" />
+                    @if(shipping.get('city')?.invalid){
+                      <mat-error>Enter a City</mat-error>
+                    }
+                  </mat-form-field>
+                    
+                  <mat-form-field appearance="fill" class="form-field">
+                    <mat-label>State/Region/Province</mat-label>
+                    <input matInput formControlName="state" placeholder="Enter a State" />
+                    @if(shipping.get('state')?.invalid){
+                      <mat-error>Enter a State</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+            
+                <div class="form-row">
+                  <mat-form-field appearance="fill" class="form-field">
+                    <mat-label>Postal / Zip Code</mat-label>
+                    <input matInput formControlName="postalCode" placeholder="Enter a valid Zip Code" />
+                    @if(shipping.get('postalCode')?.invalid){
+                      <mat-error>Enter a valid Zip Code</mat-error>
+                    }
+                  </mat-form-field>
+            
+                  <mat-form-field appearance="fill" class="form-field">
+                    <mat-label>Country</mat-label>
+                    <mat-select formControlName="country" placeholder="Select a Country">
+                      <mat-option value="United States">United States</mat-option>
+                      <mat-option value="Canada">Canada</mat-option>
+                    </mat-select>
+                    @if(shipping.get('country')?.invalid){
+                      <mat-error>Select a Country</mat-error>
+                    }
+                  </mat-form-field>
+                </div>
+               }
+
+        </div>
+       
+      }
+      </div>
+    </form>
+  }
+    </div>
+    <div class="btnClass">
+      <button mat-raised-button class="nextbtn" (click)="goNextToReview()">
+        Next
+      </button>
+    </div>
   </div>
   }
   <div class="multiple-card">
@@ -747,638 +1043,1021 @@
       <div class="card">
         <h1>Step 2: Select Your Hardware</h1>
         @if(expandHardware){
-          <div class="phone hardware">
-            <p>Would you like to use physical phones?*</p>
-            <div class="toggle-container">
-              <button
-                [class]="{ active: selectPhone===true }"
-                (click)="selectPhone = true"
-                class="toggle-btn"
-              >
-                Yes
-              </button>
-              <button
-                [class]="{ active: selectPhone===false}"
-                (click)="selectPhone = false"
-                class="toggle-btn"
-              >
-                No
-              </button>
-            </div>
-            @if(selectPhone){
-            <div class="phone-context">
-              <span class="info">
-                <mat-icon>info</mat-icon>To ensure optimal phone experience, we
-                require all customers who opt for hard phones to purchase at least
-                two 2616s.
-              </span>
-              <div class="phones-grid">
-                <div class="phone-content" [class.active-content]="counts[0] > 0">
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/grandstream-grp-2616.png"
-                    alt=""
-                  />
-                  <p class="phone-name">Grandstream <strong> GRP 2616</strong></p>
-                  <span class="price">$150</span>
-                  <span class="description"
-                    >Best for workstations handling more than 10 calls per day.
-                    (Recommended for front desk, call centers, etc.)</span
+          @if(whichPackageToShow!="Only Lite - 1st Yr Promo"){
+            @if(showSelection_of_phone){
+              <div class="phone hardware">
+                <p>Would you like to use physical phones?*</p>
+                <div class="toggle-container">
+                  <button
+                    [class]="{ active: selectPhone === true }"
+                    (click)="selectPhone = true"
+                    (click)="calculateTotalPrice()"
+                    class="toggle-btn"
                   >
-                  <div class="counter-container">
-                    <button (click)="decrement(0)">−</button>
-                    <span>{{ counts[0] }}</span>
-                    <button (click)="increment(0)">+</button>
-                  </div>
+                    Yes
+                  </button>
+                  <button
+                    [class]="{ active: selectPhone === false }"
+                    (click)="selectPhone = false"
+                    (click)="removeValue_of_hardware()"
+                    class="toggle-btn">
+                    No
+                  </button>
                 </div>
-  
-                <div class="phone-content" [class.active-content]="counts[1] > 0">
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/grandstream-grp-2613.png"
-                    alt=""
-                  />
-                  <p class="phone-name">Grandstream <strong> GRP 2613</strong></p>
-                  <span class="price">$100</span>
-                  <span class="description"
-                    >Best for workstations handling less than 10 calls per day.
-                    (Typically in Operatories and Hallways)</span
-                  >
-                  <div class="counter-container">
-                    <button (click)="decrement(1)">−</button>
-                    <span>{{ counts[1] }}</span>
-                    <button (click)="increment(1)">+</button>
+                @if(selectPhone){
+                <div class="phone-context">
+                  <span class="info">
+                    <mat-icon>info</mat-icon>To ensure optimal phone experience, we
+                    require all customers who opt for hard phones to purchase at least
+                    two 2616s.
+                  </span>
+                  <div class="phones-grid">
+                    <div class="phone-content" [class.active-content]="counts_for_phone[0] > 0">
+                      <img
+                        src="https://demo.enfolytics.com/assets/images/grandstream-grp-2616.png"
+                        alt=""
+                      />
+                      <p class="phone-name">Grandstream <strong> GRP 2616</strong></p>
+                      <span class="price">$150</span>
+                      <span class="description"
+                        >Best for workstations handling more than 10 calls per day.
+                        (Recommended for front desk, call centers, etc.)</span
+                      >
+                      <div class="counter-container">
+                        <button (click)="decrement(0,true)">−</button>
+                        <span>{{ counts_for_phone[0] }}</span>
+                        <button (click)="increment(0,true)">+</button>
+                      </div>
+                    </div>
+      
+                    <div class="phone-content" [class.active-content]="counts_for_phone[1] > 0">
+                      <img
+                        src="https://demo.enfolytics.com/assets/images/grandstream-grp-2613.png"
+                        alt=""
+                      />
+                      <p class="phone-name">Grandstream <strong> GRP 2613</strong></p>
+                      <span class="price">$100</span>
+                      <span class="description"
+                        >Best for workstations handling less than 10 calls per day.
+                        (Typically in Operatories and Hallways)</span
+                      >
+                      <div class="counter-container">
+                        <button (click)="decrement(1,true)">−</button>
+                        <span>{{ counts_for_phone[1] }}</span>
+                        <button (click)="increment(1,true)">+</button>
+                      </div>
+                    </div>
+      
+                    <div class="phone-content" [class.active-content]="counts_for_phone[2] > 0">
+                      <img
+                        src="https://demo.enfolytics.com/assets/images/grandstream-dp-720.png"
+                        alt=""
+                      />
+                      <p class="phone-name">Grandstream <strong> DP 720</strong></p>
+                      <span class="price">$100</span>
+                      <span class="description"
+                        >Best for staff who are constantly on their feet and handle
+                        less than 10 calls per day.</span
+                      >
+                      <div class="counter-container">
+                        <button (click)="decrement(2,true)">−</button>
+                        <span>{{ counts_for_phone[2] }}</span>
+                        <button (click)="increment(2,true)">+</button>
+                      </div>
+                    </div>
+                    <div class="phone-content" [class.active-content]="counts_for_phone[3] > 0">
+                      <img
+                        src="https://demo.enfolytics.com/assets/images/grp-2616-wall-mount.png"
+                        alt=""
+                      />
+                      <p class="phone-name">GRP 2616 Wall Mount</p>
+                      <span class="price">$10</span>
+                      <div class="counter-container">
+                        <button (click)="decrement(3,true)">−</button>
+                        <span>{{ counts_for_phone[3] }}</span>
+                        <button (click)="increment(3,true)">+</button>
+                      </div>
+                    </div>
+                    <div class="phone-content" [class.active-content]="counts_for_phone[4] > 0">
+                      <img
+                        src="https://demo.enfolytics.com/assets/images/grp-2613-wall-mount.png"
+                        alt=""
+                      />
+                      <p class="phone-name">GRP 2613 Wall Mount</p>
+                      <span class="price">$10</span>
+                      <div class="counter-container">
+                        <button (click)="decrement(4,true)">−</button>
+                        <span>{{ counts_for_phone[4] }}</span>
+                        <button (click)="increment(4,true)">+</button>
+                      </div>
+                    </div>
+                    <div class="phone-content" [class.active-content]="counts_for_phone[5] > 0">
+                      <img
+                        src="https://demo.enfolytics.com/assets/images/headset-adapter.png"
+                        alt=""
+                      />
+                      <p class="phone-name">Headset + Adapter</p>
+                      <span class="price">$275</span>
+                      <div class="counter-container">
+                        <button (click)="decrement(5,true)">−</button>
+                        <span>{{ counts_for_phone[5] }}</span>
+                        <button (click)="increment(5,true)">+</button>
+                      </div>
+                    </div>
                   </div>
+                  <span class="terms">
+                    <input class="checkBox" [checked]="checkConditionForHardware" (click)="checkConditionForHardware=!checkConditionForHardware" type="checkbox" /><span
+                      >I understand that our practice needs to have an ethernet outlet
+                      available at every location where a phone needs to be
+                      installed.</span
+                    >
+                  </span>
                 </div>
-  
-                <div class="phone-content" [class.active-content]="counts[2] > 0">
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/grandstream-dp-720.png"
-                    alt=""
-                  />
-                  <p class="phone-name">Grandstream <strong> DP 720</strong></p>
-                  <span class="price">$100</span>
-                  <span class="description"
-                    >Best for staff who are constantly on their feet and handle
-                    less than 10 calls per day.</span
-                  >
-                  <div class="counter-container">
-                    <button (click)="decrement(2)">−</button>
-                    <span>{{ counts[2] }}</span>
-                    <button (click)="increment(2)">+</button>
-                  </div>
-                </div>
-                <div class="phone-content" [class.active-content]="counts[3] > 0">
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/grp-2616-wall-mount.png"
-                    alt=""
-                  />
-                  <p class="phone-name">GRP 2616 Wall Mount</p>
-                  <span class="price">$10</span>
-                  <div class="counter-container">
-                    <button (click)="decrement(3)">−</button>
-                    <span>{{ counts[3] }}</span>
-                    <button (click)="increment(3)">+</button>
-                  </div>
-                </div>
-                <div class="phone-content" [class.active-content]="counts[4] > 0">
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/grp-2613-wall-mount.png"
-                    alt=""
-                  />
-                  <p class="phone-name">GRP 2613 Wall Mount</p>
-                  <span class="price">$10</span>
-                  <div class="counter-container">
-                    <button (click)="decrement(4)">−</button>
-                    <span>{{ counts[4] }}</span>
-                    <button (click)="increment(4)">+</button>
-                  </div>
-                </div>
-                <div class="phone-content" [class.active-content]="counts[5] > 0">
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/headset-adapter.png"
-                    alt=""
-                  />
-                  <p class="phone-name">Headset + Adapter</p>
-                  <span class="price">$275</span>
-                  <div class="counter-container">
-                    <button (click)="decrement(5)">−</button>
-                    <span>{{ counts[5] }}</span>
-                    <button (click)="increment(5)">+</button>
-                  </div>
-                </div>
+                }
               </div>
-              <span class="terms">
-                <input class="checkBox" type="checkbox" /><span
-                  >I understand that our practice needs to have an ethernet outlet
-                  available at every location where a phone needs to be
-                  installed.</span
-                >
-              </span>
-            </div>
             }
-          </div>
-          <div class="terminals hardware">
-            <p>Would you like to purchase payment terminals?*</p>
-              <div class="toggle-container">
-              <button
-                [class]="{ active: selectTerminal === true }"
-                (click)="selectTerminal = true"
-                class="toggle-btn"
-              >
-                Yes
-              </button>
-              <button
-                [class]="{ active: selectTerminal === false }"
-                (click)="selectTerminal = false"
-                class="toggle-btn"
-              >
-                No
-              </button>
-              </div>
-            @if(selectTerminal){
-            <div class="terminal-context">
-              <div class="terminal-grid">
-                <div
-                  class="terminal-content"
-                  [class.active-content]="counts[6] > 0"
-                >
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e.png"
-                    alt=""
-                  />
-                  <p class="sub">Stripe</p>
-                  <p class="terminal-name">BBPOS WisePOS E</p>
-                  <span class="price">$250</span>
-                  <span class="description"
-                    >Best for workstations handling more than 10 calls per day.
-                    (Recommended for front desk, call centers, etc.)</span
-                  >
-                  <div class="counter-container">
-                    <button (click)="decrement(6)">−</button>
-                    <span>{{ counts[6] }}</span>
-                    <button (click)="increment(6)">+</button>
-                  </div>
-                </div>
-                <div
-                  class="terminal-content"
-                  [class.active-content]="counts[7] > 0"
-                >
-                  <img
-                    src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e-dock.png"
-                    alt=""
-                  />
-                  <p class="sub">Stripe</p>
-                  <p class="terminal-name">BBPOS WisePOS E Dock</p>
-                  <span class="price">$49</span>
-                  <span class="description"
-                    >Best for workstations handling less than 10 calls per day.
-                    (Typically in Operatories and Hallways)</span
-                  >
-                  <div class="counter-container">
-                    <button (click)="decrement(7)">−</button>
-                    <span>{{ counts[7] }}</span>
-                    <button (click)="increment(7)">+</button>
-                  </div>
-                </div>
-              </div>
-              <p class="refund">
-                <span> Refund Policy:</span> Please note that you will be
-                receiving your terminals and docks selected from our vendor
-                Stripe. All terminal sales with Stripe are non-refundable after 30
-                days from when you receive the shipment.
-              </p>
-            </div>
           }
+        <div class="terminals hardware">
+          <p>Would you like to purchase payment terminals?*</p>
+          <div class="toggle-container">
+            <button
+              [class]="{ active: selectTerminal === true }"
+              (click)="selectTerminal = true"
+              class="toggle-btn"
+            >
+              Yes
+            </button>
+            <button
+              [class]="{ active: selectTerminal === false }"
+              (click)="selectTerminal = false"
+              (click)="removeValue_of_hardware()"
+              class="toggle-btn"
+            >
+              No
+            </button>
           </div>
+          @if(selectTerminal){
+          <div class="terminal-context">
+            <div class="terminal-grid">
+              <div
+                class="terminal-content"
+                [class.active-content]="counts_for_terminal[0] > 0"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e.png"
+                  alt=""
+                />
+                <p class="sub">Stripe</p>
+                <p class="terminal-name">BBPOS WisePOS E</p>
+                <span class="price">$250</span>
+                <span class="description"
+                  >Best for workstations handling more than 10 calls per day.
+                  (Recommended for front desk, call centers, etc.)</span
+                >
+                <div class="counter-container">
+                  <button (click)="decrement(0,false)">−</button>
+                  <span>{{ counts_for_terminal[0] }}</span>
+                  <button (click)="increment(0,false)">+</button>
+                </div>
+              </div>
+              <div
+                class="terminal-content"
+                [class.active-content]="counts_for_terminal[1] > 0"
+              >
+                <img
+                  src="https://demo.enfolytics.com/assets/images/bbpos-wisepos-e-dock.png"
+                  alt=""
+                />
+                <p class="sub">Stripe</p>
+                <p class="terminal-name">BBPOS WisePOS E Dock</p>
+                <span class="price">$49</span>
+                <span class="description"
+                  >Best for workstations handling less than 10 calls per day.
+                  (Typically in Operatories and Hallways)</span
+                >
+                <div class="counter-container">
+                  <button (click)="decrement(1,false)">−</button>
+                  <span>{{ counts_for_terminal[1] }}</span>
+                  <button (click)="increment(1,false)">+</button>
+                </div>
+              </div>
+            </div>
+            <p class="refund">
+              <span> Refund Policy:</span> Please note that you will be
+              receiving your terminals and docks selected from our vendor
+              Stripe. All terminal sales with Stripe are non-refundable after 30
+              days from when you receive the shipment.
+            </p>
+          </div>
+          }
+        </div>
+        @if(selectPhone!=null || selectTerminal!=null){
           <div class="btnClass">
-            <button mat-raised-button class="nextbtn">Next</button>
+            <button mat-raised-button class="nextbtn" (click)="goToExpandForm()">Next</button>
           </div>
         }
+        }
       </div>
-      }
-       @if(multiple_location=='no'){
+      } 
+      @if(multiple_location=='no'){
       <div class="card about-practice">
         <h1>Step 3: Tell Us About Your Practice</h1>
-        <p>
-          To sign up for Adit, please begin by filling out the below
-          information.
-        </p>
-
-        <form [formGroup]="practiceData">
-          <div formArrayName="locations">
-            @for(location of locations.controls;track location; let i = $index){
-            <!-- @if(multiple_location=='yes'){
-              <h2>
-                @if(i>0){
-                <mat-icon (click)="removeLocation(i)">delete</mat-icon>
+        @if(expandForm){
+          <p>
+            To sign up for Adit, please begin by filling out the below
+            information.
+          </p>
   
-                } Location {{ i + 1 }} : {{ location.get("locationName")?.value }}
-              </h2>
-              } -->
-            <div [formGroupName]="i">
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Practice Name</mat-label>
-                  <input type="text" formControlName="parcticeName" matInput />
-                </mat-form-field>
+          <form [formGroup]="practiceData">
+            <div formArrayName="locations">
+              @for(location of locations.controls;track location; let i = $index){
+              <div [formGroupName]="i">
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Practice Name</mat-label>
+                    <input type="text" formControlName="practice_name" matInput />
+                  </mat-form-field>
+                </div>
+  
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Location Short Name (ex. Houston)</mat-label>
+                    <input type="text" formControlName="location_name" matInput />
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Practice Address Line 1</mat-label>
+                    <input
+                      type="text"
+                      formControlName="practiceAdressLine_1"
+                      matInput
+                    />
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Practice Address Line 2</mat-label>
+                    <input
+                      type="text"
+                      formControlName="practiceAdressLine_2"
+                      matInput
+                    />
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>City</mat-label>
+                    <input type="text" formControlName="practice_city" matInput />
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>State/Region/Province</mat-label>
+                    <mat-select formControlName="practice_state">
+                      <mat-option value="Alabama">Alabama </mat-option>
+                      <mat-option value="Alaska">Alaska</mat-option>
+                      <mat-option value="Arizona">Arizona</mat-option>
+                      <mat-option value="Arkansas">Arkansas</mat-option>
+                      <mat-option value="California">California</mat-option>
+                      <mat-option value="Colorado">Colorado</mat-option>
+                      <mat-option value="Connecticut">Connecticut</mat-option>
+                      <mat-option value="Delaware">Delaware</mat-option>
+                      <mat-option value="District of Columbia"
+                        >District of Columbia</mat-option
+                      >
+                      <mat-option value="Florida">Florida</mat-option>
+                      <mat-option value="Georgia">Georgia</mat-option>
+                      <mat-option value="Hawaii">Hawaii</mat-option>
+                      <mat-option value="Idaho">Idaho</mat-option>
+                      <mat-option value="Illinois">Illinois</mat-option>
+                      <mat-option value="Indiana">Indiana</mat-option>
+                      <mat-option value="Iowa">Iowa</mat-option>
+                      <mat-option value="Kansas">Kansas</mat-option>
+                      <mat-option value="Kentucky">Kentucky</mat-option>
+                      <mat-option value="Louisiana">Louisiana</mat-option>
+                      <mat-option value="Maine">Maine</mat-option>
+                      <mat-option value="Maryland">Maryland</mat-option>
+                      <mat-option value="Massachusetts">Massachusetts</mat-option>
+                      <mat-option value="Michigan">Michigan</mat-option>
+                      <mat-option value="Minnesota">Minnesota</mat-option>
+                      <mat-option value="Mississippi">Mississippi</mat-option>
+                      <mat-option value="Missouri">Missouri</mat-option>
+                      <mat-option value="Montana">Montana</mat-option>
+                      <mat-option value="Nebraska">Nebraska</mat-option>
+                      <mat-option value="Nevada">Nevada</mat-option>
+                      <mat-option value="New Hampshire">New Hampshire</mat-option>
+                      <mat-option value="New Jersey">New Jersey</mat-option>
+                      <mat-option value="New Mexico"> New Mexico</mat-option>
+                      <mat-option value="New York">New York</mat-option>
+                      <mat-option value="North Carolina"
+                        >North Carolina</mat-option
+                      >
+                      <mat-option value="North Dakota">North Dakota</mat-option>
+                      <mat-option value="Ohio">Ohio</mat-option>
+                      <mat-option value="Oklahoma">Oklahoma</mat-option>
+                      <mat-option value="Oregon">Oregon</mat-option>
+                      <mat-option value="Pennsylvania">Pennsylvania</mat-option>
+                      <mat-option value="Puerto Rico">Puerto Rico</mat-option>
+                      <mat-option value="Rhode Island">Rhode Island</mat-option>
+                      <mat-option value="South Carolina"
+                        >South Carolina</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Postal/Zip Code</mat-label>
+                    <input
+                      type="text"
+                      formControlName="practice_postal_zip_code"
+                      matInput
+                    />
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Country</mat-label>
+                    <mat-select formControlName="practice_country">
+                      <mat-option value="UnitedStates">United States</mat-option>
+                      <mat-option value="Canada">Canada</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Timezone</mat-label>
+                    <mat-select formControlName="practice_timezone">
+                      <mat-option value="utc">UTC </mat-option>
+                      <mat-option value="utc_pacific">UTC Pacific</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Office Phone</mat-label>
+                    <input
+                      type="text"
+                      matInput
+                      formControlName="practice_office_phone"
+                      appPhoneNumberFormatter
+                    />
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Email</mat-label>
+                    <input
+                      type="text"
+                      matInput
+                      formControlName="practice_email"
+                    />
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Website URL</mat-label>
+                    <input
+                      type="text"
+                      matInput
+                      formControlName="practice_website_url"
+                    />
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>Practice Management Software (PMS)</mat-label>
+                    <mat-select formControlName="practice_management_software">
+                      <mat-option value="AbelDent">AbelDent</mat-option>
+                      <mat-option value="ClearDent">ClearDent</mat-option>
+                      <mat-option value="Curve">Curve</mat-option>
+                      <mat-option value="Denticon">Denticon</mat-option>
+                      <mat-option value="Dentrix">Dentrix</mat-option>
+                      <mat-option value="Dentrix Ascend"
+                        >Dentrix Ascend</mat-option
+                      >
+                      <mat-option value="Eaglesoft">Eaglesoft</mat-option>
+                      <mat-option value="Easy Dental">Easy Dental</mat-option>
+                      <mat-option value="OpenDental">OpenDental</mat-option>
+                      <mat-option value="PracticeWorks">PracticeWorks</mat-option>
+                      <mat-option value="Practice Web">Practice Web</mat-option>
+                      <mat-option value="Tracker">Tracker</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>POC Name (Point-of-Contact)</mat-label>
+                    <input type="text" formControlName="practice_poc" matInput />
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>POC Email</mat-label>
+                    <input
+                      type="text"
+                      formControlName="practice_poc_email"
+                      matInput
+                    />
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>POC Work Number</mat-label>
+                    <input
+                      type="text"
+                      formControlName="practice_poc_work_number"
+                      matInput
+                      appPhoneNumberFormatter
+                      placeholder="(111) 111-1111"
+                    />
+                  </mat-form-field>
+                  <mat-form-field class="field" appearance="fill">
+                    <mat-label>POC Cell Number</mat-label>
+                    <input
+                      type="text"
+                      formControlName="practice_poc_cell_number"
+                      appPhoneNumberFormatter
+                      matInput
+                    />
+                  </mat-form-field>
+                </div>
               </div>
-
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Location Short Name (ex. Houston)</mat-label>
-                  <input type="text" formControlName="locationName" matInput />
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Practice Address Line 1</mat-label>
-                  <input
-                    type="text"
-                    formControlName="practiceAdressLine_1"
-                    matInput
-                  />
-                </mat-form-field>
-              </div>
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Practice Address Line 2</mat-label>
-                  <input
-                    type="text"
-                    formControlName="practiceAdressLine_2"
-                    matInput
-                  />
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>City</mat-label>
-                  <input type="text" formControlName="practice_city" matInput />
-                </mat-form-field>
-              </div>
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>State/Region/Province</mat-label>
-                  <mat-select formControlName="practice_state">
-                    <mat-option value="Alabama">Alabama </mat-option>
-                    <mat-option value="Alaska">Alaska</mat-option>
-                    <mat-option value="Arizona">Arizona</mat-option>
-                    <mat-option value="Arkansas">Arkansas</mat-option>
-                    <mat-option value="California">California</mat-option>
-                    <mat-option value="Colorado">Colorado</mat-option>
-                    <mat-option value="Connecticut">Connecticut</mat-option>
-                    <mat-option value="Delaware">Delaware</mat-option>
-                    <mat-option value="District of Columbia"
-                      >District of Columbia</mat-option
-                    >
-                    <mat-option value="Florida">Florida</mat-option>
-                    <mat-option value="Georgia">Georgia</mat-option>
-                    <mat-option value="Hawaii">Hawaii</mat-option>
-                    <mat-option value="Idaho">Idaho</mat-option>
-                    <mat-option value="Illinois">Illinois</mat-option>
-                    <mat-option value="Indiana">Indiana</mat-option>
-                    <mat-option value="Iowa">Iowa</mat-option>
-                    <mat-option value="Kansas">Kansas</mat-option>
-                    <mat-option value="Kentucky">Kentucky</mat-option>
-                    <mat-option value="Louisiana">Louisiana</mat-option>
-                    <mat-option value="Maine">Maine</mat-option>
-                    <mat-option value="Maryland">Maryland</mat-option>
-                    <mat-option value="Massachusetts">Massachusetts</mat-option>
-                    <mat-option value="Michigan">Michigan</mat-option>
-                    <mat-option value="Minnesota">Minnesota</mat-option>
-                    <mat-option value="Mississippi">Mississippi</mat-option>
-                    <mat-option value="Missouri">Missouri</mat-option>
-                    <mat-option value="Montana">Montana</mat-option>
-                    <mat-option value="Nebraska">Nebraska</mat-option>
-                    <mat-option value="Nevada">Nevada</mat-option>
-                    <mat-option value="New Hampshire">New Hampshire</mat-option>
-                    <mat-option value="New Jersey">New Jersey</mat-option>
-                    <mat-option value="New Mexico"> New Mexico</mat-option>
-                    <mat-option value="New York">New York</mat-option>
-                    <mat-option value="North Carolina"
-                      >North Carolina</mat-option
-                    >
-                    <mat-option value="North Dakota">North Dakota</mat-option>
-                    <mat-option value="Ohio">Ohio</mat-option>
-                    <mat-option value="Oklahoma">Oklahoma</mat-option>
-                    <mat-option value="Oregon">Oregon</mat-option>
-                    <mat-option value="Pennsylvania">Pennsylvania</mat-option>
-                    <mat-option value="Puerto Rico">Puerto Rico</mat-option>
-                    <mat-option value="Rhode Island">Rhode Island</mat-option>
-                    <mat-option value="South Carolina"
-                      >South Carolina</mat-option
-                    >
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Postal/Zip Code</mat-label>
-                  <input
-                    type="text"
-                    formControlName="practice_postal_zip_code"
-                    matInput
-                  />
-                </mat-form-field>
-              </div>
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Country</mat-label>
-                  <mat-select formControlName="practice_country">
-                    <mat-option value="UnitedStates">United States</mat-option>
-                    <mat-option value="Canada">Canada</mat-option>
-                  </mat-select>
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Timezone</mat-label>
-                  <mat-select formControlName="practice_timezone">
-                    <mat-option value="utc">UTC </mat-option>
-                    <mat-option value="utc_pacific">UTC Pacific</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Office Phone</mat-label>
-                  <input
-                    type="text"
-                    matInput
-                    formControlName="practice_office_phone"
-                  />
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Email</mat-label>
-                  <input
-                    type="text"
-                    matInput
-                    formControlName="practice_email"
-                  />
-                </mat-form-field>
-              </div>
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Website URL</mat-label>
-                  <input
-                    type="text"
-                    matInput
-                    formControlName="practice_website_url"
-                  />
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>Practice Management Software (PMS)</mat-label>
-                  <mat-select formControlName="practice_management_software">
-                    <mat-option value="AbelDent">AbelDent</mat-option>
-                    <mat-option value="ClearDent">ClearDent</mat-option>
-                    <mat-option value="Curve">Curve</mat-option>
-                    <mat-option value="Denticon">Denticon</mat-option>
-                    <mat-option value="Dentrix">Dentrix</mat-option>
-                    <mat-option value="Dentrix Ascend"
-                      >Dentrix Ascend</mat-option
-                    >
-                    <mat-option value="Eaglesoft">Eaglesoft</mat-option>
-                    <mat-option value="Easy Dental">Easy Dental</mat-option>
-                    <mat-option value="OpenDental">OpenDental</mat-option>
-                    <mat-option value="PracticeWorks">PracticeWorks</mat-option>
-                    <mat-option value="Practice Web">Practice Web</mat-option>
-                    <mat-option value="Tracker">Tracker</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>POC Name (Point-of-Contact)</mat-label>
-                  <input type="text" formControlName="practice_poc" matInput />
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>POC Email</mat-label>
-                  <input
-                    type="text"
-                    formControlName="practice_poc_email"
-                    matInput
-                  />
-                </mat-form-field>
-              </div>
-              <div class="form-field">
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>POC Work Number</mat-label>
-                  <input
-                    type="text"
-                    formControlName="practice_poc_work_number"
-                    matInput
-                  />
-                </mat-form-field>
-                <mat-form-field class="field" appearance="fill">
-                  <mat-label>POC Cell Number</mat-label>
-                  <input
-                    type="text"
-                    formControlName="pracitce_poc_cell_number"
-                    matInput
-                  />
-                </mat-form-field>
-              </div>
+              }
             </div>
-            }
+          </form>
+          @if(selectPhone==true || selectTerminal==true){
+            <div class="shipping-address-container">
+              <h3>Where would you like your hardware shipped?</h3>
+              <div style="display: flex;">
+                <input
+                type="checkbox"
+                [checked]="sameAsPracticeAddress"
+                (click)="sameAsPracticeAddress=!sameAsPracticeAddress"
+                style="accent-color: var(--primary-color);"/>
+                  Shipping address same as practice address
+              </div>
+            
+              @if(sameAsPracticeAddress==false){
+                <form [formGroup]="shippingAddressForm">
+                  <div class="form-row">
+                    <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>Shipping Address Line 1</mat-label>
+                      <input matInput formControlName="address_line_1" placeholder="Enter a Shipping Address" />
+                      @if(shippingAddressForm.get('address_line_1')?.invalid && shippingAddressForm.get('address_line_1')?.touched){
+                        <mat-error>
+                          Enter a Shipping Address
+                        </mat-error>
+                      }
+                    </mat-form-field>
+              
+                    <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>Shipping Address Line 2</mat-label>
+                      <input matInput formControlName="address_line_2" placeholder="Enter a Shipping Address (Optional)" />
+                    </mat-form-field>
+                  </div>
+              
+                  <div class="form-row">
+                    <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>City</mat-label>
+                      <input matInput formControlName="city" placeholder="Enter a City" />
+                      @if(shippingAddressForm.get('city')?.invalid && shippingAddressForm.get('city')?.touched){
+                        <mat-error>
+                          Enter a City
+                        </mat-error>
+                      }
+                    </mat-form-field>
+              
+                    <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>State/Region/Province</mat-label>
+                      <input matInput formControlName="state" placeholder="Enter a State" />
+                      @if(shippingAddressForm.get('state')?.invalid && shippingAddressForm.get('state')?.touched){
+                        <mat-error>
+                          Enter a State
+                        </mat-error>
+                      }
+                   
+                    </mat-form-field>
+                  </div>
+              
+                  <div class="form-row">
+                    <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>Postal / Zip Code</mat-label>
+                      <input matInput formControlName="postalCode" placeholder="Enter a valid Zip Code" />
+                      @if(shippingAddressForm.get('postalCode')?.invalid && shippingAddressForm.get('postalCode')?.touched){
+                        <mat-error>
+                          Enter a valid Zip Code
+                        </mat-error>
+                      }
+                    </mat-form-field>
+              
+                    <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>Country</mat-label>
+                      <mat-select formControlName="country" placeholder="Select a Country">
+                        <mat-option value="United States">United States</mat-option>
+                        <mat-option value="Canada">Canada</mat-option>
+                      </mat-select>
+                      @if(shippingAddressForm.get('country')?.invalid && shippingAddressForm.get('country')?.touched){
+                        <mat-error>
+                          Select a Country
+                        </mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                </form>
+              }
+             
+            </div>
+          }
+          <div class="btnClass">
+            <button mat-raised-button class="nextbtn" (click)="goNextToReview()">
+              Next
+            </button>
           </div>
-        </form>
-
-        <div class="btnClass">
-          <!-- @if(multiple_location=='yes'){ -->
-          <button mat-raised-button class="nextbtn" (click)="addLocation()">
-            Add Location
-          </button>
-          <!-- } -->
-          <button mat-raised-button class="nextbtn" (click)="onSubmit()">
-            Next
-          </button>
-        </div>
+        }
       </div>
       }
 
       <div class="card review-order">
         <h1>Step 4: Review Your Order</h1>
-        <h2>Order Summary</h2>
-        <div class="summary-topinfo">
-          <div class="practice-name">
-            <span class="practice">Practice</span>
-            <span class="p-values">
-              <span class="p-name"><strong>Practice_Name</strong></span>
-              <span class="p-loc">practice_location</span>
-            </span>
-          </div>
-          <div class="about-package">
-            <span class="titles">
-              <span>Package:</span>
-              <span>Pay Cycle:</span>
-              <span>Amount:</span>
-            </span>
-            <span class="values">
-              <span>Analytics Bundle</span>
-              <span>Annually</span>
-              <span>$5,988</span>
-            </span>
-          </div>
-        </div>
-        <div class="bllling-start">
-          <strong> Billing Start: </strong>For all annual billing, the total
-          yearly fee will be charged within one business day of sign date.
-          Subsequent billing will occur 1 year + 45 days of sign date, annually.
-          Any necessary, prorated refunds of annual charges will incur a 3%
-          processing fee.
-        </div>
-        <div class="compliance">
-          <strong> 10DLC Charges & FCC Compliance:</strong> As mandated by the
-          Federal Communications Commission, 10DLC Campaign Charges(mandatory)
-          and Text Messaging Surcharges(if applicable) will be charged monthly
-          on top of the subscription fees to the payment method on file. The
-          average customer pays ~$18 per month.
-        </div>
-        <div class="signature">
-          <strong>Signature</strong>
-          <mat-tab-group>
-            <mat-tab label="Draw">
-              <div style="border: 2px solid var(--primary-color)">
-                <canvas width="800" height="300" #signatureCanvas></canvas>
+        @if(expandReview){
+          @if(multiple_location=='yes'){
+            <div class="toggles">
+              <div class="toggle-container">
+                <button
+                  [class.active]="separateCard" 
+                  (click)="separateCard=!separateCard"               
+                  class="toggle-btn">
+                  Separate Cards For Each Location
+                </button>
+                <button
+                [class.active]="!separateCard"     
+                  (click)="separateCard=!separateCard"
+                  class="toggle-btn">
+                  One Card For All Locations
+                </button>
               </div>
-
-              <!-- <button (click)="saveSignature()">Save</button> -->
-            </mat-tab>
-            <mat-tab label="Upload">
-              <div style="border: 2px dotted var(--primary-color)">
-                <div
-                  class="upload-container"
-                  (dragover)="onDragOver($event)"
-                  (dragleave)="onDragLeave($event)"
-                  (drop)="onDrop($event)"
-                >
-                  @if(!previewImage){
-                  <p>Drag & drop a signature image</p>
-                  <p>or</p>
-
-                  <label class="upload-button">
-                    <input
-                      type="file"
-                      (change)="onFileSelected($event)"
-                      accept="image/*"
-                      hidden
-                    />
-                    Select Image
-                  </label>
-                  } @if(previewImage){
-                  <div class="preview">
-                    <img [src]="previewImage" alt="Signature Preview" />
-                  </div>
-                  }
-                </div>
-              </div>
-            </mat-tab>
-          </mat-tab-group>
-          <div class="belowSignature">
-            <div class="nameOfSignatory">
-              <p>Name of signatory:</p>
-              <input type="text" [(ngModel)]="signature_name" />
             </div>
-            <button mat-flat-button (click)="clearPad()">
-              <mat-icon class="deleteIcon">delete</mat-icon> Clear
-            </button>
-          </div>
-          <div class="terms">
-            <input
-              class="checkBox"
-              type="checkbox"
-              #tooltip="matTooltip"
-              matTooltip="Please accepet these terms to continuse"
-            />
-            <span>
-              I accept the Terms and Conditions outlined at
-              <a href="https://adit.com/terms">https://adit.com/terms</a>
-            </span>
-          </div>
-          <div class="terms">
-            <input
-              class="checkBox"
-              type="checkbox"
-              matTooltip="Please accept these EHR terms to continue"
-            />
-            <span>
-              I accept that Adit will need access to our server and/or EHR
-              occasionally to ensure the best product experience. Details
-              outlined at
-              <a href="https://adit.com/terms"> https://adit.com/terms</a></span
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="right-card">
-      <div class="toggle-container">
-        <button
-          [class]="{ active: isAnnually }"
-          (click)="toggleView('annually')"
-          class="toggle-btn"
-        >
-          Annually
-        </button>
-        <button
-          [class]="{ active: !isAnnually }"
-          (click)="toggleView('monthly')"
-          class="toggle-btn"
-        >
-          Monthly
-        </button>
-      </div>
-      <div class="short-card">
-        <h3>One time payment Due Today <mat-icon>shopping_cart</mat-icon></h3>
-        <!-- add line -->
-        <mat-divider></mat-divider>
+          }
+  
+          <h2>Order Summary</h2>
+        @if(multiple_location=='yes'){
+          <table>
+            <thead>
+              <tr>
+                <th>Location</th>
+                @if(!ifPackageAditLite){
+                  <th>Package</th>
+                }
+                <th>Activation</th>
+                <th>Subscription</th>
+                <th>Hardware</th>
+                <th>Hardware Discount</th>
+                <th>Total Due Today</th>
+                <th>Next Payment Due</th>
+              </tr>
+            </thead>
+            <tbody>
+      
+              @for(location of locations.controls; track location; let i = $index) {
+              <tr>
+                <!-- Location name from the form -->
+                <td>{{ location.get("location_name")?.value }}</td>
+                  <!-- Package name from the form -->
+                  @if(ifPackageAditLite){
+                    <td>
+                      {{makeFirstLetterCapital(selectedPackage[i])}}
+                    </td>
+                  }@else if(ifPackageisAditCore){
+                    <td class="aditCoreInOrderSummary">
+                      <!-- @if(iconStates && iconStates[i]) { -->
+                        <button
+                          mat-icon-button
+                          [class.phone_active_icon]="iconStates[i].phoneActive">
+                          <mat-icon>settings_phone</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
+                          [class.analytic_active_icon]="iconStates[i].analyticActive">
+                          <mat-icon>analytics</mat-icon>
+                        </button>
+                        <button
+                          mat-icon-button
+                          [class.verification_active_icon]="iconStates[i].verificationActive">
+                          <mat-icon>price_check</mat-icon>
+                        </button>
+                      <!-- } -->
+                    </td>
+                  }@else if(!ifPackageAditLite && !ifPackageisAditCore){
+                    <td>
+                    {{makeFirstLetterCapital(selectedPackage[i])}}
+                    </td>
+                  }
+                <!-- Activation fee -->
+                <td> ${{ activation_fee }}</td>
+                <td> 
+                 <!-- Subscription -->
+                  @if(ifPackageisAditCore){
+                  
+                    <td>
+                      {{
+                        isAnnually
+                          ? "Today $" + (calculateLocationTotal(i))
+                          : "Today $" + activation_fee || 0
+                      }}
+                    </td>
+                   
+                
+                  }@else{
+                   ${{ isAnnually ? subscriptionPlans[i].annually*12 : subscriptionPlans[i].monthly }}
+                 
+                  }
+                 </td>
+                 <!-- Hardware -->
+                 <td>
+                  @if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
+                    ${{ calculateTotalHardwarePriceTotal() }}
+                    }@else if(selectTerminal || selectPhone) {
+                      ${{ hardware_TotalFor_Singlecoation || 0 }}
+                      }@else { $0 }
+                 </td>
+                <!-- Hardware credit -->
+                <td>
+                  @if(selectPhone || selectTerminal){ 
+                    -${{getMinValue(isAnnually ? hardwareCreditAnnually : hardwareCreditMonthly,hardware_TotalFor_Singlecoation)
+                  }}
+                  }@else if (purchasePhones.length>0 ||purchaseTerminals.length>0) {
+                  -${{          getMinValue(
+                    isAnnually ? hardwareCreditAnnually : hardwareCreditMonthly,
+                    calculateTotalHardwarePriceTotal()
+                  ) }}
+                  }@else if(!selectPhone && !selectTerminal){ $0 }@else { $0 }
+                </td>
+                <!-- Today's payment -->
+                @if(!ifPackageAditLite){
+                  <td>
+                    {{
+                      isAnnually
+                        ? "Today $" +  ((calculateLocationTotal(i)*12) + convertStringToNumber(activation_fee))
+                        : "Today $" + 0
+                    }}
+                  </td>
+                }@else {
+                  <td>
+                    {{
+                      isAnnually
+                        ? "Today $" + (subscriptionPriceAnnually || 0) * 12
+                        : "Today $" + 0
+                    }}
+                  </td>
+                }
+                <!-- Next payment date -->
+                <td>
+                  @if(ifPackageAditLite){
+                    {{
+                      isAnnually
+                        ? getNextPaymentDate() + " -- $" + (subscriptionPlans[i]?.annually || 0) * 12
+                        : getNextPaymentDate() + " -- $" + (subscriptionPlans[i]?.monthly || 0)
+                    }}
+                  }@else if(ifPackageisAditCore){
+                      {{
+                        isAnnually
+                          ? getNextPaymentDate() + " -- $" + calculateLocationTotal(i)*12
+                          : getNextPaymentDate() + " -- $" + calculateLocationTotalForMonthly(i)
+                      }}
 
-        <p class="context">
-          <span class="title">Activation Fee <mat-icon>info</mat-icon></span>
-          <span class="value"> ${{ activation_fee }} </span>
-        </p>
-        <p class="context">
-          <span class="title">Subscription Fee</span>
-          <span class="value"
-            >${{
-              isAnnually
-                ? subscriptionPriceAnnually * 12
-                : subscriptionPriceMonthly
-            }}
-          </span>
-        </p>
-        <p class="context">
-          <span class="title">Hardware Selected</span>
-          <span class="value"> ${{calculateTotalHardwarePriceTotal()}} </span>
-        </p>
-        <p class="context">
-          <span class="title"
-            >Hardware Credit Applied <mat-icon>info</mat-icon></span
-          >
-          <span class="hardwareValue"> -$0 </span>
-        </p>
-        <!-- add line -->
-        <mat-divider></mat-divider>
-
-        <H3 class="context">
-          <span class="title">Total Payment Today</span>
-          <span class="value">
-            ${{ isAnnually ? getTotal() : activation_fee }}
-          </span>
-        </H3>
-        <!-- if condtion for annual and monthly -->
-        @if(isAnnually){
-        <!-- <span class="subtext">Saved By Going Annual $600</span> -->
+                  }@else {
+                    {{
+                      isAnnually
+                        ? "Today $" + (subscriptionPriceAnnually || 0) * 12
+                        : "Today $" + (subscriptionPriceMonthly || 0)
+                    }}
+                  }
+                  
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        }@else {
+          <div class="summary-topinfo">
+            <div class="practice-name">
+              <span class="practice">Practice</span>
+              <span class="p-values">
+                @if(multiple_location=='no'){
+                  @for(location of locations.controls; track location; let i = $index) {
+                    <span class="p-name"><strong>{{ location.get("practice_name")?.value }}</strong></span>
+                    <span class="p-loc">{{ location.get("location_name")?.value }}</span>
+                  }
+                }
+              </span>
+            </div>
+            <div class="about-package">
+              <span class="titles">
+                <span>Package:</span>
+                <span>Pay Cycle:</span>
+                <span>Amount:</span>
+              </span>
+              <span class="values">
+                <span>{{ makeFirstLetterCapital(selectedPackageName) }} Bundle</span>
+                <span>{{isAnnually?'Annually':'Monthly'}}</span>
+                <span>${{isAnnually ?  subscriptionPriceAnnually*12:subscriptionPriceMonthly}}</span>
+              </span>
+            </div>
+          </div>
+        }
+          <div class="bllling-start">
+            <strong> Billing Start: </strong>For all annual billing, the total
+            yearly fee will be charged within one business day of sign date.
+            Subsequent billing will occur 1 year + 45 days of sign date, annually.
+            Any necessary, prorated refunds of annual charges will incur a 3%
+            processing fee.
+          </div>
+          <div class="compliance">
+            <strong> 10DLC Charges & FCC Compliance:</strong> As mandated by the
+            Federal Communications Commission, 10DLC Campaign Charges(mandatory)
+            and Text Messaging Surcharges(if applicable) will be charged monthly
+            on top of the subscription fees to the payment method on file. The
+            average customer pays ~$18 per month.
+          </div>
+          <div class="signature">
+            <strong>Signature</strong>
+            <mat-tab-group>
+              <mat-tab label="Draw">
+                <div style="border: 2px solid var(--primary-color)">
+                  <canvas width="800" height="300" #signatureCanvas></canvas>
+                </div>
+  
+                <!-- <button (click)="saveSignature()">Save</button> -->
+              </mat-tab>
+              <mat-tab label="Upload">
+                <div style="border: 2px dotted var(--primary-color)">
+                  <div
+                    class="upload-container"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)"
+                    (drop)="onDrop($event)"
+                  >
+                    @if(!previewImage){
+                    <p>Drag & drop a signature image</p>
+                    <p>or</p>
+  
+                    <label class="upload-button">
+                      <input
+                        type="file"
+                        (change)="onFileSelected($event)"
+                        accept="image/*"
+                        hidden
+                      />
+                      Select Image
+                    </label>
+                    } @if(previewImage){
+                    <div class="preview">
+                      <img [src]="previewImage" alt="Signature Preview" />
+                    </div>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+            <div class="belowSignature">
+              <div class="nameOfSignatory">
+                <p>Name of signatory:</p>
+                <input type="text" [(ngModel)]="signature_name" />
+              </div>
+              <button mat-flat-button (click)="clearPad()">
+                <mat-icon class="deleteIcon">delete</mat-icon> Clear
+              </button>
+            </div>
+            <div class="terms">
+              <input
+                class="checkBox"
+                type="checkbox"
+                #tooltip="matTooltip"
+                matTooltip="Please accepet these terms to continuse"
+              />
+              <span>
+                I accept the Terms and Conditions outlined at
+                <a href="https://adit.com/terms">https://adit.com/terms</a>
+              </span>
+            </div>
+            <div class="terms">
+              <input
+                class="checkBox"
+                type="checkbox"
+                matTooltip="Please accept these EHR terms to continue"
+              />
+              <span>
+                Iaccept that Adit will need access to our server and/or EHR
+                occasionally to ensure the best product experience. Details
+                outlined at
+                <a href="https://adit.com/terms"> https://adit.com/terms</a></span
+              >
+            </div>
+          </div>
         }
       </div>
-      <div class="short-card">
-        <H3 class="context">
-          <span class="title"
-            >Next {{ isAnnually ? "Annually " : "Monthly" }} Payment</span
-          >
-          <span class="value"
-            >${{
-              isAnnually
-                ? subscriptionPriceAnnually * 12
-                : subscriptionPriceMonthly
-            }}
-          </span>
-        </H3>
-        <span class="subDate">On APR 28, 2026</span>
-      </div>
-      <button mat-raised-button class="acceptBtn" [disabled]="true">
-        Accept & Pay
-      </button>
     </div>
+    <!-- single location -->
+@if(totalAnnually>0 && multiple_location=='no'){
+      <div class="right-card">
+        <div class="toggle-container">
+          <button
+            [class]="{ active: isAnnually }"
+            (click)="toggleView('annually')"
+            class="toggle-btn"
+          >
+            Annually
+          </button>
+          <button
+            [class]="{ active: !isAnnually }"
+            (click)="toggleView('monthly')"
+            class="toggle-btn">
+            Monthly
+          </button>
+        </div>
+        <div class="short-card">
+          <h3>One time payment Due Today <mat-icon>shopping_cart</mat-icon></h3>
+          <!-- add line -->
+          <mat-divider></mat-divider>
+  
+          <p class="context">
+            <span class="title">Activation Fee <mat-icon>info</mat-icon></span>
+            <span class="value"> ${{ activation_fee }} </span>
+          </p>
+          <p class="context">
+            <span class="title">Subscription Fee</span>
+           <!-- @if(multiple_location=='yes'){
+            @if(ifPackageisAditCore){
+              <span class="value"
+              >${{ isAnnually ?subscriptionPriceAnnually*12:subscriptionPriceMonthly }}
+            </span>
+            }@else{
+              <span class="value"
+              >${{ isAnnually ? getSubscriptionsTotal() : getSubscriptionsTotalMonthly() }}
+            </span>
+            }
+  
+           }@else { -->
+            <span class="value"
+            >${{ isAnnually ?  subscriptionPriceAnnually*12:subscriptionPriceMonthly  }}
+          </span>
+           <!-- } -->
+          </p>
+          <p class="context">
+            <span class="title">Hardware Selected</span>
+            <span class="value">
+              @if(selectTerminal || selectPhone) {
+                ${{ hardware_TotalFor_Singlecoation || 0  }}
+                }
+            @else if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
+              ${{ calculateTotalHardwarePriceTotal() }}
+              } @else { $0 }
+            </span>
+          </p>
+          <p class="context">
+            <span class="title"
+              >Hardware Credit Applied <mat-icon>info</mat-icon></span
+            >
+            <span class="hardwareValue">
+              @if(selectPhone || selectTerminal){ 
+                -${{getMinValue(isAnnually ? hardwareCreditAnnually : hardwareCreditMonthly,hardware_TotalFor_Singlecoation)
+              }}
+              }@else if (purchasePhones.length>0 ||purchaseTerminals.length>0) {
+              -${{          getMinValue(
+                isAnnually ? hardwareCreditAnnually : hardwareCreditMonthly,
+                calculateTotalHardwarePriceTotal()
+              ) }}
+              }@else if(!selectPhone && !selectTerminal){ $0 }@else { $0 }
+            </span>
+          </p>
+          <!-- add line -->
+          <mat-divider></mat-divider>
+  
+          <H3 class="context">
+            <span class="title">Total Payment Today</span>
+            <span class="value">
+              ${{ getTotal() }}
+            </span>
+          </H3>
+          <!-- if condtion for annual and monthly -->
+          @if(isAnnually){
+          <!-- <span class="subtext">Saved By Going Annual $600</span> -->
+          }
+        </div>
+        <div class="short-card">
+          <h3 class="context">
+            <span class="title">Next {{ isAnnually ? "Annually " : "Monthly" }} Payment</span>
+            <!-- @if(multiple_location=='yes'){
+              @if(ifPackageisAditCore){
+                <span class="value"
+                >${{ isAnnually ?subscriptionPriceAnnually*12:subscriptionPriceMonthly }}
+              </span>
+              }@else{
+                <span class="value"
+                >${{ isAnnually ? getSubscriptionsTotal() : getSubscriptionsTotalMonthly() }}
+              </span>
+              }
+    
+             }@else { -->
+              <span class="value">
+                ${{ isAnnually ?  subscriptionPriceAnnually*12:subscriptionPriceMonthly  }}
+              </span>
+             <!-- } -->
+          </h3>
+          <span class="subDate">On {{ getNextPaymentDate() }}</span>
+         </div>
+        <button mat-raised-button class="acceptBtn" [disabled]="true">
+          Accept & Pay
+        </button>
+      </div>
+    }@else if(multiple_location=='yes'){
+   
+        <div class="right-card">
+          <div class="toggle-container">
+            <button
+              [class]="{ active: isAnnually }"
+              (click)="toggleView('annually')"
+              class="toggle-btn"
+            >
+              Annually
+            </button>
+            <button
+              [class]="{ active: !isAnnually }"
+              (click)="toggleView('monthly')"
+              class="toggle-btn">
+              Monthly
+            </button>
+          </div>
+          <div class="short-card">
+            <h3>One time payment Due Today <mat-icon>shopping_cart</mat-icon></h3>
+            <!-- add line -->
+            <mat-divider></mat-divider>
+    
+            <p class="context">
+              <span class="title">Activation Fee <mat-icon>info</mat-icon></span>
+              <span class="value"> ${{ activation_fee }} </span>
+            </p>
+            <p class="context">
+              <span class="title">Subscription Fee</span>
+            
+              @if(ifPackageisAditCore){ 
+                <span class="value"
+                >${{ getSubscriptionTotalForMultipleLocations() }}
+              </span>
+              }@else{
+                <span class="value"
+                >${{ isAnnually ? getSubscriptionsTotal() : getSubscriptionsTotalMonthly() }}
+              </span>
+              }
+    
+             
+            </p>
+            <p class="context">
+              <span class="title">Hardware Selected</span>
+              <span class="value">
+                @if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
+                ${{ calculateTotalHardwarePriceTotal() }}
+                }@else{
+                  $0
+                }
+              </span>
+            </p>
+            <p class="context">
+              <span class="title">Hardware Credit Applied <mat-icon>info</mat-icon></span>
+              <span class="hardwareValue">
+                @if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
+                  ${{getMinValue(getHarwareCreditTotal(),calculateTotalHardwarePriceTotal())}}
+                }
+              </span>
+            </p>
+            <!-- add line -->
+            <mat-divider></mat-divider>
+    
+            <H3 class="context">
+              <span class="title">Total Payment Today</span>
+              <span class="value">
+                ${{ getTotalPayment() }}
+              </span>
+            </H3>
+            <!-- if condtion for annual and monthly -->
+            @if(isAnnually){
+            <!-- <span class="subtext">Saved By Going Annual $600</span> -->
+            }
+          </div>
+          <div class="short-card">
+            <h3 class="context">
+              <span class="title">Next {{ isAnnually ? "Annually " : "Monthly" }} Payment</span>
+              @if(multiple_location=='yes'){
+                @if(ifPackageisAditCore){
+                  <span class="value"
+                  >${{ isAnnually ?subscriptionPriceAnnually*12:subscriptionPriceMonthly }}
+                </span>
+                }@else{
+                  <span class="value"
+                  >${{ isAnnually ? getSubscriptionsTotal() : getSubscriptionsTotalMonthly() }}
+                </span>
+                }
+      
+               }@else {
+                <span class="value">
+                  ${{ isAnnually ?  subscriptionPriceAnnually*12:subscriptionPriceMonthly  }}
+                </span>
+               }
+            </h3>
+            <span class="subDate">On {{ getNextPaymentDate() }}</span>
+           </div>
+          <button mat-raised-button class="acceptBtn" [disabled]="true">
+            Accept & Pay
+          </button>
+        </div>
+    }
   </div>
 </div>

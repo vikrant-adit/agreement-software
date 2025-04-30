@@ -4,34 +4,17 @@
   <div class="form-container">
     <form [formGroup]="preAgreementForm" (ngSubmit)="onSubmit()">
       <div class="form-section">
-        <!-- <h2 style="color: var(--secondary-color);">Practice Details</h2>
-        <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Practice Name</mat-label>
-            <input matInput formControlName="practice_name">
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Contact Email</mat-label>
-            <input matInput formControlName="contact_email">
-          </mat-form-field>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Practice Address Line 1</mat-label>
-            <input matInput formControlName="practice_address_line_1">
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Practice Address Line 2</mat-label>
-            <input matInput formControlName="practice_address_line_2">
-          </mat-form-field>
-        </div> -->
         <h2 style="color: var(--secondary-color)">Customer Details</h2>
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Practice Industry</mat-label>
             <mat-select formControlName="practiceIndustry">
+              
               <mat-option value="dental" (click)="dental_or_optometry='dental'">Dental</mat-option>
               <mat-option value="optometry" (click)="dental_or_optometry='optometry'">Optometry</mat-option>
+              <mat-option value="orthodontic" (click)="dental_or_optometry='orthodontic'">Orthodontic</mat-option>
+              <mat-option value="chiropractic" (click)="dental_or_optometry='chiropractic'">Chiropractic</mat-option>
+           
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
@@ -98,16 +81,24 @@
             
           </mat-form-field>
           
-          @if(deals.length>0){
+          @if(deals.length>0 || formPatched){
             <mat-form-field appearance="fill">
               <mat-label>Select a Deal</mat-label>
-              <mat-select>
-                @for(deal of deals;track deal){
-                  <mat-option [value]="deal">
-                    {{ deal.deal_name }} 
-                  </mat-option>
+              <mat-select formControlName="deal" (selectionChange)="onDealSelect($event)">
+                @if(deals.length > 0) {
+                  @for(deal of deals; track deal) {
+                    <mat-option [value]="deal.name">
+                      {{ deal.name }}
+                    </mat-option>
+                  }
+                } @else {
+                  <!-- Show pre-selected value if deals haven't loaded yet -->
+                  @if(preAgreementForm.get('deal')?.value) {
+                    <mat-option [value]="preAgreementForm.get('deal')?.value">
+                      {{ preAgreementForm.get('deal')?.value }}
+                    </mat-option>
+                  }
                 }
-               
               </mat-select>
             </mat-form-field>
           }
@@ -129,7 +120,7 @@
                 <mat-option value="CrystalPM">CrystalPM</mat-option>
                 <mat-option value="OfficeMate">OfficeMate</mat-option>
                 <mat-option value="RevolutionEHR">RevolutionEHR</mat-option>
-              }@else {
+              }@else if(dental_or_optometry=='dental') {
                 <mat-option value="AbelDent">AbelDent</mat-option>
                 <mat-option value="ClearDent">ClearDent</mat-option>
                 <mat-option value="Curve">Curve</mat-option>
@@ -142,16 +133,21 @@
                 <mat-option value="PracticeWorks">PracticeWorks</mat-option>
                 <mat-option value="Practice Web">Practice Web</mat-option>
                 <mat-option value="Tracker">Tracker</mat-option>
+              }@else if(dental_or_optometry=='chiropractic') {
+                <mat-option value="chiroTouch">ChiroTouch</mat-option>
+              }@else if(dental_or_optometry=='orthodontic') {
+                <mat-option value="cloud9">Cloud9</mat-option>
+                <mat-option value="dolphin">Dolphin</mat-option>
+                <mat-option value="ortho2Edge">Ortho2Edge</mat-option>
+                <mat-option value="orthoTrac">OrthoTrac</mat-option>
               }
-              
-           
              }@else {
               <mat-option value=" " disabled>Select Practice Industry</mat-option>
              }
             </mat-select>
           </mat-form-field>
         </div>
-          <mat-checkbox formControlName="displayPricing">Display Pricing</mat-checkbox>
+          <mat-checkbox formControlName="displayPricing"  (click)="addVaildate()">Display Pricing</mat-checkbox>
           @if(preAgreementForm.get('displayPricing')?.value){
             <div class="pricing-section">
               <div class="form-grid">
@@ -191,7 +187,14 @@
                 <!-- Promotion Expiry Date -->
                 <mat-form-field appearance="fill" class="form-field">
                   <mat-label>Promotion Expiry Date</mat-label>
-                  <input formControlName="promotionExpiryDate" matInput [matDatepicker]="picker">
+                  <input
+                    formControlName="promotionExpiryDate"
+                    matInput
+                    [matDatepicker]="picker"
+                    [matDatepickerFilter]="disablePastDates"
+                    [(ngModel)]="dateToShow"
+                    (dateChange)="onDateChange($event, picker)"
+                  />
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>

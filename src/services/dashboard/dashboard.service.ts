@@ -8,7 +8,7 @@ import { environment } from '../../environment';
   providedIn: 'root'
 })
 export class DashboardService {
-  private baseUrl = environment.baseUrl+ '/dashboard';
+  private baseUrl = environment.baseUrl+ '/agreements';
 
   constructor(private http: HttpClient) {}
 
@@ -32,7 +32,14 @@ export class DashboardService {
       catchError(this.handleError)
     );
   }
-
+  updateAgreementStatus(agreementId: string, status: string): Observable<any> {
+    // const url = `${environment.baseUrl}/update-status/${agreementId}`;
+    const body = { status }; // Payload for the request
+  
+    return this.http.put<any>(this.baseUrl+'/'+agreementId, body).pipe(
+      catchError(this.handleError) // Handle errors
+    );
+  }
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Something bad happened; please try again later.'
     if (error.error instanceof ErrorEvent) {

@@ -17,7 +17,6 @@ import { HeaderComponent } from '../../header/header.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { UserService } from '../../../services/users/user.service';
-import { RolesService } from '../../../services/roles/roles.service';
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -36,7 +35,6 @@ import { RolesService } from '../../../services/roles/roles.service';
 export class ProfileComponent  implements OnInit{
   userForm: FormGroup;
   private userService=inject(UserService)
-  private roleService=inject(RolesService)
   constructor(private fb: FormBuilder) {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
@@ -49,10 +47,8 @@ export class ProfileComponent  implements OnInit{
 ngOnInit(): void {
   let id = localStorage.getItem('userId')
   this.userService.getUser(id).subscribe(res=>{
-    this.userForm.patchValue(res)
-    this.roleService.getRole(res.role_id).subscribe(result=>{
-     this.userForm.get('role')?.setValue(result[0].name)
-    })
+    this.userForm.patchValue(res.data)
+    this.userForm.get('role')?.setValue(res.data.role.name)
   })
 }
 

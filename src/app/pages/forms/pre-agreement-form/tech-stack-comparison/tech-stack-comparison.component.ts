@@ -1,5 +1,7 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
+import { ChangeDetectorRef } from '@angular/core';
+
 import {
   FormControl,
   FormBuilder,
@@ -55,40 +57,40 @@ export class TechStackComparisonComponent implements OnInit {
   mobile=mobile
   verifications=verifications
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,private cdr: ChangeDetectorRef) {
   
     this.techStackForm = this.fb.group({
-      current_phone_proivder: [],
+      current_phone_provider: [],
       patient_texting: [],
       reminder_recall: [],
-      digital_froms: [],
+      digital_forms: [],
       treatment_presentation_payment_plans: [],
-      current_payement_provider: [],
+      current_payment_provider: [],
       review: [],
       online_scheduling: [],
       mass_texting: [],
       mass_emailing: [],
       analytics_morning_huddle: [],
       verification_provider: [],
-      current_phone_proivder_price: [],
+      current_phone_provider_price: [],
       patient_texting_price: [],
       reminder_recall_price: [],
-      digital_froms_price: [],
+      digital_forms_price: [],
       treatment_presentation_payment_plans_price: [],
-      current_payement_provider_price: [],
+      current_payment_provider_price: [],
       review_price: [],
       online_scheduling_price: [],
       mass_texting_price: [],
       mass_emailing_price: [],
       analytics_morning_huddle_price: [],
       verification_provider_price: [],
-      tech_stack_totalprice: [],
+      tech_stack_total_price: [],
       features:[[]]
     });
     this.techStackForm.valueChanges.subscribe(() => {
       this.calculateTotal();
       // this.techStackForm.get('features')?.setValue(this.featuresArray, { emitEvent: false });
-      this.techStackForm.get('tech_stack_totalprice')?.setValue(this.totalCost, { emitEvent: false });
+      this.techStackForm.get('tech_stack_total_price')?.setValue(this.totalCost, { emitEvent: false });
       this.formChanged.emit(this.techStackForm);
     });
   }
@@ -221,39 +223,9 @@ export class TechStackComparisonComponent implements OnInit {
   selectedValues: { [key: number]: string } = {}; // Store selected values for each dropdown
   resetValue: any;
 
-  //open the dialog and get value and price
-  openSelectProvider(label: string, formControlName: string) {
-    const dialogRef = this.dialog.open(SelectProviderComponent, {
-      minWidth: '70vw',
-      maxHeight: '70vh',
-      data: label
-    });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log(result)
-      if (result) {  
-        if(result=='reset'){
-          this.techStackForm.get(formControlName)?.reset();
-          this.techStackForm.get(formControlName + '_price')?.reset();
-          this.storeTheArray.pop()
-          this.manageGaps();
-          return
-        }
-        this.techStackForm.get(formControlName)?.setValue(result);
-        if (label == 'Verification Provider') {
-          let price = this.verification_providers[result];
-          this.techStackForm.get(formControlName + '_price')?.setValue(price);
-          this.manageGapsInVerification(result);
-        } else {
-          let price = this.pricing[result];
-          this.techStackForm.get(formControlName + '_price')?.setValue(price);
-          this.storeTheArray.push(result); 
-          this.manageGaps();
-        }
-      }
-    });
-  }
   reset(){
+    this.techStackForm.enable();
     this.techStackForm.reset();
     this.techStackForm.reset();
     this.storeTheArray=[]
@@ -319,5 +291,73 @@ export class TechStackComparisonComponent implements OnInit {
     console.log(falseTexts);
     this.techStackForm.get('features')?.setValue(falseTexts)
     // this.featuresArray=falseTexts
+  }
+
+
+  copyValue(sourceControlName: string, targetControlName: string): void {
+    const sourceValue = this.techStackForm.get(sourceControlName)?.value;
+    if (sourceValue !== null && sourceValue !== undefined) {
+      this.techStackForm.get(targetControlName)?.setValue(sourceValue);
+    } else {
+      console.warn(`No value found in ${sourceControlName} to copy.`);
+    }
+   
+  const priceControl = this.techStackForm.get(targetControlName + '_price');
+  if (priceControl) {
+    priceControl.disable(); // Disable the input field
+    this.cdr.detectChanges(); // Trigger change detection
+
+  } else {
+    console.warn(`FormControl ${targetControlName + '_price'} does not exist.`);
+  }
+  }
+  
+  setThePriceOfTechStack(result:string,formControlName:string,label:string){
+    if (result) {  
+      this.techStackForm.get(formControlName)?.setValue(result);
+      if (label == 'Verification Provider') {
+        let price = this.verification_providers[result];
+        this.techStackForm.get(formControlName + '_price')?.setValue(price);
+        this.manageGapsInVerification(result);
+      } else {
+        let price = this.pricing[result];
+        this.techStackForm.get(formControlName + '_price')?.setValue(price);
+        this.storeTheArray.push(result); 
+        this.manageGaps();
+      }
+    }
+  }
+
+  //open the dialog and get value and price
+  openSelectProvider(label: string, formControlName: string) {
+    const dialogRef = this.dialog.open(SelectProviderComponent, {
+      minWidth: '70vw',
+      maxHeight: '70vh',
+      data: label
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(result)
+      if (result) {  
+        if(result=='reset'){
+          this.techStackForm.get(formControlName)?.reset();
+          this.techStackForm.get(formControlName + '_price')?.reset();
+          this.storeTheArray.pop()
+          this.manageGaps();
+          return
+        }
+        this.techStackForm.get(formControlName)?.setValue(result);
+        if (label == 'Verification Provider') {
+          let price = this.verification_providers[result];
+          this.techStackForm.get(formControlName + '_price')?.setValue(price);
+          this.manageGapsInVerification(result);
+        } else {
+          let price = this.pricing[result];
+          this.techStackForm.get(formControlName + '_price')?.setValue(price);
+          this.storeTheArray.push(result); 
+          this.manageGaps();
+        }
+      }
+    });
   }
 }

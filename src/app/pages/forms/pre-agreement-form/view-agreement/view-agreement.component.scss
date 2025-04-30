@@ -1,17 +1,24 @@
 .container {
+  padding-block-start:3rem ;
+  .header{
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    width: 100%;
+  }
   .saveBtn{
-    position: absolute;
+    position: fixed;
     top: 12px;
-    z-index: 10;
+    z-index: 100;
     right: 230px;
     background-color: var(--primary-color);
     border:1px solid var(--primary-color);
     color: white;
   }
   .edit{
-    position: absolute;
+    position: fixed;
     top: 12px;
-    z-index: 10;
+    z-index: 100;
     right: 130px;
     background-color: white;
     border:1px solid var(--primary-color);
@@ -168,6 +175,10 @@
       .active-content{
         background-color: #fedba8;
       }
+      .disable{
+        background-color: #f5f3f3;
+        opacity: 0.5;
+      }
     }
 
     .terminal-grid{
@@ -275,11 +286,11 @@
       width: 23%;
       margin: 2rem auto;
       position: sticky;
-      top: 0; /* This makes the right card stick to the top when it reaches the top of the viewport */
+      top: 5rem; 
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
-      align-self: flex-start; /* Ensures the right card doesn't stretch to the height of the left card */
+      align-self: flex-start; 
       .toggle-container {
         margin: auto;
         width: fit-content;
@@ -531,6 +542,43 @@
   gap: 1rem;
   h2{
     margin: 0;
+  }
+  .toggles{
+    .toggle-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ddd;
+      border-radius: 60px;
+      width: 20rem;
+      
+      .toggle-btn {
+        
+        padding: 8px 15px;
+        border: none;
+        background-color: #ddd;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s, color 0.3s;
+        color: var(--primary-color);
+        &.active {
+          background-color: var(--primary-color);
+          color: rgb(255, 255, 255);
+          border-radius: 10px;
+        }
+    
+        &:last-child {
+          border-top-right-radius: 60px;
+          border-bottom-right-radius: 60px;
+        }
+    
+        &:not(:last-child) {
+          border-top-left-radius: 60px;
+          border-bottom-left-radius: 60px;
+        }
+      }
+    }
   }
   .summary-topinfo{
     background-color: #efefef;
@@ -805,3 +853,36 @@ tr:nth-child(even) {
     outline: none;
   }
 }
+
+.shipping-address-container {
+  margin: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-field {
+  flex: 1;
+}
+
+.phone_active_icon{
+  background-color: rgb(9, 210, 255);
+  color: white;
+}
+.analytic_active_icon{
+  background-color: rgb(255, 157, 0);
+  color: white;
+}
+.verification_active_icon{
+  background-color: #6118d6;
+  color: white;
+}
+.aditCoreInOrderSummary{
+  display: flex;
+  gap: 0.3rem;
+  height: 3.45rem;
+  align-items: center;
+  }

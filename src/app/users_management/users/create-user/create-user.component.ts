@@ -18,6 +18,20 @@ import { UserService } from '../../../../services/users/user.service';
 import { PermissionsService } from '../../../../services/permissons/permissions.service';
 import { HeaderComponent } from '../../../header/header.component';
 import { AuthService } from '../../../../services/auth.service';
+
+interface Role {
+  id: number;
+  name: string;
+  guard_name: string;
+  permissions: Permission[];
+}
+
+interface Permission {
+  id: number;
+  name: string;
+  guard_name: string;
+}
+
 @Component({
   standalone: true,
   imports: [
@@ -48,11 +62,13 @@ export class CreateUserComponent implements OnInit {
   private router = inject(Router);
 
   userId: number | null = null;
-  roles: any[] = [];
+  roles: Role[] = [];
+  rolesList: string[] = [];
   permissionList: any[] = [];
   viewPermission = false;
-  edit=false
-  constructor(private fb: FormBuilder,private authService:AuthService) {
+  edit = false;
+
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -68,48 +84,49 @@ export class CreateUserComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
       if (id) {
-        this.edit=true
+        this.edit = true;
         this.userId = +id;
         this.getUserDetails(this.userId);
-      }else{
-        this.edit=false
+      } else {
+        this.edit = false;
       }
     });
 
     this.getRoles();
   }
 
-  selectedPermission:any[]=[]
+  selectedPermission: any[] = [];
   getUserDetails(id: number) {
     this.userService.getUser(id).subscribe((user) => {
       this.userForm.patchValue({
-        name: user.name,
-        email: user.email,
-        username: user.username,
-        roleId: user.role_id,
-        overridePermission: user.override_permisson===1?true:false,
-        extraPermissions:user.extraPermissions
+        name: user.data.name,
+        email: user.data.email,
+        username: user.data.username,
+        roleId: user.data.role_id,
+        overridePermission: user.data.override_permisson === 1 ? true : false,
+        extraPermissions: user.data.extraPermissions,
       });
-        if(user.override_permisson==1){
-          this.viewPermission=true
-        }
+      if (user.override_permisson == 1) {
+        this.viewPermission = true;
+      }
       // Password should not be prefilled for security reasons
       this.userForm.get('password')?.setValidators([]);
       this.userForm.get('password')?.updateValueAndValidity();
-      this.permissionService.getPermissions().subscribe((permissions) => {
-        console.log(permissions,"asdaseqweqweqweqweqwe")
-        this.permissionList = permissions.map((permission) => ({
+      this.permissionService.getPermissions().subscribe((permissionsData: any) => {
+        let permissions = permissionsData.data;
+        console.log(permissions, 'asdaseqweqweqweqweqwe');
+        this.permissionList = permissions.map((permission: any) => ({
           ...permission,
           checked: user.extraPermissions.includes(permission.id), // Mark selected
         }));
-        console.log(this.permissionList)
+        console.log(this.permissionList);
       });
-    
     });
   }
+
   onCheckboxChange(event: any, permissionId: number) {
     let selectedPermissions = this.userForm.value.extraPermissions || [];
-  
+
     if (event.checked) {
       if (!selectedPermissions.includes(permissionId)) {
         selectedPermissions.push(permissionId);
@@ -117,13 +134,12 @@ export class CreateUserComponent implements OnInit {
     } else {
       selectedPermissions = selectedPermissions.filter((id: number) => id !== permissionId);
     }
-  
+
     // Explicitly patch the updated permissions to ensure form reflects changes
     this.userForm.patchValue({ extraPermissions: [...selectedPermissions] });
-  
-    console.log("Updated extraPermissions:", this.userForm.value.extraPermissions);
+
+    console.log('Updated extraPermissions:', this.userForm.value.extraPermissions);
   }
-  
 
   generatePassword(inputElement: HTMLInputElement) {
     const tempPassword = Math.random().toString(36).slice(-8);
@@ -144,9 +160,9 @@ export class CreateUserComponent implements OnInit {
             this.router.navigate(['/users']); // Redirect after update
           },
           error: (err) => {
-            console.error("Update Error:", err);
-          alert(err)
-          }
+            console.error('Update Error:', err);
+            alert(err);
+          },
         });
       } else {
         // Create new user
@@ -157,23 +173,52 @@ export class CreateUserComponent implements OnInit {
             this.router.navigate(['/users']); // Redirect after creation
           },
           error: (err) => {
-            console.error("Create Error:", err);
-          alert(err)
-          }
+            console.error('Create Error:', err);
+            alert(err);
+          },
         });
       }
     } else {
-      alert("Please fill all required fields correctly.");
+      alert('Please fill all required fields correctly.');
     }
   }
-  
-  
-  
-  
 
   getRoles() {
-    this.roleService.getRoles().subscribe((data) => {
-      this.roles = data;
+    this.roleService.getRoleswithPermissions().subscribe((response: any) => {
+      if (response.success) {
+        this.roles = response.data.roles;
+        this.rolesList = response.data.rolesList;
+        
+        // Process allPermissions from the response
+        if (response.data.allPermissions && Array.isArray(response.data.allPermissions)) {
+          // Store allPermissions in component property
+          this.allPermission = response.data.allPermissions;
+          
+          // Map permissions with checked status (all false by default)
+          this.mappedPermissions = response.data.allPermissions.map((permission: any) => ({
+            ...permission,
+            checked: false
+          }));
+          
+          // If we're in edit mode and a role is already selected, check permissions accordingly
+          if (this.selectedRoleId && this.edit) {
+            const selectedRole = this.roles.find(role => role.id === this.selectedRoleId);
+            if (selectedRole && selectedRole.permissions) {
+              const rolePermissionIds = selectedRole.permissions.map(p => p.id);
+              
+              // Mark permissions as checked if they belong to the selected role
+              this.mappedPermissions.forEach(permission => {
+                permission.checked = rolePermissionIds.includes(permission.id);
+              });
+            }
+          }
+          
+          console.log('Mapped permissions:', this.mappedPermissions);
+        }
+        
+        console.log(this.rolesList, 'rolesList');
+        console.log(this.roles, 'roles');
+      }
     });
   }
 
@@ -181,70 +226,80 @@ export class CreateUserComponent implements OnInit {
     this.viewPermission = !this.viewPermission;
     if (this.viewPermission) {
       this.userForm.get('overridePermission')?.setValue(true);
-    
     } else {
       this.userForm.get('overridePermission')?.setValue(false);
     }
   }
 
-
-      //get permission for selected role
-      allPermission:any[]=[]
-      mappedPermissions:any[]=[]
-      selectedRoleId:any
-      getRadioInfo(event:any){
-        if(event.value){
-          if(event.value!=this.selectedRoleId){
-           this.userForm.get('extraPermissions')?.setValue([])
-            this.selectedRoleId=event.value
-          }
-        }
+  //get permission for selected role
+  allPermission: any[] = [];
+  mappedPermissions: any[] = [];
+  selectedRoleId: any;
+  getRadioInfo(event: any) {
+    if (event.value) {
+      if (event.value != this.selectedRoleId) {
+        // Reset extraPermissions when role changes
+        this.userForm.get('extraPermissions')?.setValue([]);
+        this.selectedRoleId = event.value;
         
-            this.permissionService.getPermissionsForRole(event.value).subscribe(selectedPermissions => {
-        this.selectedPermission = selectedPermissions;
-      
-        this.permissionService.getPermissions().subscribe(allPermissions => {
-          this.allPermission = allPermissions;
-      
-          // Transform allPermission to mark selected permissions
-          this.mappedPermissions = this.allPermission.map(permission => ({
-            ...permission,
-            checked: this.selectedPermission.some(selected => selected.id === permission.id) // Assuming permissions have an 'id' property
-          }));
-        });
-      });
-      }
-   
-      addExtraPermission(event: any, permissionId: number) {
-     
-        let selectedPermissions = this.userForm.value.extraPermissions || [];
-      
-        if (event.checked) {
-          if (!selectedPermissions.includes(permissionId)) {
-            selectedPermissions.push(permissionId);
-              this.mappedPermissions.forEach(perm=>{
-            if(perm.id==permissionId){
-              perm.checked=event.checked
-            }
-          })
-            
+        // Find the selected role object
+        const selectedRole = this.roles.find(role => role.id === this.selectedRoleId);
+        
+        if (selectedRole && selectedRole.permissions) {
+          // Get IDs of permissions assigned to this role
+          const rolePermissionIds = selectedRole.permissions.map(p => p.id);
+          
+          // Update mappedPermissions to reflect the role's permissions
+          this.mappedPermissions.forEach(permission => {
+            // Set checked to true if the permission is in the role's permissions
+            permission.checked = rolePermissionIds.includes(permission.id);
+          });
+          
+          // If we want to prefill extraPermissions with the role's permissions
+          // (useful if override is enabled by default)
+          if (this.viewPermission) {
+            this.userForm.get('extraPermissions')?.setValue([...rolePermissionIds]);
           }
+          
+          console.log('Updated permissions based on role selection:', this.mappedPermissions);
         } else {
-          selectedPermissions = selectedPermissions.filter((id: number) => id !== permissionId);
-          this.mappedPermissions.forEach(perm=>{
-            if(perm.id==permissionId){
-              perm.checked=event.checked
-            }
-          })
+          // If no role found or no permissions for role, reset all to unchecked
+          this.mappedPermissions.forEach(permission => {
+            permission.checked = false;
+          });
         }
-      
-        // Explicitly patch the updated permissions to ensure form reflects changes
-        this.userForm.patchValue({ extraPermissions: [...selectedPermissions] });
-      
-        console.log("Newly added extraPermissions:", this.userForm.value.extraPermissions);
       }
+    }
+  }
 
-      hasPermission(permission: string): boolean {
-        return this.authService.getUserPermissions().includes(permission);
+  addExtraPermission(event: any, permissionId: number) {
+    let selectedPermissions = this.userForm.value.extraPermissions || [];
+
+    if (event.checked) {
+      if (!selectedPermissions.includes(permissionId)) {
+        selectedPermissions.push(permissionId);
+        this.mappedPermissions.forEach((perm) => {
+          if (perm.id == permissionId) {
+            perm.checked = event.checked;
+          }
+        });
       }
+    } else {
+      selectedPermissions = selectedPermissions.filter((id: number) => id !== permissionId);
+      this.mappedPermissions.forEach((perm) => {
+        if (perm.id == permissionId) {
+          perm.checked = event.checked;
+        }
+      });
+    }
+
+    // Explicitly patch the updated permissions to ensure form reflects changes
+    this.userForm.patchValue({ extraPermissions: [...selectedPermissions] });
+
+    console.log('Newly added extraPermissions:', this.userForm.value.extraPermissions);
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.authService.getUserPermissions().includes(permission);
+  }
 }

@@ -20,7 +20,7 @@ loginForm!:FormGroup
 private userService=inject(UserService)
 constructor(private route:Router){
   this.loginForm= new FormGroup({
-    username:new FormControl('',Validators.required),
+    email:new FormControl('',Validators.required),
     password:new FormControl('',Validators.required)
   })
 }
@@ -28,9 +28,9 @@ loading=false
 login() {
   if (this.loginForm.valid) {
    
-    const { username, password } = this.loginForm.value;
+    const { email, password } = this.loginForm.value;
 
-    this.userService.login(username, password).subscribe({
+    this.userService.login(email, password).subscribe({
       next: (response) => {
      
          // Hide loader
@@ -57,7 +57,7 @@ login() {
 
         let errorMessage = 'Login failed. Please try again.';
         if (error.status === 401) {
-          errorMessage = 'Invalid username or password.';
+          errorMessage = 'Invalid email or password.';
         } else if (error.error?.message) {
           errorMessage = error.error.message;
         }

@@ -16,7 +16,7 @@ export class AuthService {
   refreshAccessToken(): Observable<{ accessToken: string; role: string; permissions: string[] }> {
     const refreshToken = localStorage.getItem('refreshToken');
     return this.http.post<{ accessToken: string; role: string; permissions: string[] }>(
-      `${this.baseUrl}/refresh-token`,
+      `${this.baseUrl}/users/refresh-token`,
       { refreshToken }
     ).pipe(
       map(response => {

@@ -4,6 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -14,7 +15,7 @@ MatButtonModule
 @Component({
   selector: 'app-select-provider',
   standalone: true,
-  imports: [MatDialogModule,MatIconModule,MatButtonModule,MatRadioModule,MatFormFieldModule,MatInputModule],
+  imports: [FormsModule,MatDialogModule,MatIconModule,MatButtonModule,MatRadioModule,MatFormFieldModule,MatInputModule],
   templateUrl: './select-provider.component.html',
   styleUrl: './select-provider.component.scss'
 })
@@ -111,6 +112,8 @@ export class SelectProviderComponent implements OnInit {
        }else if(this.data=='Verification Provider'){
         this.providers=this.verification_provider
        }
+       this.filteredProviders = [...this.providers];
+
     }
     
     setValue(result:string){
@@ -118,8 +121,16 @@ export class SelectProviderComponent implements OnInit {
         result
       )
     }
-    //to reset value
-    // reset(){
-    //   this.dialogRef.close('reset')
-    // }
+    //search apply
+    searchTerm:any
+    filteredProviders: string[] = []; // Filtered list of providers
+
+    filterOptions(): void {
+      // Filter the providers based on the search term
+      const lowerCaseSearchTerm = this.searchTerm.toLowerCase();
+      this.filteredProviders = this.providers.filter((provider) =>
+        provider.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+    }
+  
 }

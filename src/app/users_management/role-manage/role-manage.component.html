@@ -25,7 +25,6 @@
           @if(hasPermission('edit_roles')||hasPermission('delete_roles')||hasPermission('assign_permissions')){
             <th>Actions</th>
           }
-        
         </tr>
       </thead>
       <tbody>
@@ -46,7 +45,7 @@
                   @if(editRoleId !== role.id){
                     <button mat-raised-button (click)="startEdit(role)">Edit</button>
                 }@else if (editRoleId === role.id) {
-                    <button mat-raised-button (click)="updateRole()">Save</button>
+                    <button mat-raised-button (click)="updateRole()">Update</button>
                 }
                 }
                 @if(hasPermission('delete_roles')){

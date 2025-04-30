@@ -51,16 +51,16 @@ export class PermissionsComponent {
     });
   }
   loadPermissions() {
-    this.permissionService.getPermissions().subscribe(data => {
-      this.permissions = data;
+    this.permissionService.getPermissions().subscribe((res:any) => {
+      this.permissions = res.data;
     });
   }
 
   addPermission() {
     if (!this.newPermissionName.trim()) return;
-    this.permissionService.addPermission(this.newPermissionName, this.newPermissionDescription).subscribe(() => {
+    this.permissionService.addPermission(this.newPermissionName).subscribe(() => {
       this.newPermissionName = '';
-      this.newPermissionDescription = '';
+      // this.newPermissionDescription = '';
       this.loadPermissions();
     });
   }

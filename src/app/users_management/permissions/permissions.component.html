@@ -9,10 +9,10 @@
           <input type="text" matInput [(ngModel)]="newPermissionName" />
         </mat-form-field>
         &nbsp; &nbsp; &nbsp;
-        <mat-form-field>
+        <!-- <mat-form-field>
           <mat-label>Permission Description</mat-label>
           <input type="text" matInput [(ngModel)]="newPermissionDescription" />
-        </mat-form-field>
+        </mat-form-field> -->
         &nbsp; &nbsp; &nbsp;
         <button mat-raised-button (click)="addPermission()">
           Add Permission
@@ -26,7 +26,7 @@
         <tr>
           <th>ID</th>
           <th>Role Name</th>
-          <th>Description</th>
+          <!-- <th>Description</th> -->
           @if(hasPermission("edit_permissions") ||hasPermission("delete_permission") ){
             <th>Actions</th>
           }
@@ -44,13 +44,13 @@
             }
           </td>
   
-          <td>
+          <!-- <td>
             @if(editPermId !== permission.id){
             <span>{{ permission.description }}</span>
             }@else if(editPermId === permission.id){
             <input [(ngModel)]="editPermDescription" />
             }
-          </td>
+          </td> -->
           <td>
             @if(hasPermission("edit_permissions")){
               @if(editPermId !== permission.id){
