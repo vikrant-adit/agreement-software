@@ -103,7 +103,7 @@
         <h2>Please add-on at least one of the following packages:</h2>
         <div class="package">
           @if(pricingArray.add_on_phones!=null){
-            <div class="phone-package" [class.selected]="!phoneSelected"  (click)="phoneAddOnPriceAdd(pricingArray.add_on_phones)">
+            <div class="phone-package" [class.selected]="!phoneSelected"  (click)="handlePhoneAddOnClick(pricingArray.add_on_phones)">
               <div class="heading">
                 <h2>
                   <mat-icon> settings_phone </mat-icon>
@@ -132,7 +132,7 @@
             </div>
           }
           @if(pricingArray.add_on_analytic){
-            <div class="analytic-pacakge" [class.selected]="!analyticsSelected" (click)="analyticAddOnPriceAdd(pricingArray.add_on_analytic)">
+            <div class="analytic-pacakge" [class.selected]="!analyticsSelected" (click)="handleAnalyticsAddOnClick(pricingArray.add_on_analytic)">
               <div class="heading">
                 <h2>
                   <mat-icon> analytics </mat-icon>
@@ -164,7 +164,7 @@
             </div>
           }
           @if(pricingArray.add_on_verification){
-            <div class="verification-package" [class.selected]="!verificationSelected" (click)="verificationAddOnPriceAdd(pricingArray.add_on_verification)">
+            <div class="verification-package" [class.selected]="!verificationSelected" (click)="handleVerificationAddOnClick(pricingArray.add_on_verification)">
               <div class="heading">
                 <h2>
                   <mat-icon> price_check </mat-icon>
@@ -207,7 +207,13 @@
           <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
         }
       }
+     
     </div>
+    @if(promotionDateSelected && promotionDate){
+  <div class="promotion-date-banner">
+    Your Special Prices Are Valid Until {{promotionDate}}
+  </div>
+}
     <div class="head">
       <div class="title-head">
         <h3>How would you like to pay?</h3>
@@ -606,12 +612,15 @@
           </span> 
         </p>
         @if(isAnnually){
-          <p style="margin:0;"> <span style="font-size:16px">
-            <span style="font-size: 32px; color: rgb(255, 128, 0); font-weight: 700;">$199</span> /mo 1st year</span></p>
-            <p style="font-size: 16px;">
+          <p style="margin:0;"> 
+            <!-- <span style="font-size:16px"> -->
+            <span style="font-size: 32px; color: rgb(255, 128, 0); font-weight: 700;">${{newPackageTotalAnnualy}}</span>
+             <!-- /mo 1st year</span> -->
+            </p>
+            <!-- <p style="font-size: 16px;">
               <span style="font-weight: 700;font-size: 20px;">${{newPackageTotalAnnualy}}</span>
               /mo after
-            </p>
+            </p> -->
             <span class="subtext"> $600 Saved By Going Annular</span>
         }@else {
           <h2 style="margin:5px;font-size: 36px;"> ${{newPackageTotalMonthly}} </h2>

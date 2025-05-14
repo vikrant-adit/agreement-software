@@ -27,7 +27,6 @@ import { DatePipe } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import {MatDialogModule, MatDialog} from '@angular/material/dialog'
 import { SelectColumnDialogComponent } from './select-column-dialog/select-column-dialog.component';
-import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 import Swal from 'sweetalert2';
 @Component({
@@ -104,6 +103,7 @@ export class DashboardComponent {
     { id: 'created_at', name: 'Date Requested', selected: true },
     { id: 'sales_person_account_name', name: 'Sales Person Account Name', selected: true },
     { id: 'sales_person_name', name: 'Sales Person Name', selected: true },
+    {id:'newOrExistingClient',name:'Customer Type',selected:true},
     { id: 'multipleLocations', name: 'Multi Location', selected: true },
     { id: 'display_pricing', name: 'Display Pricing', selected: true },
     { id: 'display_techstack', name: 'Display Tech Stack', selected: true },
@@ -126,7 +126,7 @@ export class DashboardComponent {
     { id: 'aditLiteAnnual_Disc', name: 'Disc. Adit Lite Price (Annual)', selected: true },
     { id: 'aditCore_monthly', name: 'Adit Core Price (monthly)', selected: true },
     { id: 'aditCore_annually', name: 'Adit Core Price (Annual)', selected: true },
-    { id: 'status', name: 'Status', selected: true }
+    { id: 'status', name: 'Status', selected: true }, 
   ];
 
   // Dynamically updated columns list
@@ -187,8 +187,10 @@ export class DashboardComponent {
       .subscribe({
         next: (response) => {
           this.dataSource = new MatTableDataSource(response.data);
-          this.totalRecords = response.total;
-
+          this.totalRecords = response.pagination.total;
+          // this.pageSize = response.pagination.totalPages;
+          this.currentPage = response.pagination.page;
+          console.log(this.totalRecords,this.pageSize,this.currentPage)
           // Set paginator properties
           if (this.paginator) {
             this.paginator.length = this.totalRecords;
@@ -213,8 +215,10 @@ export class DashboardComponent {
         {
           next: (response) => {
             this.dataSource = new MatTableDataSource(response.data);
-            this.totalRecords = response.total;
-
+              this.totalRecords = response.pagination.total;
+          // this.pageSize = response.pagination.totalPages;
+          this.currentPage = response.pagination.page;
+        
             // Set paginator properties
             if (this.paginator) {
               this.paginator.length = this.totalRecords;
@@ -268,6 +272,7 @@ export class DashboardComponent {
   }
 
   readDateRange() {
+    console.log(this.range.value,'gettting called');
     this.range.valueChanges.subscribe((res) => {
       if (res.start && res.end) {
         console.log(res);

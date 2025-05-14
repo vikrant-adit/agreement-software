@@ -2,11 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule,FormGroup, FormControl,FormsModule, Validators } from '@angular/forms';
 import { UserService } from '../../../services/users/user.service';
-import {
-  MatSnackBar,
-  MatSnackBarHorizontalPosition,
-  MatSnackBarVerticalPosition,
-} from '@angular/material/snack-bar';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -15,7 +11,7 @@ import {
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-private _snackBar = inject(MatSnackBar);
+private toaster = inject(ToastrService);
 loginForm!:FormGroup
 private userService=inject(UserService)
 constructor(private route:Router){
@@ -72,10 +68,7 @@ login() {
 }
 
 openSnackBar(msg:string) {
-  this._snackBar.open(msg, 'OK', {
-    horizontalPosition: 'center',
-    verticalPosition: 'top',
-  });
+  this.toaster.success(msg, 'Success');
 }
 
 }

@@ -12,6 +12,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RolesService } from '../../../../services/roles/roles.service';
 import { UserService } from '../../../../services/users/user.service';
@@ -35,6 +36,7 @@ interface Permission {
 @Component({
   standalone: true,
   imports: [
+    MatTooltipModule,
     HeaderComponent,
     MatIconModule,
     MatCheckboxModule,
@@ -57,13 +59,13 @@ export class CreateUserComponent implements OnInit {
   userForm: FormGroup;
   private roleService = inject(RolesService);
   private userService = inject(UserService);
-  private permissionService = inject(PermissionsService);
+  // private permissionService = inject(PermissionsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   userId: number | null = null;
   roles: Role[] = [];
-  rolesList: string[] = [];
+  rolesList: any[] = [];
   permissionList: any[] = [];
   viewPermission = false;
   edit = false;
@@ -112,15 +114,15 @@ export class CreateUserComponent implements OnInit {
       // Password should not be prefilled for security reasons
       this.userForm.get('password')?.setValidators([]);
       this.userForm.get('password')?.updateValueAndValidity();
-      this.permissionService.getPermissions().subscribe((permissionsData: any) => {
-        let permissions = permissionsData.data;
-        console.log(permissions, 'asdaseqweqweqweqweqwe');
-        this.permissionList = permissions.map((permission: any) => ({
-          ...permission,
-          checked: user.extraPermissions.includes(permission.id), // Mark selected
-        }));
-        console.log(this.permissionList);
-      });
+      // this.permissionService.getPermissions().subscribe((permissionsData: any) => {
+      //   let permissions = permissionsData.data;
+      //   console.log(permissions, 'asdaseqweqweqweqweqwe');
+      //   this.permissionList = permissions.map((permission: any) => ({
+      //     ...permission,
+      //     checked: user.extraPermissions.includes(permission.id), // Mark selected
+      //   }));
+      //   console.log(this.permissionList);
+      // });
     });
   }
 
@@ -141,7 +143,7 @@ export class CreateUserComponent implements OnInit {
     console.log('Updated extraPermissions:', this.userForm.value.extraPermissions);
   }
 
-  generatePassword(inputElement: HTMLInputElement) {
+  generatePassword(inputElement: HTMLInputElement) {0
     const tempPassword = Math.random().toString(36).slice(-8);
     this.userForm.patchValue({ password: tempPassword });
 

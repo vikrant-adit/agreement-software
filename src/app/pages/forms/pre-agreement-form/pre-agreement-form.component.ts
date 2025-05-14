@@ -100,27 +100,57 @@ export class PreAgreementFormComponent implements OnInit {
   formPatched: boolean = false;
 
   ngOnInit(): void {
-    this.onPromotionChange()
-    this.getPricingControls()
-    let id =  this.activeRouter.snapshot.params['id']
-    if(id){
+    // First set up form change monitors
+    this.preAgreementForm.get('accountId')?.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      filter(value => value.length === 19)
+    ).subscribe(value => {
+      if (this.preAgreementForm.get('accountId')?.valid && !this.formPatched) {
+        this.fetchDeals(value);
+      }
+    });
+    
+    // Check for ID param and load existing data if available
+    let id = this.activeRouter.snapshot.params['id'];
+    if (id) {
       this.agreementId = id;
       this.formService.getAgreement(this.agreementId).subscribe(res => {
-        this.preAgreementForm.patchValue(res.data);
+        console.log('Loaded agreement data:', res.data);
         
-        // Check if deal exists in the response data
+        // First set the promotion type to ensure correct pricing controls
+        if (res.data.sales_person_promotion_type) {
+          this.preAgreementForm.get('sales_person_promotion_type')?.setValue(res.data.sales_person_promotion_type);
+          this.selectedPromotion = res.data.sales_person_promotion_type;
+          
+          // Initialize promotion controls before patching pricing values
+          this.onPromotionChange();
+        }
+        
+        // Then patch the general form data
+        this.preAgreementForm.patchValue({
+          practiceIndustry: res.data.practiceIndustry,
+          newOrExistingClient: res.data.newOrExistingClient,
+          multipleLocations: res.data.multipleLocations,
+          accountId: res.data.accountId,
+          currency: res.data.currency,
+          pms: res.data.pms,
+          displayPricing: res.data.displayPricing || false,
+          displayTechStackComparison: res.data.displayTechStackComparison || false,
+          event_type: res.data.event_type,
+          promotionExpiryDate: res.data.promotionExpiryDate,
+          promotionExpiryDate_display: res.data.promotionExpiryDate_display
+        });
+        
+        // Handle deal data
         if (res.data.deal) {
-          // Set both deal and deal_id values
           this.preAgreementForm.patchValue({
             deal: res.data.deal,
-            deal_id: res.data.deal_id  // Assuming deal_id is available in the response
+            deal_id: res.data.deal_id
           });
-
-          console.log('Form data:', res.data.deal, res.data.deal_id);
           
-          // If you need to populate the deals array for the dropdown
+          // Load deals for dropdown
           if (res.data.accountId && !this.deals.length) {
-            // Optional: fetch deals for this account to ensure the dropdown has options
             this.formService.fetchDeal(res.data.accountId).subscribe({
               next: (response: any) => {
                 if (response.success && response.data.deals.length > 0) {
@@ -131,34 +161,113 @@ export class PreAgreementFormComponent implements OnInit {
           }
         }
         
+        // Set industry type
         this.dental_or_optometry = res.data.practiceIndustry;
-        if(res.data.displayPricing){
-          this.preAgreementForm.get('displayPricing')?.setValue(true);
-        }
         
-        // Set the flag after patching values
+        // Initialize add-ons and bundle states with direct pricing data
+        this.initializeAddOnsAndBundleStates(res.data);
+        
+        // Set the form patched flag
         this.formPatched = true;
         
-        this.onPromotionChange();
-        this.getPricingControls();
-        if(res.data.displayTechStackComparison){
+        // Handle tech stack comparison
+        if (res.data.displayTechStackComparison) {
           this.sendForm = res.data.techStack;
-          console.log(this.sendForm);
         }
+        
+        // Update pricing controls
+        this.getPricingControls();
       });
+    } else {
+      // For new forms, initialize with default promotion
+      this.onPromotionChange();
+      this.getPricingControls();
     }
-    // this.onPromotionChange();
-    this.preAgreementForm.get('accountId')?.valueChanges.pipe(
-        debounceTime(300), // Wait for 300ms after the user stops typing
-        distinctUntilChanged(), // Only emit if the value has changed
-        filter(value => value.length === 19) // Only proceed if the input is exactly 19 digits
-      )
-      .subscribe(value => {
-        // Only fetch deals if the form is valid AND we haven't patched values from existing data
-        if (this.preAgreementForm.get('accountId')?.valid && !this.formPatched) {
-          this.fetchDeals(value);
+  }
+
+  initializeAddOnsAndBundleStates(data: any) {
+    // Wait a short time for form controls to be created after promotion change
+    setTimeout(() => {
+      // Check if we have pricing data directly in the data object
+      if (data) {
+        const pricingKeys = [
+          'activation_fee', 'analyticAnnual', 'techMonthly_Disc', 'analyticAnnual_Disc',
+          'techAnnual', 'techMonthly', 'techAnnual_Disc', 'analyticMonthly',
+          'analyticMonthly_Disc', 'aditLiteMontly', 'aditLiteMontly_Disc',
+          'aditLiteAnnual', 'aditLiteAnnual_Disc', 'aditCore_monthly',
+          'aditCore_annually', 'add_on_phones', 'add_on_analytic',
+          'add_on_verification', 'pozative_Only_Monthly', 'pozative_Only_Annually',
+          'verifications_Only_Monthly', 'verifications_Only_Annually'
+        ];
+        
+        const pricingFormGroup = this.preAgreementForm.get('pricingDetails') as FormGroup;
+        
+        // Process pricing data from the data object
+        pricingKeys.forEach(key => {
+          // Skip null values and _Min/_Max fields
+          if (data[key] !== null && data[key] !== undefined && !key.endsWith('_Min') && !key.endsWith('_Max')) {
+            // Make sure the form control exists before setting the value
+            if (pricingFormGroup.get(key)) {
+              pricingFormGroup.get(key)?.setValue(data[key]);
+              console.log(`Setting ${key} to ${data[key]}`);
+            } else {
+              // If the control doesn't exist yet, create it
+              const minValue = data[`${key}_Min`] ?? null;
+              const maxValue = data[`${key}_Max`] ?? null;
+              const isEditable = minValue !== null && maxValue !== null;
+              
+              pricingFormGroup.addControl(
+                key,
+                new FormControl(
+                  data[key],
+                  isEditable ? [Validators.min(minValue), Validators.max(maxValue)] : []
+                )
+              );
+            }
+            
+            // Handle add-ons checkboxes state
+            if (key === 'add_on_phones' && data[key] !== null) {
+              this.phoneState = false;
+              this.addOnStates['add_on_phones'] = true;
+            } else if (key === 'add_on_analytic' && data[key] !== null) {
+              this.analyticsState = false;
+              this.addOnStates['add_on_analytic'] = true;
+            } else if (key === 'add_on_verification' && data[key] !== null) {
+              this.verificationState = false;
+              this.addOnStates['add_on_verification'] = true;
+            }
+            
+            // Handle bundle states based on monthly/annually pairs
+            if ((key === 'pozative_Only_Monthly' || key === 'pozative_Only_Annually') && 
+                (data['pozative_Only_Monthly'] !== null || data['pozative_Only_Annually'] !== null)) {
+              this.pozativeState = false;
+              this.bundleStates['pozative_Only_Monthly'] = true;
+              this.bundleStates['pozative_Only_Annually'] = true;
+            } else if ((key === 'verifications_Only_Monthly' || key === 'verifications_Only_Annually') && 
+                      (data['verifications_Only_Monthly'] !== null || data['verifications_Only_Annually'] !== null)) {
+              this.verificationOnlyState = false;
+              this.bundleStates['verifications_Only_Monthly'] = true;
+              this.bundleStates['verifications_Only_Annually'] = true;
+            } else if ((key === 'aditCore_monthly' || key === 'aditCore_annually') && 
+                      (data['aditCore_monthly'] !== null || data['aditCore_annually'] !== null)) {
+              this.aditCoreState = false;
+              this.bundleStates['aditCore_monthly'] = true;
+              this.bundleStates['aditCore_annually'] = true;
+            }
+          }
+        });
+        
+        // Update the selected promotion type if it's not already set
+        if (data.sales_person_promotion_type && 
+            !this.preAgreementForm.get('sales_person_promotion_type')?.value) {
+          this.preAgreementForm.get('sales_person_promotion_type')?.setValue(data.sales_person_promotion_type);
+          this.selectedPromotion = data.sales_person_promotion_type;
         }
-      });
+        
+        // Ensure form validity is updated
+        this.preAgreementForm.updateValueAndValidity();
+      }
+    }, 300); // Wait for form controls to be created
   }
 
   addVaildate(){
@@ -169,27 +278,23 @@ export class PreAgreementFormComponent implements OnInit {
     }
   }
   onSubmit() {
-    // Set the techStack value from receivedForm
-    
+    // Set the techStack value from receivedForm and handle add-on states
     if(this.phoneState==false){
       const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_phones');
         if(addOnVerificationControl){
           addOnVerificationControl.setValue(null)
-
         }
     }
     if(this.analyticsState==false){
       const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_analytic');
         if(addOnVerificationControl){
           addOnVerificationControl.setValue(null)
-
         }
     }
     if(this.verificationState==false){
       const addOnVerificationControl = this.preAgreementForm.get('pricingDetails.add_on_verification');
         if(addOnVerificationControl){
           addOnVerificationControl.setValue(null)
-
         }
     }
     if(this.pozativeState==false){
@@ -199,7 +304,6 @@ export class PreAgreementFormComponent implements OnInit {
         if(addOnVerificationControl1 && addOnVerificationControl2){
           addOnVerificationControl1.setValue(null)
           addOnVerificationControl2.setValue(null)
-
         }
     }
     if(this.aditCoreState==false){
@@ -209,7 +313,6 @@ export class PreAgreementFormComponent implements OnInit {
         if(addOnVerificationControl1 && addOnVerificationControl2){
           addOnVerificationControl1.setValue(null)
           addOnVerificationControl2.setValue(null)
-
         }
     }
     if(this.verificationOnlyState==false){
@@ -219,20 +322,23 @@ export class PreAgreementFormComponent implements OnInit {
         if(addOnVerificationControl1 && addOnVerificationControl2){
           addOnVerificationControl1.setValue(null)
           addOnVerificationControl2.setValue(null)
-
         }
     }
     
-    console.log('Priceing',this.preAgreementForm.value)
+    console.log('Pricing', this.preAgreementForm.value);
+    
     // Check if the form is valid
-    if(this.preAgreementForm.get('displayTechStackComparison')?.value==true){
+    if(this.preAgreementForm.get('displayTechStackComparison')?.value == true) {
       this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
-      debugger
     }
 
-    if (this.preAgreementForm.valid && this.preAgreementForm.get('displayPricing')?.value==true ||  this.preAgreementForm.get('displayTechStackComparison')?.value==true) {
+    if (this.preAgreementForm.valid && this.preAgreementForm.get('displayPricing')?.value == true || this.preAgreementForm.get('displayTechStackComparison')?.value == true) {
+      // IMPORTANT: Store the multiple locations value BEFORE processing the form
+      const multipleLocations = this.preAgreementForm.get('multipleLocations')?.value;
+      console.log('Multiple locations value (before submit):', multipleLocations);
+      
       const formData = new FormData();
-  
+    
       // Append non-file form fields except techStack
       Object.keys(this.preAgreementForm.value).forEach(key => {
         if (key === 'techStack') return; // Skip techStack for now
@@ -243,47 +349,61 @@ export class PreAgreementFormComponent implements OnInit {
           formData.append(key, value);
         }
       });
-  
+    
       // Conditionally append techStack
       if (this.preAgreementForm.get('displayTechStackComparison')?.value === true) {
         formData.append('techStack', JSON.stringify(this.preAgreementForm.get('techStack')?.value));
       } else {
         formData.append('techStack', JSON.stringify([])); // Send blank array if false
       }
-  
+    
       // Append file separately if selected
       if (this.selectedFile) {
         formData.append('fileUpload', this.selectedFile, this.selectedFile.name); // Include file name
       }
-  
+    
       // Log the FormData for debugging
       console.log("Data that is submitted:", formData);
-  
+    
       // Submit the form data to the API
-      if(this.agreementId){
-        this.formService.updateForm(formData,this.agreementId).subscribe({
+      if(this.agreementId) {
+        this.formService.updateForm(formData, this.agreementId).subscribe({
           next: (response) => {
             console.log('Form updated successfully:', response);
             this.toastr.success('Form submitted successfully!');
-            this.preAgreementForm.reset(); // Reset the form
-            this.selectedFile = null; // Clear the selected file
-            this.router.navigate(['/view-agreement/'+response.data.agreementId])
+            
+            // Navigate based on the stored multipleLocations value
+            if (multipleLocations === 'yes') {
+              this.router.navigate(['/view-agreements/' + response.data.agreementId]);
+            } else {
+              this.router.navigate(['/view-agreement/' + response.data.agreementId]);
+            }
+            
+            // Reset the form AFTER navigation decision
+            this.preAgreementForm.reset();
+            this.selectedFile = null;
           },
           error: (error) => {
             console.error('Error submitting form:', error);
             alert('Error submitting form. Please try again.');
           }
         });
-      }else{
-
+      } else {
         this.formService.saveForm(formData).subscribe({
           next: (response) => {
             console.log('Form submitted successfully:', response);
-            this.router.navigate(['/view-agreement'])
             this.toastr.success('Form submitted successfully!');
-            this.preAgreementForm.reset(); // Reset the form
-            this.selectedFile = null; // Clear the selected file
-            this.router.navigate(['/view-agreement/'+response.data.agreementId])
+            
+            // Navigate based on the stored multipleLocations value
+            if (multipleLocations === 'yes') {
+              this.router.navigate(['/view-agreements/' + response.data.agreementId]);
+            } else {
+              this.router.navigate(['/view-agreement/' + response.data.agreementId]);
+            }
+            
+            // Reset the form AFTER navigation decision
+            this.preAgreementForm.reset();
+            this.selectedFile = null;
           },
           error: (error) => {
             console.error('Error submitting form:', error);
@@ -315,6 +435,10 @@ export class PreAgreementFormComponent implements OnInit {
       'pricingDetails'
     ) as FormGroup;
     this.selectedPromotion = selectedPromo; // Capture selected promotion type
+    
+    // Store existing values to restore after changing promotion
+    const existingValues = this.formPatched ? { ...pricingDetails.value } : null;
+    
     if(this.selectedPromotion === 'Event'){
       this.eventService.getUsers().subscribe(res=>{
        this.eventOptions = res
@@ -350,11 +474,15 @@ export class PreAgreementFormComponent implements OnInit {
           const minValue = newPricing[`${control}_Min`] ?? null;
           const maxValue = newPricing[`${control}_Max`] ?? null;
           const isEditable = minValue !== null && maxValue !== null;
+          
+          // Use existing value if available and patching form
+          const initialValue = existingValues && existingValues[control] !== undefined ? 
+                              existingValues[control] : newPricing[control];
 
           pricingDetails.addControl(
             control,
             new FormControl(
-              newPricing[control],
+              initialValue,
               isEditable
                 ? [
                     Validators.min(minValue),
@@ -368,16 +496,65 @@ export class PreAgreementFormComponent implements OnInit {
 
       // Ensure `activation_fee` is always added
       if (!pricingDetails.get('activation_fee')) {
+        const activationFeeValue = existingValues && existingValues['activation_fee'] !== undefined ?
+                                existingValues['activation_fee'] : (newPricing.activation_fee ?? 0);
+        
         pricingDetails.addControl(
           'activation_fee',
-          new FormControl(newPricing.activation_fee ?? 0)
+          new FormControl(activationFeeValue)
         );
       }
 
       // Update form validity to trigger change detection
       this.preAgreementForm.updateValueAndValidity();
       this.loading = false;
+      
+      // If we're patching the form, ensure we update the add-on and bundle states
+      if (this.formPatched && existingValues) {
+        this.updateStatesFromPatchedValues(existingValues);
+      }
     }, 100);
+  }
+
+  // Add a new helper method for updating states from patched values
+  updateStatesFromPatchedValues(values: any) {
+    // Handle add-ons
+    if (values.add_on_phones !== null && values.add_on_phones !== undefined) {
+      this.phoneState = false;
+      this.addOnStates['add_on_phones'] = true;
+    }
+    
+    if (values.add_on_analytic !== null && values.add_on_analytic !== undefined) {
+      this.analyticsState = false;
+      this.addOnStates['add_on_analytic'] = true;
+    }
+    
+    if (values.add_on_verification !== null && values.add_on_verification !== undefined) {
+      this.verificationState = false;
+      this.addOnStates['add_on_verification'] = true;
+    }
+    
+    // Handle bundles
+    if (values.pozative_Only_Monthly !== null && values.pozative_Only_Monthly !== undefined ||
+        values.pozative_Only_Annually !== null && values.pozative_Only_Annually !== undefined) {
+      this.pozativeState = false;
+      this.bundleStates['pozative_Only_Monthly'] = true;
+      this.bundleStates['pozative_Only_Annually'] = true;
+    }
+    
+    if (values.verifications_Only_Monthly !== null && values.verifications_Only_Monthly !== undefined ||
+        values.verifications_Only_Annually !== null && values.verifications_Only_Annually !== undefined) {
+      this.verificationOnlyState = false;
+      this.bundleStates['verifications_Only_Monthly'] = true;
+      this.bundleStates['verifications_Only_Annually'] = true;
+    }
+    
+    if (values.aditCore_monthly !== null && values.aditCore_monthly !== undefined ||
+        values.aditCore_annually !== null && values.aditCore_annually !== undefined) {
+      this.aditCoreState = false;
+      this.bundleStates['aditCore_monthly'] = true;
+      this.bundleStates['aditCore_annually'] = true;
+    }
   }
 
   getMinValue(control: string): number | null {

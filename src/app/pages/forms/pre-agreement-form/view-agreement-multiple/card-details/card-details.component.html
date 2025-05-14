@@ -1,0 +1,129 @@
+<form [formGroup]="paymentForm" (ngSubmit)="onSubmit()" class="payment-form">
+  <div class="form-group">
+    <label>Billing Email Address*</label>
+    <input formControlName="email" type="email" placeholder="Billing Email Address*" />
+    @if (paymentForm.get('email')?.invalid && (paymentForm.get('email')?.dirty || paymentForm.get('email')?.touched)) {
+      <div class="error-message">
+        @if (paymentForm.get('email')?.errors?.['required']) {
+          <span>Email is required</span>
+        }
+        @if (paymentForm.get('email')?.errors?.['email']) {
+          <span>Please enter a valid email address</span>
+        }
+      </div>
+    }
+  </div>
+
+  <h3>Payment Information</h3>
+
+  <div class="form-group">
+    <input formControlName="cardNumber" type="text" placeholder="Card Number" />
+    @if (paymentForm.get('cardNumber')?.invalid && (paymentForm.get('cardNumber')?.dirty || paymentForm.get('cardNumber')?.touched)) {
+      <div class="error-message">
+        @if (paymentForm.get('cardNumber')?.errors?.['required']) {
+          <span>Card number is required</span>
+        }
+        @if (paymentForm.get('cardNumber')?.errors?.['pattern']) {
+          <span>Please enter a valid card number</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="form-row">
+    <div class="form-column">
+      <input formControlName="expiryDate" type="text" placeholder="MM / YY" />
+      @if (paymentForm.get('expiryDate')?.invalid && (paymentForm.get('expiryDate')?.dirty || paymentForm.get('expiryDate')?.touched)) {
+        <div class="error-message">
+          @if (paymentForm.get('expiryDate')?.errors?.['required']) {
+            <span>Expiry date is required</span>
+          }
+          @if (paymentForm.get('expiryDate')?.errors?.['pattern']) {
+            <span>Please enter a valid date (MM/YY)</span>
+          }
+        </div>
+      }
+    </div>
+    <div class="form-column">
+      <input formControlName="cvv" type="text" placeholder="CVV" />
+      @if (paymentForm.get('cvv')?.invalid && (paymentForm.get('cvv')?.dirty || paymentForm.get('cvv')?.touched)) {
+        <div class="error-message">
+          @if (paymentForm.get('cvv')?.errors?.['required']) {
+            <span>CVV is required</span>
+          }
+          @if (paymentForm.get('cvv')?.errors?.['pattern']) {
+            <span>Please enter a valid CVV</span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="form-group">
+    <input formControlName="address" type="text" placeholder="Address*" />
+    @if (paymentForm.get('address')?.invalid && (paymentForm.get('address')?.dirty || paymentForm.get('address')?.touched)) {
+      <div class="error-message">
+        @if (paymentForm.get('address')?.errors?.['required']) {
+          <span>Address is required</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="form-group">
+    <input formControlName="city" type="text" placeholder="City*" />
+    @if (paymentForm.get('city')?.invalid && (paymentForm.get('city')?.dirty || paymentForm.get('city')?.touched)) {
+      <div class="error-message">
+        @if (paymentForm.get('city')?.errors?.['required']) {
+          <span>City is required</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="form-row">
+    <div class="form-column">
+      <input formControlName="state" type="text" placeholder="State*" />
+      @if (paymentForm.get('state')?.invalid && (paymentForm.get('state')?.dirty || paymentForm.get('state')?.touched)) {
+        <div class="error-message">
+          @if (paymentForm.get('state')?.errors?.['required']) {
+            <span>State is required</span>
+          }
+        </div>
+      }
+    </div>
+    <div class="form-column">
+      <input formControlName="zip" type="text" placeholder="ZIP Code*" />
+      @if (paymentForm.get('zip')?.invalid && (paymentForm.get('zip')?.dirty || paymentForm.get('zip')?.touched)) {
+        <div class="error-message">
+          @if (paymentForm.get('zip')?.errors?.['required']) {
+            <span>ZIP code is required</span>
+          }
+          @if (paymentForm.get('zip')?.errors?.['pattern']) {
+            <span>Please enter a valid ZIP code</span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="form-group">
+    <select formControlName="country">
+      <option value="United States">United States</option>
+      <option value="Canada">Canada</option>
+      <option value="UK">UK</option>
+    </select>
+    @if (paymentForm.get('country')?.invalid && (paymentForm.get('country')?.dirty || paymentForm.get('country')?.touched)) {
+      <div class="error-message">
+        @if (paymentForm.get('country')?.errors?.['required']) {
+          <span>Country is required</span>
+        }
+      </div>
+    }
+  </div>
+
+  <button type="submit" class="submit-button" [disabled]="paymentForm.invalid">Complete Order</button>
+</form>
+
+
+

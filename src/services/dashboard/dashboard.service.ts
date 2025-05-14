@@ -26,7 +26,8 @@ export class DashboardService {
       .set('search', searchTerm)
       .set('status', status)
       .set('startDate', start)
-      .set('endDate', end);
+      .set('endDate', end)
+      .set('ngrok-skip-browser-warning', '1');
 
     return this.http.get<any>(this.baseUrl, { params }).pipe(
       catchError(this.handleError)

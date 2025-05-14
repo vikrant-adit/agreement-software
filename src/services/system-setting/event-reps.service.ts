@@ -17,16 +17,16 @@ export class EventRepsService {
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<any> {
-    return this.http.get(this.baseUrl+'/event-reps') .pipe(catchError(this.handleError));
+    return this.http.get(this.baseUrl+'/settings/sales-reps/list') .pipe(catchError(this.handleError));
   }
 
   deleteEventRep(id: number): Observable<any> {
-    return this.http.delete(this.baseUrl+'/event-reps'+id);
+    return this.http.delete(this.baseUrl+'/settings/sales-reps/'+id);
   }
 
   
   addEventRep(userId: number): Observable<any> {
-    return this.http.post(this.baseUrl+'/event-reps', { user_id: userId });
+    return this.http.post(this.baseUrl+'/settings/sales-reps/add', { userId: userId });
   }
 
 

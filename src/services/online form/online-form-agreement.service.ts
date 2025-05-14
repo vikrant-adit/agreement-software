@@ -41,6 +41,13 @@ export class OnlineFormAgreementService {
       catchError(this.handleError)
     );
   }
+
+  deletePracticeLocation(agreementId: string, locationId: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/practices-data/agreements/${agreementId}/practice-data/${locationId}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   // Handle errors
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';

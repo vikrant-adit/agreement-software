@@ -88,9 +88,14 @@ export class TechStackComparisonComponent implements OnInit {
       features:[[]]
     });
     this.techStackForm.valueChanges.subscribe(() => {
-      this.calculateTotal();
+      console.log('called');
+      // this.calculateTotal();
+        this.totalCost = Object.keys(this.techStackForm.controls)
+      .filter((key) => key.endsWith('_price'))
+      .map((key) => Number(this.techStackForm.controls[key].value) || 0)
+      .reduce((acc, val) => acc + val, 0);
       // this.techStackForm.get('features')?.setValue(this.featuresArray, { emitEvent: false });
-      this.techStackForm.get('tech_stack_total_price')?.setValue(this.totalCost, { emitEvent: false });
+      // this.techStackForm.get('tech_stack_total_price')?.setValue(this.totalCost, { emitEvent: false });
       this.formChanged.emit(this.techStackForm);
     });
   }
@@ -247,6 +252,22 @@ export class TechStackComparisonComponent implements OnInit {
       .filter((key) => key.endsWith('_price'))
       .map((key) => Number(this.techStackForm.controls[key].value) || 0)
       .reduce((acc, val) => acc + val, 0);
+      this.techStackForm.get('tech_stack_total_price')?.setValue(this.totalCost, { emitEvent: false });
+  }
+
+  calculateTotalDirectly() {
+    // Explicitly calculate the total from all price fields
+    const priceTotal = Object.keys(this.techStackForm.controls)
+      .filter(key => key.endsWith('_price') && key !== 'tech_stack_total_price')
+      .map(key => {
+        const value = this.techStackForm.get(key)?.value;
+        return Number(value) || 0;
+      })
+      .reduce((sum, current) => sum + current, 0);
+    
+    // Set the total price in the form
+    this.totalCost = priceTotal;
+    this.techStackForm.get('tech_stack_total_price')?.setValue(priceTotal, { emitEvent: false });
   }
 
   manageGapsInVerification(result: string) {
@@ -337,16 +358,43 @@ export class TechStackComparisonComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(result)
+      console.log(result);
       if (result) {  
-        if(result=='reset'){
+        if(result == 'reset') {
+          // Store the old price before resetting
+          const oldPrice = Number(this.techStackForm.get(formControlName + '_price')?.value) || 0;
+          
           this.techStackForm.get(formControlName)?.reset();
           this.techStackForm.get(formControlName + '_price')?.reset();
-          this.storeTheArray.pop()
+          
+          // Remove the previous value for this control from storeTheArray
+          const currentValue = this.techStackForm.get(formControlName)?.value;
+          if (currentValue) {
+            const index = this.storeTheArray.indexOf(currentValue);
+            if (index > -1) {
+              this.storeTheArray.splice(index, 1);
+            }
+          }
+          
           this.manageGaps();
-          return
+          this.calculateTotal();
+          return;
         }
+        
+        // Get the current value to check if we're updating
+        const currentValue = this.techStackForm.get(formControlName)?.value;
+        const oldPrice = Number(this.techStackForm.get(formControlName + '_price')?.value) || 0;
+        
+        // If there was a previous value, remove it from storeTheArray
+        if (currentValue && currentValue !== result) {
+          const index = this.storeTheArray.indexOf(currentValue);
+          if (index > -1) {
+            this.storeTheArray.splice(index, 1);
+          }
+        }
+        
         this.techStackForm.get(formControlName)?.setValue(result);
+        
         if (label == 'Verification Provider') {
           let price = this.verification_providers[result];
           this.techStackForm.get(formControlName + '_price')?.setValue(price);
@@ -354,9 +402,17 @@ export class TechStackComparisonComponent implements OnInit {
         } else {
           let price = this.pricing[result];
           this.techStackForm.get(formControlName + '_price')?.setValue(price);
-          this.storeTheArray.push(result); 
+          
+          // Only add to storeTheArray if it's not already there
+          if (!this.storeTheArray.includes(result)) {
+            this.storeTheArray.push(result);
+          }
+          
           this.manageGaps();
         }
+        
+        // Force recalculation to ensure correct total
+        this.calculateTotalDirectly();
       }
     });
   }

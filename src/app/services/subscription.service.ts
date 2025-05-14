@@ -13,7 +13,7 @@ export class SubscriptionService {
     verificationAddOn: number
   ): number {
     if (isAnnually) {
-      return basePackagePrice + phoneAddOn + analyticsAddOn + verificationAddOn;
+      return (basePackagePrice + phoneAddOn + analyticsAddOn + verificationAddOn) *12;
     }
     return 0;
   }

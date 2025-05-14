@@ -65,7 +65,7 @@
         <mat-label>Password</mat-label>
         <input matInput formControlName="password" type="password" #passwordInput />
         <button mat-icon-button matSuffix type="button" (click)="generatePassword(passwordInput)">
-          <mat-icon>autorenew</mat-icon>
+          <mat-icon matTooltip="Generate Password">autorenew</mat-icon>
         </button>
       </mat-form-field>
 

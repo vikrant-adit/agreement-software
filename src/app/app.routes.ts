@@ -17,6 +17,7 @@ import { SettingsComponent } from './users_management/settings/settings.componen
 import { AuthGuard } from './auth.guard';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 import { ViewAgreementComponent } from './pages/forms/pre-agreement-form/view-agreement/view-agreement.component';
+import { ViewAgreementMultipleComponent } from './pages/forms/pre-agreement-form/view-agreement-multiple/view-agreement-multiple.component';
 export const routes: Routes = [
   {
     path: '',
@@ -82,6 +83,12 @@ export const routes: Routes = [
   {
     path:'view-agreement/:agreementId',
     component:ViewAgreementComponent,
+    //  canActivate:[AuthGuard],
+    //  data: { permission: 'add_agreements' }
+  },
+  {
+    path:'view-agreements/:agreementId',
+    component:ViewAgreementMultipleComponent,
     //  canActivate:[AuthGuard],
     //  data: { permission: 'add_agreements' }
   },
