@@ -16,7 +16,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RolesService } from '../../../../services/roles/roles.service';
 import { UserService } from '../../../../services/users/user.service';
-import { PermissionsService } from '../../../../services/permissons/permissions.service';
 import { HeaderComponent } from '../../../header/header.component';
 import { AuthService } from '../../../../services/auth.service';
 
@@ -74,9 +73,8 @@ export class CreateUserComponent implements OnInit {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      username: ['', Validators.required],
       password: ['', Validators.required],
-      roleId: [],
+      role_id: [],
       overridePermission: [false],
       extraPermissions: [[]],
     });
@@ -104,13 +102,15 @@ export class CreateUserComponent implements OnInit {
         name: user.data.name,
         email: user.data.email,
         username: user.data.username,
-        roleId: user.data.role_id,
-        overridePermission: user.data.override_permisson === 1 ? true : false,
-        extraPermissions: user.data.extraPermissions,
+        role_id: user.data.role.id,
+        // overridePermission: user.data.override_permisson === 1 ? true : false,
+        // extraPermissions: user.data.extraPermissions,
       });
-      if (user.override_permisson == 1) {
-        this.viewPermission = true;
-      }
+     const mockEvent = { value: user.data.role.id };
+    this.getRadioInfo(mockEvent);
+      // if (user.override_permisson == 1) {
+      //   this.viewPermission = true;
+      // }
       // Password should not be prefilled for security reasons
       this.userForm.get('password')?.setValidators([]);
       this.userForm.get('password')?.updateValueAndValidity();
@@ -238,6 +238,7 @@ export class CreateUserComponent implements OnInit {
   mappedPermissions: any[] = [];
   selectedRoleId: any;
   getRadioInfo(event: any) {
+    console.log(event, 'event');
     if (event.value) {
       if (event.value != this.selectedRoleId) {
         // Reset extraPermissions when role changes

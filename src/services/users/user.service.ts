@@ -33,13 +33,13 @@ export class UserService {
 
   createUser(data: any): Observable<any> {
     return this.http
-      .post<any>(this.baseUrl + '/create-user', data)
+      .post<any>(this.baseUrl + '/users', data)
       .pipe(catchError(this.handleError));
   }
 
   updateUser(id:any,data: any): Observable<any> {
     return this.http
-      .put<any>(this.baseUrl + '/update-user/'+id, data)
+      .put<any>(this.baseUrl + '/users/'+id, data)
       .pipe(catchError(this.handleError));
   }
 

@@ -83,7 +83,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title> Roles</mat-panel-title>
           </mat-expansion-panel-header>
-            <mat-radio-group formControlName="roleId"  aria-label="Select an option">
+            <mat-radio-group formControlName="role_id"  aria-label="Select an option">
               @for (role of roles; track role.id) {
                 @if(hasPermission('add_admin') && role.name === 'Super Admin'){
                   <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
