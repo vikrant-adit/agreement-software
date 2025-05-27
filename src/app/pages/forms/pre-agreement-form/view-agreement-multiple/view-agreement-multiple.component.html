@@ -8,13 +8,16 @@
     <button class="edit" mat-flat-button type="button" (click)="editForm()">
       Edit
     </button>
-    @if(showtechStackGap){
+    @if(!hideAllcards){
+        @if(showtechStackGap || showOnlyTechStack){
       <div class="card">
         <div class="spending">
-          <div class="check">
+        @if(hideAllcards){
+            <div class="check">
             <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
             <mat-icon class="editIcon" (click)="editAllForm()" matTooltip="edit">edit</mat-icon>
           </div>
+        }
           <div class="spend-title">
             <h2>
               So You’re Spending <span>${{ totalCost }}</span> Per Month On
@@ -105,8 +108,10 @@
         </div>
       </div>
       } 
+    }
     <!-- -------------------------------------------------------------------- -->
-    @if(!hideAllcards){
+    @if(!showOnlyTechStack){
+         @if(!hideAllcards){
     <div class="card">
 
         @if(multiple_location=='yes'){
@@ -340,9 +345,17 @@
                       <mat-form-field class="field" appearance="fill">
                         <mat-label>Timezone</mat-label>
                         <mat-select formControlName="practice_timezone">
-                          <mat-option value="utc">UTC </mat-option>
-                          <mat-option value="utc_pacific">UTC Pacific</mat-option>
-                        </mat-select>
+                      <mat-option value="(UTC-10:00) Hawaii">(UTC-10:00) Hawaii</mat-option>
+                       <mat-option value="(UTC-9:00) Alaska">(UTC-9:00) Alaska </mat-option>
+                       <mat-option value="(UTC-8:00) Pacific Time (US & Canada)">(UTC-8:00) Pacific Time (US & Canada)</mat-option>
+                       <mat-option value="(UTC-7:00) Arizona">(UTC-7:00) Arizona</mat-option>
+                       <mat-option value="(UTC-7:00) Mountain Time (US & Canada)">(UTC-7:00) Mountain Time (US & Canada)</mat-option>
+                        <mat-option value="(UTC-7:00) Yukon">(UTC-7:00) Yukon</mat-option>
+                       <mat-option value="(UTC-6:00) Central Time (US & Canada)">(UTC-6:00) Central Time (US & Canada)</mat-option>
+                      <mat-option value="(UTC-5:00) Eastern Time (US & Canada)">(UTC-5:00) Eastern Time (US & Canada)</mat-option>
+                      <mat-option value="(UTC-4:00) Atlantic Time (Canada)">(UTC-4:00) Atlantic Time (Canada)</mat-option>
+                      <mat-option value="(UTC-3:30) Newfoundland">(UTC-3:30) Newfoundland</mat-option>
+                    </mat-select>
                       </mat-form-field>
                     </div>
                     <div class="form-field">
@@ -435,7 +448,7 @@
             Add Location
           </button>
           <!-- } -->
-          <button mat-raised-button class="nextbtn" (click)="onSubmit()">
+          <button mat-raised-button class="nextbtn" (click)="nextButtonMultipleLocation()">
             Next
           </button>
         </div>
@@ -537,24 +550,30 @@
                 }@else{
                   <td style="display: flex; gap: 0.5rem;">
                     @if(iconStates && iconStates[i]) {
-                      <button
+                      @if(addOnPhone){
+                          <button
                         mat-icon-button
                         [class.phone_active_icon]="iconStates[i].phoneActive"
                         (click)="toggleIconState(i, 'phoneActive')">
                         <mat-icon>settings_phone</mat-icon>
                       </button>
-                      <button
+                      }
+                      @if(addOnAnalytic){
+                        <button
                         mat-icon-button
                         [class.analytic_active_icon]="iconStates[i].analyticActive"
                         (click)="toggleIconState(i, 'analyticActive')">
                         <mat-icon>analytics</mat-icon>
                       </button>
-                      <button
+                      }
+                      @if(addOnVerification){
+                        <button
                         mat-icon-button
                         [class.verification_active_icon]="iconStates[i].verificationActive"
                         (click)="toggleIconState(i, 'verificationActive')">
                         <mat-icon>price_check</mat-icon>
                       </button>
+                    }
                     }
                   </td>
                 }
@@ -988,7 +1007,7 @@
                         <mat-form-field appearance="fill" class="form-field">
                           <mat-label>Country</mat-label>
                           <mat-select formControlName="country" placeholder="Select a Country">
-                            <mat-option value="United States">United States</mat-option>
+                            <mat-option value="UnitedStates">United States</mat-option>
                             <mat-option value="Canada">Canada</mat-option>
                           </mat-select>
                           @if(shipping.get('country')?.invalid && shipping.get('country')?.touched){
@@ -1077,21 +1096,29 @@
                     }@else if(ifPackageisAditCore){
                       <td class="aditCoreInOrderSummary">
                         <!-- @if(iconStates && iconStates[i]) { -->
-                          <button
+                        
+                          @if(addOnPhone){
+                              <button
                             mat-icon-button
                             [class.phone_active_icon]="iconStates[i].phoneActive">
                             <mat-icon>settings_phone</mat-icon>
                           </button>
+                        }
+                        @if(addOnAnalytic){
                           <button
                             mat-icon-button
                             [class.analytic_active_icon]="iconStates[i].analyticActive">
                             <mat-icon>analytics</mat-icon>
                           </button>
+                        }
+                        @if(addOnVerification){
                           <button
                             mat-icon-button
                             [class.verification_active_icon]="iconStates[i].verificationActive">
                             <mat-icon>price_check</mat-icon>
                           </button>
+                        }
+
                         <!-- } -->
                       </td>
                     }@else if(!ifPackageAditLite && !ifPackageisAditCore){
@@ -1350,7 +1377,8 @@
                 <span class="title">Hardware Credit Applied <mat-icon matTooltip="With the annual upfront package, Adit will be paying for the first $250 towards your phones and payment terminals.">info</mat-icon></span>
                 <span class="hardwareValue">
                   @if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
-                    ${{getMinValue(getHarwareCreditTotal(),calculateTotalHardwarePriceTotal())}}
+                    <!-- ${{getMinValue(getHarwareCreditTotal(),calculateTotalHardwarePriceTotal())}} -->
+                     ${{calculateTotalHardwareCredit()}}
                   }
                 </span>
               </p>
@@ -1422,3 +1450,5 @@
   }
   </div>
 
+
+    }

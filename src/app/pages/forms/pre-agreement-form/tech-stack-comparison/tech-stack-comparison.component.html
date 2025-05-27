@@ -370,10 +370,36 @@
       <div class="spending">
         <div class="spend-title">
           <h2>
-            So You’re Spending <span>${{ totalCost }}</span> Per Month On
+            So You're Spending <span>${{ totalCost }}</span> Per Month On
           </h2>
         </div>
-        <div class="logo-img"></div>
+        
+        <!-- Provider logos section -->
+        <div class="provider-logos">
+          @for(provider of getUniqueProvidersWithImages(); track provider.name) {
+            <div class="provider-logo-item">
+              @if(provider.name=='AT&T'){
+                <p>{{ provider.name }}</p>
+              }@else {
+                <img [src]="'https://demo.enfolytics.com/'+provider.imageUrl" [alt]="provider.name" width="70px" />
+              }
+              <!-- <p>{{ provider.name }}</p> -->
+            </div>
+          }
+        </div>
+        
+        <!-- If no provider images found, show default logo -->
+        <!-- @if(getUniqueProvidersWithImages().length === 0) {
+          <div class="logo-img">
+            <img
+              src="https://demo.enfolytics.com/assets/images/default-tech-logo.png"
+              alt="Default Tech Stack Logo" 
+              width="100px" 
+            />
+          </div>
+        } -->
+        
+        <!-- Rest of your existing code... -->
         <div class="gaps-in-your-tech">
           <div class="head">
             <img

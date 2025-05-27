@@ -9,27 +9,13 @@ import { environment } from '../../environment';
 @Injectable({
   providedIn: 'root'
 })
-export class EventRepsService {
-
+export class EventsService {
   private baseUrl = environment.baseUrl;
-
-  constructor(private http: HttpClient) {}
-
-  getUsers(): Observable<any> {
-    return this.http.get(this.baseUrl+'/settings/sales-reps/list') .pipe(catchError(this.handleError));
+  constructor(private http: HttpClient) { }
+  getAllEventz(): Observable<any> {
+    return this.http.get(this.baseUrl+'/events') .pipe(catchError(this.handleError));
   }
-
-  deleteEventRep(id: number): Observable<any> {
-    return this.http.delete(this.baseUrl+'/settings/sales-reps/'+id);
-  }
-
-  
-  addEventRep(userId: number): Observable<any> {
-    return this.http.post(this.baseUrl+'/settings/sales-reps/add', { userId: userId });
-  }
-
-
-  private handleError(error: HttpErrorResponse) {
+   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Something bad happened; please try again later.';
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.

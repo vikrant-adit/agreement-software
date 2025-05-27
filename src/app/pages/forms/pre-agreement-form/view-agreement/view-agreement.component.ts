@@ -108,7 +108,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
 
   // nextToHardware:boolean=false
   // signatureUrlFromApi: string | null = null; // Add this property to your class
-
+  showOnlyTechStack: boolean = false;
   constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
     this.practiceData = this.fb.group({
       locations: this.fb.array([this.createLocationGroup()]) 
@@ -383,18 +383,20 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
 
       // Convert grouped keys to an array
       this.dynamicPackages = Object.values(groupedKeys);
-
+        console.log(this.dynamicPackages, 'Dynamic Packages');
       //packages
-      if (this.dynamicPackages[0].value == 'aditCore') {
-        this.ifPackageisAditCore = true;
-        this.selectedPackageName = 'Adit Core';
-      } else if (this.dynamicPackages[0].value == 'aditLite') {
-        this.selectedPackageName = 'Adit Lite';
-        this.ifPackageAditLite = true;
-      } else {
-        this.ifPackageisAditCore = false;
-        this.ifPackageAditLite = false;
-      }
+        if(this.dynamicPackages.length > 0){
+              if (this.dynamicPackages[0].value == 'aditCore') {
+                this.ifPackageisAditCore = true;
+                this.selectedPackageName = 'Adit Core';
+              } else if (this.dynamicPackages[0].value == 'aditLite') {
+                this.selectedPackageName = 'Adit Lite';
+                this.ifPackageAditLite = true;
+              } else {
+                this.ifPackageisAditCore = false;
+                this.ifPackageAditLite = false;
+              }
+        }
       // console.log('Dynamic Packages:', this.dynamicPackages);
       this.iconStates = this.locations.controls.map(() => ({
         phoneActive: true,
@@ -403,7 +405,40 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
         phoneSelectionActive: true,
         purchasePhone: true,
       }));
+       console.log('Shipping Address from API:', responseData.shippingAddresses);
+    if (responseData.shippingAddresses) {
+        console.log('Shipping Address from API:', responseData.shippingAddresses); // Debug log
 
+        // Make sure the form is initialized
+        // if (!this.shippingAddressForm) {
+        //   this.shippingAddressForm = this.fb.group({
+        //     address_line_1: ['', Validators.required],
+        //     address_line_2: [''],
+        //     city: ['', Validators.required],
+        //     state: ['', Validators.required],
+        //     postalCode: ['', Validators.required],
+        //     country: ['', Validators.required],
+        //   });
+        // }
+
+        // Create a patching object with a match between API and form control names
+        const patchData = {
+          address_line_1: responseData.shippingAddresses[0].addressLine1 || '',
+          address_line_2: responseData.shippingAddresses[0].addressLine2 || '',
+          city: responseData.shippingAddresses[0].city || '',
+          state: responseData.shippingAddresses[0].state || '',
+          postalCode: responseData.shippingAddresses[0].postalCode || '',
+          country: responseData.shippingAddresses[0].country || '',
+        };
+
+        // console.log('Data to patch:', patchData); // Debug log
+        this.shippingAddressForm.patchValue(patchData);
+
+        // Force change detection
+        setTimeout(() => {
+          this.shippingAddressForm.updateValueAndValidity();
+        });
+      }
       this.multiple_location = responseData.multipleLocations;
       if (responseData.add_on_phones !== null) {
         this.addOnPhone = true;
@@ -412,9 +447,13 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       }
       if (responseData.add_on_analytic != null) {
         this.addOnAnalytic = true;
+      }else{
+        this.addOnAnalytic = false;
       }
       if (responseData.add_on_verification != null) {
         this.addOnVerification = true;
+      }else{
+        this.addOnVerification = false;
       }
 
       // console.log(this.pricingArray, 'EARRRRRRRRRRRRRR');
@@ -595,12 +634,12 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       }
 
       if (
-        res.data.practiceData &&
-        Array.isArray(res.data.practiceData) &&
-        res.data.practiceData.length > 0 &&
-        res.data.practiceData[0].selectedPackageName
+        responseData.practiceData &&
+        Array.isArray(responseData.practiceData) &&
+        responseData.practiceData.length > 0 &&
+        responseData.practiceData[0].selectedPackageName
       ) {
-        this.selectedPackageName = this.whichPackageToShow = res.data.practiceData[0].selectedPackageName;
+        this.selectedPackageName = this.whichPackageToShow = responseData.practiceData[0].selectedPackageName;
         this.expandHardware = true;
         // console.log(this.whichPackageToShow, 'selectedPackageName');
         if (this.selectedPackageName == 'Adit Lite') {
@@ -608,6 +647,9 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
           this.showSelection_of_phone = false;
         }
       } else {
+        if( responseData.sales_person_promotion_type=='') {
+        this.showOnlyTechStack=true
+        }
         this.whichPackageToShow = responseData.sales_person_promotion_type;
       }
       if (responseData.displayTechStackComparison == false) {
@@ -615,6 +657,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       } else {
         this.showtechStackGap = true;
         const featuresArray = responseData.techStack[0].features;
+        console.log(featuresArray, 'featuresArray',communicationsList);
         this.updateArrayWithFeatures(this.communicationsList, featuresArray);
 
         this.updateArrayWithFeatures(this.analytics, featuresArray);
@@ -623,7 +666,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
         this.updateArrayWithFeatures(this.operations, featuresArray);
       }
       if (responseData.techStack.length > 0) {
-        this.totalCost = responseData.techStack[0].tech_stack_total_price;
+        this.totalCost = responseData.techStack[0].tech_stack_total_prices;
       }
       this.activation_fee = responseData.activation_fee;
 
@@ -688,7 +731,6 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
         }
       }
 
-      // this.updateArrayWithFeatures(this.verifications, featuresArray);
       if (responseData.signature_url) {
         this.signature_url = responseData.signature_url;
       }
@@ -1432,6 +1474,7 @@ if (this.multiple_location == 'no') {
     this.phoneActive = event;
     this.selectPhone = event;
     this.addOnPhone = event;
+    this.calculateTotalPrice()
     // console.log(event, 'event of phone');
   }
 
@@ -1458,7 +1501,12 @@ if (this.multiple_location == 'no') {
         // Don't check for checkConditionForHardware when selectTerminal is true
         this.expandForm = true;
       } else {
+        if(this.selectTerminal === null){
+        alert('Select Yes or No for Terminal');
+        }else{
         alert('Accept the conditions, check the checkbox');
+
+        }
       }
     }
         // Special case for "Only Lite - 1st Yr Promo"
@@ -1487,7 +1535,12 @@ if (this.multiple_location == 'no') {
         // Don't check checkConditionForHardware for terminals
         this.expandForm = true;
       } else {
+        if(this.selectTerminal === null){
+        alert('Select Yes or No for Terminal');
+        }else{
         alert('Accept the conditions, check the checkbox');
+
+        }
       }
     }
     this.onSubmit()

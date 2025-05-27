@@ -204,7 +204,7 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
     'Australia',
     'India',
   ];
-
+showOnlyTechStack: boolean = false;
   allActivePhone: boolean = true; // Separate property to track overall state of phone
   allActiveAnalytic: boolean = true; // Separate property to track overall state of phone
   allActiveVerification: boolean = true; // Separate property to track overall state of phone
@@ -530,11 +530,16 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
       } else {
         this.addOnPhone = false;
       }
+
       if (responseData.add_on_analytic != null) {
         this.addOnAnalytic = true;
+      }else {
+        this.addOnAnalytic = false;
       }
       if (responseData.add_on_verification != null) {
         this.addOnVerification = true;
+      }else{
+        this.addOnVerification = false;
       }
 
       // console.log(this.pricingArray, 'EARRRRRRRRRRRRRR');
@@ -762,6 +767,9 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
           this.showSelection_of_phone = false;
         }
       } else {
+        if(responseData.sales_person_promotion_type==''){
+          this.showOnlyTechStack=true
+        }
         this.whichPackageToShow = responseData.sales_person_promotion_type;
       }
       if (responseData.displayTechStackComparison == false) {
@@ -1036,6 +1044,145 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
     });
   }
 
+ nextButtonMultipleLocation() {
+  // Check if forms are valid before proceeding
+  if (this.validateForms()) {
+    // Logic to go to next step if validation passes
+    this.onNextClick(true);
+  }
+}
+
+validateForms() {
+  let isValid = true;
+  const errorMessages: string[] = [];
+
+  // 1. Validate organization info (if required)
+  if (!this.organization_name && this.multiple_location === 'yes') {
+    isValid = false;
+    errorMessages.push('Organization Name is required');
+  }
+
+  // 2. Validate locations form array
+  const locationControls = this.locations.controls;
+  
+  if (locationControls.length === 0) {
+    isValid = false;
+    errorMessages.push('At least one location is required');
+  } else {
+    // Check each location's validity
+    locationControls.forEach((locationGroup, index) => {
+      // Required fields for each location
+      const requiredFields = [
+        'practice_name',
+        'location_name',
+        'practiceAdressLine_1',
+        'practice_city',
+        'practice_state',
+        'practice_postal_zip_code',
+        'practice_country',
+        'practice_timezone',
+        'practice_office_phone',
+        'practice_email',
+        'practice_management_software'
+      ];
+      
+      requiredFields.forEach(field => {
+        if (!locationGroup.get(field)?.value) {
+          isValid = false;
+          errorMessages.push(`Location ${index + 1}: ${this.getFieldLabel(field)} is required`);
+          locationGroup.get(field)?.markAsTouched();
+        }
+      });
+      
+      // Validate email format
+      const emailControl = locationGroup.get('practice_email');
+      if (emailControl?.value && !this.isValidEmail(emailControl.value)) {
+        isValid = false;
+        errorMessages.push(`Location ${index + 1}: Email format is invalid`);
+        emailControl.setErrors({'email': true});
+      }
+      
+      // Validate phone number format
+      const phoneControl = locationGroup.get('practice_office_phone');
+      if (phoneControl?.value && !this.isValidPhoneNumber(phoneControl.value)) {
+        isValid = false;
+        errorMessages.push(`Location ${index + 1}: Phone number format is invalid`);
+        phoneControl.setErrors({'phone': true});
+      }
+    });
+  }
+
+
+
+  return isValid;
+}
+
+// Helper methods for validation
+getFieldLabel(fieldName: string): string {
+  const fieldLabels: {[key: string]: string} = {
+    'practice_name': 'Practice Name',
+    'location_name': 'Location Name',
+    'practiceAdressLine_1': 'Address Line 1',
+    'practice_city': 'City',
+    'practice_state': 'State',
+    'practice_postal_zip_code': 'Zip Code',
+    'practice_country': 'Country',
+    'practice_timezone': 'Timezone',
+    'practice_office_phone': 'Office Phone',
+    'practice_email': 'Email',
+    'practice_management_software': 'Practice Management Software'
+  };
+  return fieldLabels[fieldName] || fieldName;
+}
+
+getShippingFieldLabel(fieldName: string): string {
+  const fieldLabels: {[key: string]: string} = {
+    'address_line_1': 'Address Line 1',
+    'city': 'City',
+    'state': 'State',
+    'postalCode': 'Zip Code',
+    'country': 'Country'
+  };
+  return fieldLabels[fieldName] || fieldName;
+}
+
+isValidEmail(email: string): boolean {
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email);
+}
+
+isValidPhoneNumber(phone: string): boolean {
+  // This pattern should match the format produced by your phone formatter directive
+  // Adjust as needed based on your specific formatting requirements
+  const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
+  return phonePattern.test(phone);
+}
+
+validateAditCoreSelections(): boolean {
+  // Check if each location has at least one add-on selected
+  return this.iconStates.every((state, index) => {
+    return state.phoneActive || state.analyticActive || state.verificationActive;
+  });
+}
+
+// Helper methods to determine current step
+checkPackageStep(): boolean {
+  // Logic to determine if we're on the package selection step
+  // You might have a step variable or check DOM elements
+  return !this.hideAllcards && this.whichPackageToShow !== '';
+}
+
+checkHardwareStep(): boolean {
+  // Logic to determine if we're on the hardware step
+  return !this.hideAllcards && this.showTable;
+}
+
+checkReviewStep(): boolean {
+  // Logic to determine if we're on the review step
+  return this.expandReview;
+}
+    // Check if the form is valid before proceeding 
+      
   onSubmit() {
     console.log(this.practiceData.value, 'Form Data');
     let formData: {
@@ -1525,6 +1672,18 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
       this.extraharwarePrices
     );
   }
+  calculateTotalHardwareCredit(): number {
+    let totalCredit = 0;
+    
+    // Loop through each location and sum up their individual hardware credits
+    for (let i = 0; i < this.hardwarepurchasePrices.length; i++) {
+      // Use the existing getHardwareCreditDisplay method to calculate credit for each location
+      const locationCredit = this.getHardwareCreditDisplay(i);
+      totalCredit += locationCredit;
+    }
+    
+    return totalCredit;
+  }
   calculateTotalHardwarePriceTotal(): number {
     let totalHardwarePrice = 0;
     for (
@@ -1685,7 +1844,7 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
     this.showSelection_of_phone = event;
     this.phoneActive = event;
     this.selectPhone = event;
-    this.addOnPhone = event;
+    // this.addOnPhone = event;
     // console.log(event, 'event of phone');
     if (event == false) {
       this.allActivePhone = false;
@@ -1715,7 +1874,7 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
 
   onSelectedAnalytics(event: any) {
     this.analyticActive = event;
-    this.addOnAnalytic = event;
+    // this.addOnAnalytic = event;
     if (event == false) {
       this.allActiveAnalytic = false;
       // Set all analyticActive states to false
@@ -1744,7 +1903,7 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
 
   onSelectedVerification(event: any) {
     this.verificationActive = event;
-    this.addOnVerification = event;
+    // this.addOnVerification = event;
 
     if (event == false) {
       this.allActiveVerification = false;
@@ -1795,7 +1954,7 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
       if (this.selectTerminal === false || this.selectPhone === false || null) {
         this.expandForm = true;
       } else if (this.selectTerminal === true) {
-        // Don't check for checkConditionForHardware when selectTerminal is true
+        // Don't check condition for hardware when terminal is selected
         this.expandForm = true;
       } else {
         alert('Accept the conditions, check the checkbox');

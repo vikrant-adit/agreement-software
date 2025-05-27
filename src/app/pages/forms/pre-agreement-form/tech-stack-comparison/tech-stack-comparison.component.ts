@@ -84,7 +84,7 @@ export class TechStackComparisonComponent implements OnInit {
       mass_emailing_price: [],
       analytics_morning_huddle_price: [],
       verification_provider_price: [],
-      tech_stack_total_price: [],
+      tech_stack_total_prices: [],
       features:[[]]
     });
     this.techStackForm.valueChanges.subscribe(() => {
@@ -95,20 +95,21 @@ export class TechStackComparisonComponent implements OnInit {
       .map((key) => Number(this.techStackForm.controls[key].value) || 0)
       .reduce((acc, val) => acc + val, 0);
       // this.techStackForm.get('features')?.setValue(this.featuresArray, { emitEvent: false });
-      // this.techStackForm.get('tech_stack_total_price')?.setValue(this.totalCost, { emitEvent: false });
+      this.techStackForm.get('tech_stack_total_prices')?.setValue(this.totalCost, { emitEvent: false });
+      
       this.formChanged.emit(this.techStackForm);
     });
   }
   ngOnInit(): void {
-
-    if(this.getForm){
-      this.techStackForm.patchValue(this.getForm)
+    console.log(this.getForm);
+    if(this.getForm.length>0){
+      this.techStackForm.patchValue(this.getForm[0])
       
-      const keysWithValues = Object.keys(this.getForm).filter((key:any) => this.getForm[key] !== null);
+      const keysWithValues = Object.keys(this.getForm[0]).filter((key:any) => this.getForm[0][key] !== null);
       console.log(keysWithValues); // Print keys with non-null values
       keysWithValues.forEach((key:any)=>{
         if(key!=='features' && !key.includes('price')){
-          this.storeTheArray.push(this.getForm[key])
+          this.storeTheArray.push(this.getForm[0][key])
           this.manageGapsWhileUpdating()
         }
       })
@@ -246,29 +247,7 @@ export class TechStackComparisonComponent implements OnInit {
     updateArray(this.mobile);
     this.featuresArray=[]
   }
-  //calculate the total price
-  calculateTotal() {
-    this.totalCost = Object.keys(this.techStackForm.controls)
-      .filter((key) => key.endsWith('_price'))
-      .map((key) => Number(this.techStackForm.controls[key].value) || 0)
-      .reduce((acc, val) => acc + val, 0);
-      this.techStackForm.get('tech_stack_total_price')?.setValue(this.totalCost, { emitEvent: false });
-  }
 
-  calculateTotalDirectly() {
-    // Explicitly calculate the total from all price fields
-    const priceTotal = Object.keys(this.techStackForm.controls)
-      .filter(key => key.endsWith('_price') && key !== 'tech_stack_total_price')
-      .map(key => {
-        const value = this.techStackForm.get(key)?.value;
-        return Number(value) || 0;
-      })
-      .reduce((sum, current) => sum + current, 0);
-    
-    // Set the total price in the form
-    this.totalCost = priceTotal;
-    this.techStackForm.get('tech_stack_total_price')?.setValue(priceTotal, { emitEvent: false });
-  }
 
   manageGapsInVerification(result: string) {
     this.verifications.forEach((res) => {
@@ -310,7 +289,7 @@ export class TechStackComparisonComponent implements OnInit {
   
     // Log or use the falseTexts array as needed
     console.log(falseTexts);
-    this.techStackForm.get('features')?.setValue(falseTexts)
+    this.techStackForm.get('features')?.setValue(falseTexts);
     // this.featuresArray=falseTexts
   }
 
@@ -319,20 +298,23 @@ export class TechStackComparisonComponent implements OnInit {
     const sourceValue = this.techStackForm.get(sourceControlName)?.value;
     if (sourceValue !== null && sourceValue !== undefined) {
       this.techStackForm.get(targetControlName)?.setValue(sourceValue);
+        const priceControl = this.techStackForm.get(targetControlName + '_price');
+        if (priceControl) {
+          priceControl.disable(); // Disable the input field
+          this.cdr.detectChanges(); // Trigger change detection
+
+        } else {
+          console.log(`FormControl ${targetControlName + '_price'} does not exist.`);
+        }
     } else {
-      console.warn(`No value found in ${sourceControlName} to copy.`);
+       console.log(sourceValue,'getting aaaaa')
+      console.log(`No value found in ${sourceControlName} to copy.`);
     }
    
-  const priceControl = this.techStackForm.get(targetControlName + '_price');
-  if (priceControl) {
-    priceControl.disable(); // Disable the input field
-    this.cdr.detectChanges(); // Trigger change detection
 
-  } else {
-    console.warn(`FormControl ${targetControlName + '_price'} does not exist.`);
-  }
   }
   
+
   setThePriceOfTechStack(result:string,formControlName:string,label:string){
     if (result) {  
       this.techStackForm.get(formControlName)?.setValue(result);
@@ -362,7 +344,7 @@ export class TechStackComparisonComponent implements OnInit {
       if (result) {  
         if(result == 'reset') {
           // Store the old price before resetting
-          const oldPrice = Number(this.techStackForm.get(formControlName + '_price')?.value) || 0;
+          // const oldPrice = Number(this.techStackForm.get(formControlName + '_price')?.value) || 0;
           
           this.techStackForm.get(formControlName)?.reset();
           this.techStackForm.get(formControlName + '_price')?.reset();
@@ -377,13 +359,12 @@ export class TechStackComparisonComponent implements OnInit {
           }
           
           this.manageGaps();
-          this.calculateTotal();
+          // this.calculateTotal();
           return;
         }
         
         // Get the current value to check if we're updating
         const currentValue = this.techStackForm.get(formControlName)?.value;
-        const oldPrice = Number(this.techStackForm.get(formControlName + '_price')?.value) || 0;
         
         // If there was a previous value, remove it from storeTheArray
         if (currentValue && currentValue !== result) {
@@ -412,8 +393,129 @@ export class TechStackComparisonComponent implements OnInit {
         }
         
         // Force recalculation to ensure correct total
-        this.calculateTotalDirectly();
+        // this.calculateTotalDirectly();
       }
     });
+  }
+
+  providerImages: { [key: string]: string } = {
+    '8x8': '/assets/images/8-8-logo.png',
+    'RingCentral': '/assets/images/ring-central-logo.png',
+    'Weave': '/assets/images/weave-logo.png',
+    'AT&T': '/assets/images/at-and-t-logo.png',
+    'Bell': '/assets/images/bell-logo.png',
+    'Comcast': '/assets/images/comcast-logo.png',
+    'xFinity': '', // No image path provided
+    'GoTo Connect': '/assets/images/goto-connect-logo.png',
+    'Intiveo': '/assets/images/intiveo-logo.png',
+    'Mango': '/assets/images/mango-logo.png',
+    'Nextiva': '/assets/images/nextiva-logo.png',
+    'Ooma': '/assets/images/ooma-logo.png',
+    'Optimum': '/assets/images/optimum-logo.png',
+    'Shaw': '/assets/images/shaw-logo.png',
+    'Spectrum': '/assets/images/spectrum-logo.png',
+    'Verizon': '/assets/images/verizon-logo.png',
+    'Birdeye': '/assets/images/birdeye-logo.png',
+    'Dear Doc': '/assets/images/dear-doc-logo.png',
+    'Demand Force': '/assets/images/demand-force-logo.png',
+    'Dental Symphony': '/assets/images/dental-symphony-logo.png',
+    'Dentrix Hub': '/assets/images/dentrix-hub-logo.png',
+    'Doctible': '/assets/images/doctible-logo.png',
+    'Enlive Forms': '/assets/images/enlive-dental-logo.png',
+    'Flex Dental': '/assets/images/flex-dental-logo.png',
+    'Kasper': '/assets/images/kasper-logo.png',
+    'Legwork': '/assets/images/legwork-logo.png',
+    'Lighthouse 360': '/assets/images/lighthouse-logo.png',
+    'M-Consent': '/assets/images/mconsent-logo.png',
+    'Localmed': '/assets/images/localmed-logo.png',
+    'DI': '/assets/images/dental-intelligence-logo.png',
+    'Modento': '/assets/images/modento-logo.png',
+    'Nexhealth': '/assets/images/nex-health-logo.png',
+    'Opera DDS': '/assets/images/opera-dds-logo.png',
+    'Patient Activator': '/assets/images/patient-activator-logo.png',
+    'Dentrix Patient Engage': '/assets/images/dentrix-logo.png',
+    'Patient Viewer': '/assets/images/patient-viewer-logo.png',
+    'Patient Xpress': '/assets/images/patient-express-logo.png',
+    'Podium': '/assets/images/podium-logo.png',
+    'Practice By Numbers': '/assets/images/practice-by-numbers-logo.png',
+    'Practice Mojo': '/assets/images/practic-mojo-logo.png',
+    'RecallMax': '/assets/images/recall-max-logo.png',
+    'Revenue Well': '/assets/images/revenue-well-logo.png',
+    'Simplifeye': '/assets/images/simplifeye-logo.png',
+    'Solution Reach': '/assets/images/solotion-reach-logo.png',
+    'Swell': '/assets/images/swell-logo.png',
+    'Vyne': '/assets/images/vynecorp-logo.png',
+    'YAPI': '/assets/images/yapi-logo.png',
+    'ZocDoc': '/assets/images/zoc-doc-logo.png',
+    'Jarvis': '/assets/images/jarvis-analytics-logo.png',
+    'Peer Logic': '/assets/images/peerlogic-logo.png',
+    'CareCru': '/assets/images/carecru_logo.png',
+    'Dental Intel': '/assets/images/dental-intelligence-logo.png',
+    'Vyne Verification': '/assets/images/vynecorp-logo.png',
+    'Weave Verification': '/assets/images/weave-logo.png',
+    'Practice By Numbers Verification': '/assets/images/practice-by-numbers-logo.png',
+    'Solution Reach Verification': '/assets/images/solotion-reach-logo.png',
+    'NexHealth Verification': '/assets/images/nex-health-logo.png',
+    'Revenue Well Verification': '/assets/images/revenue-well-logo.png'
+  };
+
+  // Method to get image URL for a provider
+  getProviderImageUrl(providerName: string): string | null {
+    if (!providerName) return null;
+    
+    // Check for exact matches first
+    if (this.providerImages[providerName]) {
+      return this.providerImages[providerName];
+    }
+    
+    // Optional: Check for partial matches (e.g., if provider name contains "8x8")
+    for (const key of Object.keys(this.providerImages)) {
+      if (providerName.toLowerCase().includes(key.toLowerCase())) {
+        return this.providerImages[key];
+      }
+    }
+    
+    return null; // No matching image found
+  }
+
+  // Method to get all selected providers as an array
+  getSelectedProviders(): string[] {
+    const providers: string[] = [];
+    const formControls = [
+      'current_phone_provider',
+      'patient_texting',
+      'reminder_recall',
+      'digital_forms',
+      'treatment_presentation_payment_plans',
+      'current_payment_provider',
+      'review',
+      'online_scheduling',
+      'mass_texting',
+      'mass_emailing',
+      'analytics_morning_huddle',
+      'verification_provider'
+    ];
+    
+    for (const control of formControls) {
+      const value = this.techStackForm.get(control)?.value;
+      if (value && typeof value === 'string' && value.trim() !== '') {
+        providers.push(value);
+      }
+    }
+    
+    return providers;
+  }
+
+  // Method to get unique providers with their images
+  getUniqueProvidersWithImages(): { name: string, imageUrl: string }[] {
+    const providers = this.getSelectedProviders();
+    const uniqueProviders = [...new Set(providers)];
+    
+    return uniqueProviders
+      .map(provider => ({
+        name: provider,
+        imageUrl: this.getProviderImageUrl(provider)
+      }))
+      .filter(item => item.imageUrl !== null) as { name: string, imageUrl: string }[];
   }
 }

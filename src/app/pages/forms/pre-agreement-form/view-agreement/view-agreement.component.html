@@ -8,7 +8,7 @@
   <button class="edit" mat-flat-button type="button" (click)="editForm()">
     Edit
   </button>
-  @if(showtechStackGap){
+  @if(showtechStackGap || showOnlyTechStack){
     <div class="card">
       <div class="spending">
         <div class="check">
@@ -36,18 +36,20 @@
             <div class="batch">
               <h3 class="heading">Communications</h3>
               <div class="communication">
-                @for (column of communicationsList; track column) {
-                @if(column.value){
+            @for (column of communicationsList; track column) {
+              @if(column.value){
                 <p class="gapNames" matTooltip="{{ column.toolTip }}">
                   <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
                 </p>
-                }@else { 
-                  @if(!expand){
+              }@else { 
+                @if(!expand){
                 <p class="gapNames" style="opacity: 0.5">
                   <mat-icon style="color: var(--secondary-color)">check_circle_outline</mat-icon>
                   {{ column.text }}
                 </p>
-                } } }
+                } 
+              } 
+            }
               </div>
             </div>
             <div class="batch">
@@ -74,9 +76,7 @@
                 </p>
                 }@else { @if(!expand){
                 <p class="gapNames" style="opacity: 0.5">
-                  <mat-icon style="color: var(--secondary-color)"
-                    >check_circle_outline</mat-icon
-                  >
+                  <mat-icon style="color: var(--secondary-color)">check_circle_outline</mat-icon>
                   {{ column.text }}
                 </p>
                 } } }
@@ -105,7 +105,8 @@
     </div>
     } 
   <!-- -------------------------------------------------------------------- -->
-  @if(multiple_location=='no'){ 
+    @if(!showOnlyTechStack){
+        @if(multiple_location=='no'){ 
       @if(whichPackageToShow){
           <div class="card">
             <app-choose-packages
@@ -612,8 +613,16 @@
                   <mat-form-field class="field" appearance="fill">
                     <mat-label>Timezone</mat-label>
                     <mat-select formControlName="practice_timezone">
-                      <mat-option value="utc">UTC </mat-option>
-                      <mat-option value="utc_pacific">UTC Pacific</mat-option>
+                      <mat-option value="(UTC-10:00) Hawaii">(UTC-10:00) Hawaii</mat-option>
+                       <mat-option value="(UTC-9:00) Alaska">(UTC-9:00) Alaska </mat-option>
+                       <mat-option value="(UTC-8:00) Pacific Time (US & Canada)">(UTC-8:00) Pacific Time (US & Canada)</mat-option>
+                       <mat-option value="(UTC-7:00) Arizona">(UTC-7:00) Arizona</mat-option>
+                       <mat-option value="(UTC-7:00) Mountain Time (US & Canada)">(UTC-7:00) Mountain Time (US & Canada)</mat-option>
+                        <mat-option value="(UTC-7:00) Yukon">(UTC-7:00) Yukon</mat-option>
+                       <mat-option value="(UTC-6:00) Central Time (US & Canada)">(UTC-6:00) Central Time (US & Canada)</mat-option>
+                      <mat-option value="(UTC-5:00) Eastern Time (US & Canada)">(UTC-5:00) Eastern Time (US & Canada)</mat-option>
+                      <mat-option value="(UTC-4:00) Atlantic Time (Canada)">(UTC-4:00) Atlantic Time (Canada)</mat-option>
+                      <mat-option value="(UTC-3:30) Newfoundland">(UTC-3:30) Newfoundland</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -774,7 +783,7 @@
                     <mat-form-field appearance="fill" class="form-field">
                       <mat-label>Country</mat-label>
                       <mat-select formControlName="country" placeholder="Select a Country">
-                        <mat-option value="United States">United States</mat-option>
+                        <mat-option value="UnitedStates">United States</mat-option>
                         <mat-option value="Canada">Canada</mat-option>
                       </mat-select>
                       @if(shippingAddressForm.get('country')?.invalid && shippingAddressForm.get('country')?.touched){
@@ -804,10 +813,7 @@
       <div class="card review-order">
         <h1>Step 4: Review Your Order</h1>
         @if(expandReview){
-    
-  
           <h2>Order Summary</h2>
-    
           <div class="summary-topinfo">
             <div class="practice-name">
               <span class="practice">Practice</span>
@@ -827,7 +833,21 @@
                 <span>Amount:</span>
               </span>
               <span class="values">
-                <span>{{ makeFirstLetterCapital(selectedPackageName) }} Bundle</span>
+                @if(ifPackageisAditCore){
+                  <span>{{ makeFirstLetterCapital('core')  }} 
+                    @if(addOnPhone==true){
+                     + Phones 
+                    }
+                    @if(addOnAnalytic==true){
+                     + Analytics 
+                    }
+                    @if(addOnVerification==true){
+                     + Verifications 
+                    }
+                  </span>
+                }@else {
+                  <span>{{ makeFirstLetterCapital(selectedPackageName) }} Bundle</span>
+                }
                 <span>{{isAnnually?'Annually':'Monthly'}}</span>
                 <span>${{isAnnually ?  subscriptionPriceAnnually*12:subscriptionPriceMonthly}}</span>
               </span>
@@ -1019,8 +1039,9 @@
         </button>
       </div>
     }
-    <!-- multiple location   -->
+ 
   
   </div>
+    }
 
 </div>

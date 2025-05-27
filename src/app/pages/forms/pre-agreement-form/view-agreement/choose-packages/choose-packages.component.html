@@ -100,7 +100,12 @@
         </div>
       </div>
       <div class="all-package">
-        <h2>Please add-on at least one of the following packages:</h2>
+        <!-- @if(add_on_phones || add_on_analytic || add_on_verification){
+          <h2>Please Select one of the following packages:</h2>
+        }@else{
+          <h2>Please Select one of the following packages:</h2>
+        } -->
+        <!-- <h2>Please add-on at least one of the following packages:</h2> -->
         <div class="package">
           @if(pricingArray.add_on_phones!=null){
             <div class="phone-package" [class.selected]="!phoneSelected"  (click)="handlePhoneAddOnClick(pricingArray.add_on_phones)">

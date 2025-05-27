@@ -56,6 +56,16 @@ export class UsersComponent implements OnInit {
         this.userService.getUsers(page, pageSize, searchTerm).subscribe({
           next: res => {
             this.updateTableData(res.data, res.total, page, pageSize);
+            this.totalRecords = res.pagination.total;
+          // this.pageSize = res.pagination.totalPages;
+          this.currentPage = res.pagination.page;
+          console.log(this.totalRecords,this.pageSize,this.currentPage)
+          // Set paginator properties
+          if (this.paginator) {
+            this.paginator.length = this.totalRecords;
+            this.paginator.pageIndex = this.currentPage - 1; // Set the page index for pagination
+            this.paginator.pageSize = this.pageSize; // Set the page size
+          }
         },
           error: (error) => {
             this.showErrorToast(error);

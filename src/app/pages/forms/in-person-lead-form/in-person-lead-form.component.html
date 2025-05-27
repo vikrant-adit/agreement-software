@@ -1,5 +1,8 @@
 <div class="container">
-<app-header></app-header>
+<app-header class="header"></app-header>
+<div>
+  <img src="https://go.adit.com/assets/images/pricing-icon.png" alt="icon_for_pacakge" class="packages_icon" width="40px" height="40px" (click)="openPacakgeDialog()">
+</div>
 <h1>Tells Us About Your Practice</h1>
 <div class="form-container">
   
@@ -16,33 +19,34 @@
          
         </mat-form-field>
         <mat-form-field appearance="fill">
-          <mat-label>First Name</mat-label>
-          <input matInput formControlName="firstName">
-          @if(practiceForm.get('firstName')?.hasError('required')){
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="fullName">
+          @if(practiceForm.get('fullName')?.hasError('required')){
             <mat-error>
-              First Name is required
+              Full Name is required
             </mat-error> 
           }
           
         </mat-form-field>
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Office Phone Number</mat-label>
-          <input matInput formControlName="officePhoneNumber">
+      <mat-form-field appearance="fill">
+          <mat-label>Select Event</mat-label>
+          <mat-select formControlName="selectEvent">
+           @for(event of eventz; track event){
+            <mat-option value={{event.event_id}}>{{event.event_name}}</mat-option>
+            
+           }
+            </mat-select>
         </mat-form-field>
        
       </div>
   
       <div class="form-row">
-        <mat-form-field appearance="fill">
-          <mat-label>Select Event</mat-label>
-          <mat-select formControlName="selectEvent">
-           @for(event of eventz; track event){
-            <mat-option value="event">{{event}}</mat-option>
-            
-           }
-            </mat-select>
+        
+          <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Office Phone Number</mat-label>
+          <input matInput appPhoneNumberFormatter formControlName="officePhoneNumber">
         </mat-form-field>
-        <mat-form-field appearance="fill">
+        <!-- <mat-form-field appearance="fill">
           <mat-label>Last Name</mat-label>
           <input matInput formControlName="lastName">
           @if(practiceForm.get('lastName')?.hasError('required')){
@@ -51,7 +55,7 @@
             </mat-error>
           }
         
-        </mat-form-field>
+        </mat-form-field> -->
         
     
         <mat-form-field appearance="fill" class="full-width">
@@ -64,20 +68,72 @@
         <mat-label>POC For Demo</mat-label>
         <input matInput formControlName="pocForDemo">
       </mat-form-field>
-
+  <div class="form-row">
+        
+          <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Personal Phone Number</mat-label>
+          <input matInput appPhoneNumberFormatter formControlName="personalPhoneNumber">
+        </mat-form-field>
+        <!-- <mat-form-field appearance="fill">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName">
+          @if(practiceForm.get('lastName')?.hasError('required')){
+            <mat-error>
+              Last Name is required
+            </mat-error>
+          }
+        
+        </mat-form-field> -->
+        
+    
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-label>Personal Email</mat-label>
+          <input matInput formControlName="personalEmail">
+        </mat-form-field>
+      </div>
       <div class="form-row">
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Practice Industry</mat-label>
           <mat-select formControlName="practiceIndustry">
-            <mat-option value="industry1">Industry 1</mat-option>
-            <mat-option value="industry2">Industry 2</mat-option>
+            <mat-option value="dental" (click)="dental_or_optometry='dental'">Dental</mat-option>
+              <mat-option value="optometry" (click)="dental_or_optometry='optometry'">Optometry</mat-option>
+              <mat-option value="orthodontic" (click)="dental_or_optometry='orthodontic'">Orthodontic</mat-option>
+              <mat-option value="chiropractic" (click)="dental_or_optometry='chiropractic'">Chiropractic</mat-option>
+           
             </mat-select>
         </mat-form-field>
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Select PMS</mat-label>
-          <mat-select formControlName="selectPMS">
-            <mat-option value="pms1">PMS 1</mat-option>
-            <mat-option value="pms2">PMS 2</mat-option>
+          <mat-select formControlName="pms">
+             @if(dental_or_optometry!=''){
+              @if(dental_or_optometry=='optometry'){
+                <mat-option value="CrystalPM">CrystalPM</mat-option>
+                <mat-option value="OfficeMate">OfficeMate</mat-option>
+                <mat-option value="RevolutionEHR">RevolutionEHR</mat-option>
+              }@else if(dental_or_optometry=='dental') {
+                <mat-option value="AbelDent">AbelDent</mat-option>
+                <mat-option value="ClearDent">ClearDent</mat-option>
+                <mat-option value="Curve">Curve</mat-option>
+                <mat-option value="Denticon">Denticon</mat-option>
+                <mat-option value="Dentrix">Dentrix</mat-option>
+                <mat-option value="Dentrix Ascend">Dentrix Ascend</mat-option>
+                <mat-option value="Eaglesoft">Eaglesoft</mat-option>
+                <mat-option value="Easy Dental">Easy Dental</mat-option>
+                <mat-option value="OpenDental">OpenDental</mat-option>
+                <mat-option value="PracticeWorks">PracticeWorks</mat-option>
+                <mat-option value="Practice Web">Practice Web</mat-option>
+                <mat-option value="Tracker">Tracker</mat-option>
+              }@else if(dental_or_optometry=='chiropractic') {
+                <mat-option value="chiroTouch">ChiroTouch</mat-option>
+              }@else if(dental_or_optometry=='orthodontic') {
+                <mat-option value="cloud9">Cloud9</mat-option>
+                <mat-option value="dolphin">Dolphin</mat-option>
+                <mat-option value="ortho2Edge">Ortho2Edge</mat-option>
+                <mat-option value="orthoTrac">OrthoTrac</mat-option>
+              }
+             }@else {
+              <mat-option value=" " disabled>Select Practice Industry</mat-option>
+             }
             </mat-select>
         </mat-form-field>
     
@@ -96,7 +152,7 @@
       </mat-form-field>
   
     <span>
-      <button mat-raised-button color="primary" type="submit">Next</button>
+      <button mat-raised-button color="primary" type="submit" >Next</button>
     </span>
     </form>
   </div>

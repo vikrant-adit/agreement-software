@@ -1,13 +1,30 @@
 .container{
   background-color: var(--background-color);
-  height: 100%;
-  
+  height: fit-content;
+  .header{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 4rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  }
+  // height: 100%;/
+  .packages_icon{
+    position: fixed;
+    top: 13px;
+    right: 120px;
+    cursor: pointer;
+  }
   h1 {
     text-align: center;
     color: var(--primary-color);
-    // margin-bottom: 20px;
+    padding-top: 80px;
   }
   .form-container {
+    padding-bottom: 80px;
     width: 70vw;
     margin: 20px auto;
     padding: 20px;

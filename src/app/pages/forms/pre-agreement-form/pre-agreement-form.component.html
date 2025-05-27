@@ -41,10 +41,8 @@
                   <span class="file-upload-label">Choose File</span>
                   @if(selectedFile){
                     <span class="file-upload-name">  &nbsp; {{ selectedFile.name }}</span>
-
                   }@else {
                     <span class="file-upload-name"> &nbsp; No file chosen</span>
-
                   }
               </label>
                 <input id="fileInput" type="file" (change)="onFileSelected($event)">
@@ -58,27 +56,47 @@
           <mat-form-field appearance="fill">
             <mat-label>Account ID</mat-label>
             <input matInput formControlName="accountId" maxlength="19"/>
-            <!-- Validation errors -->
-             @if(this.preAgreementForm.get('accountId')?.hasError('required')){
-              <mat-error>
-                Account ID is required.
-              </mat-error>
-             }
-             @if(this.preAgreementForm.get('accountId')?.hasError('pattern')){
-              <mat-error>
-                Account ID must be exactly 19 digits.
-              </mat-error>
-             }
-            @if(errorMessage){
-              <mat-hint style="color: red;">
-                {{ errorMessage }}
-              </mat-hint>
-            }
-            @if(successMsg){
-              <mat-hint >{{successMsg}}</mat-hint>
-              <!-- <span>{{successMsg}}</span> -->
-            }
             
+            <!-- Loading indicator -->
+       
+            
+            <!-- Validation error messages -->
+            <!-- @if(!isAccountIdLoading) {
+              @if(preAgreementForm.get('accountId')?.hasError('required') && preAgreementForm.get('accountId')?.touched) {
+                <mat-error>
+                  Account ID is required.
+                </mat-error>
+              } @else if(preAgreementForm.get('accountId')?.hasError('pattern')) {
+                <mat-error>
+                  Account ID must be exactly 19 digits.
+                </mat-error>
+              } @else if(preAgreementForm.get('accountId')?.hasError('apiError')) {
+                <mat-error>
+                  {{ preAgreementForm.get('accountId')?.getError('apiError') }}
+                </mat-error>
+              } @else if(errorMessage) {
+                <mat-error style="color: red;">
+                  {{ errorMessage }}
+                </mat-error>
+              } @else if(successMsg) {
+                <mat-error style="color: green;">
+                  {{ successMsg }}
+                </mat-error>
+              }
+            } -->
+              @if(preAgreementForm.get('accountId')?.hasError('pattern')) {
+                <mat-error>
+                  Account ID must be exactly 19 digits.
+                </mat-error>
+              } @else if(errorMessage) {
+                <mat-error style="color: red;">
+                  {{ errorMessage }}
+                </mat-error>
+              }@else if(successMsg) {
+                <mat-hint style="color: green;">
+                  {{ successMsg }}
+                </mat-hint>
+              }
           </mat-form-field>
           
           @if(deals.length>0 || formPatched){
@@ -92,7 +110,6 @@
                     </mat-option>
                   }
                 } @else {
-                  <!-- Show pre-selected value if deals haven't loaded yet -->
                   @if(preAgreementForm.get('deal')?.value) {
                     <mat-option [value]="preAgreementForm.get('deal')?.value">
                       {{ preAgreementForm.get('deal')?.value }}
@@ -177,11 +194,62 @@
                 <mat-form-field appearance="fill" class="form-field">
                   <mat-label>Promotion Type</mat-label>
                   <mat-select formControlName="sales_person_promotion_type" (selectionChange)="onPromotionChange()">
-                    @for( promo of promotionKeys;track promo){
+                    <!-- @for( promo of promotionKeys;track promo){
                       <mat-option [value]="promo">
                         {{ promo }}
                       </mat-option>
-                    }
+                    } -->
+                   @if(preAgreementForm.get('practiceIndustry')?.value=='dental' || preAgreementForm.get('practiceIndustry')?.value==''){
+                    <mat-option value="Smile Source">Smile Source</mat-option>
+                    <mat-option value="TruBlu">TruBlu</mat-option>
+                    <mat-option value="DDSOM">DDSOM</mat-option>
+                    <mat-option value="AIDA Member">AIDA Member</mat-option>
+                    <mat-option value="Custom">Custom</mat-option>
+                    <mat-option value="Event">Event</mat-option>
+                    <mat-option value="Outbound AE">Outbound AE</mat-option>
+                    <mat-option value="Outbound AE (Lite)">Outbound AE (Lite)</mat-option>
+                    <mat-option value="Outbound AE (Only Lite)">Outbound AE (Only Lite)</mat-option>
+                    <mat-option value="Only Lite - 1st Yr Promo">Only Lite - 1st Yr Promo</mat-option>
+                    <mat-option value="Admin">Admin</mat-option>
+                    <mat-option selected value="No Vendor Promo">No Vendor Promo</mat-option>
+                    <mat-option value="Inbound Core">Inbound Core</mat-option>
+                    <mat-option value="Outbound Core">Outbound Core</mat-option>
+                    <mat-option value="Inbound Free Phones">Inbound Free Phones</mat-option>
+                    <mat-option value="Outbound Free Phones">Outbound Free Phones</mat-option>
+                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
+                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
+                   }@else if(preAgreementForm.get('practiceIndustry')?.value=='optometry'){
+                    <mat-option value="Custom">Custom</mat-option>
+                    <mat-option value="Event">Event</mat-option>
+                    <mat-option value="Outbound AE">Outbound AE</mat-option>
+                    <mat-option value="Outbound AE (Lite)">Outbound AE (Lite)</mat-option>
+                    <mat-option value="Outbound AE (Only Lite)">Outbound AE (Only Lite)</mat-option>
+                    <mat-option value="Only Lite - 1st Yr Promo">Only Lite - 1st Yr Promo</mat-option>
+                    <mat-option value="Admin">Admin</mat-option>
+                    <mat-option selected value="No Vendor Promo">No Vendor Promo</mat-option>
+                    <mat-option value="Inbound Core">Inbound Core</mat-option>
+                    <mat-option value="Outbound Core">Outbound Core</mat-option>
+                    <mat-option value="Inbound Free Phones">Inbound Free Phones</mat-option>
+                    <mat-option value="Outbound Free Phones">Outbound Free Phones</mat-option>
+                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
+                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
+                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='orthodontic'){
+                    <mat-option value="Custom">Custom</mat-option>
+                    <mat-option value="Event">Event</mat-option>
+                    <mat-option value="Admin">Admin</mat-option>
+                    <mat-option value="Inbound Core">Inbound Core</mat-option>
+                    <mat-option value="Outbound Core">Outbound Core</mat-option>
+                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='chiropractic'){
+                       <mat-option value="Custom">Custom</mat-option>
+                    <mat-option value="Event">Event</mat-option>
+                    <mat-option value="Admin">Admin</mat-option>
+                    <mat-option value="Inbound Core">Inbound Core</mat-option>
+                    <mat-option value="Outbound Core">Outbound Core</mat-option>
+                     <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
+                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                  }
                   </mat-select>
                 </mat-form-field>
                 <!-- Promotion Expiry Date -->
@@ -192,7 +260,6 @@
                     matInput
                     [matDatepicker]="picker"
                     [matDatepickerFilter]="disablePastDates"
-                    [(ngModel)]="dateToShow"
                     (dateChange)="onDateChange($event, picker)"
                   />
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
@@ -203,7 +270,7 @@
                     <mat-label>Select Scheduler</mat-label>
                     <mat-select formControlName="event_type">
                       @for(event of eventOptions; track event){
-                        <mat-option [value]="event">
+                        <mat-option [value]="event.name">
                           {{ event.name }}
                         </mat-option>
                       }
@@ -212,84 +279,7 @@
                 }
                 
               </div>
-              <!-- Show this select only when promo is 'Event' -->
-             
-              <!-- Pricing Details -->
-              <!-- <div class="pricing-details">
-                <h3 class="section-title">Paid Monthly</h3>
-                <div class="pricing-grid">
-                  <div class="pricing-card tech-bundle">
-                    <h4 class="bundle-title">Tech Bundle</h4>
-                    <div class="form-bundle">
-                      <mat-form-field appearance="fill">
-                        <mat-label>Original Price</mat-label>
-                        <input matInput type="number" formControlName="monthly_orginal_tech_bundle_price" />
-                      </mat-form-field>
-                      <mat-form-field appearance="fill">
-                        <mat-label>Discounted Price</mat-label>
-                        <input matInput type="number"  formControlName="monthly_discnt_tech_bundle_price" />
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="pricing-card analytics-bundle">
-                    <h4 class="bundle-title">Analytics Bundle</h4>
-                    <div class="form-bundle">
-                      <mat-form-field appearance="fill">
-                        <mat-label>Original Price</mat-label>
-                        <input matInput type="number" formControlName="monthly_orginal_analytic_bundle_price" />
-                      </mat-form-field>
-                      <mat-form-field appearance="fill">
-                        <mat-label>Discounted Price</mat-label>
-                        <input matInput type="number" formControlName="monthly_discnt_analytic_bundle_price"  />
-                      </mat-form-field>
-                    </div>
-                  </div>
-                </div>
-    
-                <h3 class="section-title">Paid Annually</h3>
-                <div class="pricing-grid">
-                  <div class="pricing-card tech-bundle">
-                    <h4 class="bundle-title">Tech Bundle</h4>
-                    <div class="form-bundle">
-                      <mat-form-field appearance="fill">
-                        <mat-label>Original Price</mat-label>
-                        <input matInput type="number" formControlName="annual_orginal_tech_bundle_price" />
-                      </mat-form-field>
-                      <mat-form-field appearance="fill">
-                        <mat-label>Discounted Price</mat-label>
-                        <input matInput type="number" formControlName="annual_discnt_tech_bundle_price"  />
-                      </mat-form-field>
-                    </div>
-                  </div>
-                  <div class="pricing-card analytics-bundle">
-                    <h4 class="bundle-title">Analytics Bundle</h4>
-                    <div class="form-bundle">
-                      <mat-form-field appearance="fill">
-                        <mat-label>Original Price</mat-label>
-                        <input matInput type="number" formControlName="annual_orginal_analytic_bundle_price" />
-                      </mat-form-field>
-                      <mat-form-field appearance="fill">
-                        <mat-label>Discounted Price</mat-label>
-                        <input matInput type="number" formControlName="annual_discnt_analytic_bundle_price"  />
-                      </mat-form-field>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
-              <!-- Working code start -->
-              <!-- <div formGroupName="pricingDetails" class="pricing-details">
-                @for(control of getPricingControls();track control){
-                  <div [ngClass]="getBundleClass(control)" class="bundle">
-                    <mat-form-field appearance="fill" class="form-field">
-                      <mat-label>{{ getLabel(control) }}</mat-label>
-                      <span matPrefix>$&nbsp;</span> 
-                      <input matInput type="number" [formControlName]="control" />
-                    </mat-form-field>
-                  </div>
-                }
-                
-              </div> -->
-              <!-- END -->
+         
                @if(loading){
                 <div class="loader-overlay">
                   <div class="loader"></div>
@@ -313,7 +303,6 @@
                               
                             }
                           </h3>
-                      
                         </ng-container>
                        }
              
@@ -321,16 +310,21 @@
                         <mat-form-field appearance="fill" class="form-field">
                           <mat-label>{{ getLabel(control) }}</mat-label>
                           <span matPrefix>$&nbsp;</span>
-                          <input matInput type="number" [formControlName]="control" [min]="getMinValue(control)" [max]="getMaxValue(control)" [disabled]="isFieldDisabled(control)" />
-                      
-                                        <!-- Hidden default checkbox -->
+                          <input matInput type="number" [formControlName]="control" [min]="getMinValue(control)" [max]="getMaxValue(control)"  />
+                    
                             <input type="checkbox" (change)="toggleAddOn(control)" [checked]="isAddOnEnabled(control)" class="hidden-checkbox" />
 
                             <!-- Custom checkbox for add_on controls -->
                             @if (isAddOnControl(control)) {
-                              <div (click)="toggleAddOn(control)" [class.checked]="!isAddOnEnabled(control)" class="custom-checkbox">
-                                {{ !isAddOnEnabled(control) ? '✓' : '' }}
+                              <!-- @if(gotId){
+                                  <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  true: false" class="custom-checkbox">
+                                {{isAddOnEnabled(control) ?  '✓': ''}}
                               </div>
+                              }@else { -->
+                                     <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  false: true" class="custom-checkbox">
+                                {{isAddOnEnabled(control) ?  '': '✓' }}
+                              </div>
+                              <!-- } -->
                             }
                       
                           <!-- Error Messages -->
@@ -370,9 +364,9 @@
           
       
         <mat-checkbox formControlName="displayTechStackComparison">Display Tech Stack Comparison?</mat-checkbox>
-         @if(agreementId && sendForm) {
+         @if(gotId && sendForm) {
           <app-tech-stack-comparison  [getForm]="sendForm" (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
-        }@else if(!agreementId && preAgreementForm.get('displayTechStackComparison')?.value){
+        }@else if( preAgreementForm.get('displayTechStackComparison')?.value){
           <app-tech-stack-comparison (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
         }
       </div>
@@ -382,3 +376,10 @@
     </form>
   </div>
 </div>
+     @if(isAccountIdLoading) {
+             
+                <div class="loader-overlay">
+                  <div class="loader"></div>
+                </div>
+              
+            }
