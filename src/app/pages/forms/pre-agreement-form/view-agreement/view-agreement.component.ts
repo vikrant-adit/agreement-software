@@ -406,7 +406,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
         purchasePhone: true,
       }));
        console.log('Shipping Address from API:', responseData.shippingAddresses);
-    if (responseData.shippingAddresses) {
+    if (responseData.shippingAddresses.length>0) {
         console.log('Shipping Address from API:', responseData.shippingAddresses); // Debug log
 
         // Make sure the form is initialized

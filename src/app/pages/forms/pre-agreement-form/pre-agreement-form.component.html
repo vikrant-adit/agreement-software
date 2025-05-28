@@ -194,11 +194,7 @@
                 <mat-form-field appearance="fill" class="form-field">
                   <mat-label>Promotion Type</mat-label>
                   <mat-select formControlName="sales_person_promotion_type" (selectionChange)="onPromotionChange()">
-                    <!-- @for( promo of promotionKeys;track promo){
-                      <mat-option [value]="promo">
-                        {{ promo }}
-                      </mat-option>
-                    } -->
+            
                    @if(preAgreementForm.get('practiceIndustry')?.value=='dental' || preAgreementForm.get('practiceIndustry')?.value==''){
                     <mat-option value="Smile Source">Smile Source</mat-option>
                     <mat-option value="TruBlu">TruBlu</mat-option>

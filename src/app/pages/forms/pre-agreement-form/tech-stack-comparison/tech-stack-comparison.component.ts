@@ -88,7 +88,7 @@ export class TechStackComparisonComponent implements OnInit {
       features:[[]]
     });
     this.techStackForm.valueChanges.subscribe(() => {
-      console.log('called');
+      
       // this.calculateTotal();
         this.totalCost = Object.keys(this.techStackForm.controls)
       .filter((key) => key.endsWith('_price'))

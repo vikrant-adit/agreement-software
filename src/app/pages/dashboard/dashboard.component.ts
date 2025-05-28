@@ -336,8 +336,13 @@ export class DashboardComponent {
   editAgreement(agreementId:any){
       this.route.navigate(['/pre-agreement-form',agreementId]);
   }
-  viewAgreement(agreementId:any){
+  viewAgreement(agreementId:any,multipleOrNot:any){
+    if(multipleOrNot=='yes'){
+      this.route.navigate(['/view-agreements',agreementId]);
+    }else{
       this.route.navigate(['/view-agreement',agreementId]);
+    }
+
   }
 
   markExpireAgreement(agreementId: any): void {

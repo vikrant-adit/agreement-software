@@ -154,8 +154,7 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
   pricingArray: any;
   dynamicPackages: { value: string; label: string }[] = [
     { value: 'tech', label: 'Tech Bundle' },
-    { value: 'analytic', label: 'Analytic Bundle' },
-    { value: 'custom', label: 'Custom Package' }, // Example of additional dynamic options
+    { value: 'analytic', label: 'Analytic Bundle' } // Example of additional dynamic options
   ];
   expandedLocationIndices: number[] = [0]; // By default, only first location is expanded
 
@@ -446,33 +445,67 @@ showOnlyTechStack: boolean = false;
     this.agreementId = this.activeRoute.snapshot.params['agreementId'];
 
     this.agreementService.getAgreement(this.agreementId).subscribe((res) => {
-      const includedKeys = [
-        'analyticAnnual',
-        'techMonthly_Disc',
-        'analyticAnnual_Disc',
-        'techAnnual',
+      // Group the included keys by logical categories
+      // Standard Package Options (Tech & Analytics bundles)
+      const standardPackageKeys = [
         'techMonthly',
+        'techMonthly_Disc',
+        'techAnnual',
         'techAnnual_Disc',
         'analyticMonthly',
         'analyticMonthly_Disc',
+        'analyticAnnual',
+        'analyticAnnual_Disc',
+      ];
+
+      // Lite Package Options
+      const litePackageKeys = [
         'aditLiteMontly',
         'aditLiteMontly_Disc',
         'aditLiteAnnual',
         'aditLiteAnnual_Disc',
+      ];
+
+      // Core Pricing Options
+      const corePackageKeys = [
         'aditCore_monthly',
         'aditCore_annually',
+      ];
+
+      // Add-on Options
+      const addOnKeys = [
         'add_on_phones',
         'add_on_analytic',
         'add_on_verification',
+      ];
+
+      // No Vendor Promo Components
+      const noVendorPromoKeys = [
         'pozative_Only_Monthly',
         'pozative_Only_Annually',
         'verifications_Only_Monthly',
         'verifications_Only_Annually',
+      ];
+
+      // Hardware Credits
+      const hardwareCreditKeys = [
         'hardwareCreditAnnually',
         'hardwareCreditMonthly',
       ];
+
+      // Combined array of all included keys
+      const includedKeys = [
+        ...standardPackageKeys,
+        ...litePackageKeys,
+        ...corePackageKeys,
+        ...addOnKeys,
+        ...noVendorPromoKeys,
+        ...hardwareCreditKeys
+      ];
+
       let responseData = res.data; // Assuming this is the key in the response
-      // Create an array of objects containing only the specified key-value pairs
+      
+      // Create an object containing only the specified key-value pairs
       this.pricingArray = includedKeys.reduce((acc, key) => {
         if (responseData.hasOwnProperty(key)) {
           acc[key] = responseData[key]; // Add the key-value pair to the object
@@ -503,7 +536,8 @@ showOnlyTechStack: boolean = false;
 
       // Convert grouped keys to an array
       this.dynamicPackages = Object.values(groupedKeys);
-
+      console.log('Dynamic Packages:', this.dynamicPackages);
+      
       //packages
       if (this.dynamicPackages[0].value == 'aditCore') {
         this.ifPackageisAditCore = true;
@@ -565,8 +599,7 @@ showOnlyTechStack: boolean = false;
       this.pozative_Only_Monthly = responseData.pozative_Only_Monthly;
       this.pozative_Only_Annually = responseData.pozative_Only_Annually;
       this.verifications_Only_Monthly = responseData.verifications_Only_Monthly;
-      this.verifications_Only_Annually =
-        responseData.verifications_Only_Annually;
+      this.verifications_Only_Annually = responseData.verifications_Only_Annually;
       this.hardwareCreditAnnually = responseData.hardwareCreditAnnually;
       this.hardwareCreditMonthly = responseData.hardwareCreditMonthly;
       const responsefileData = responseData.fileData; // Assuming this is the key in the response
@@ -630,6 +663,7 @@ showOnlyTechStack: boolean = false;
       // Check if responseData is an object and has practiceData property
       if (
         responseData.practiceData &&
+        
         Array.isArray(responseData.practiceData) &&
         responseData.practiceData.length > 0
       ) {
@@ -759,7 +793,7 @@ showOnlyTechStack: boolean = false;
         res.data.practiceData[0].selectedPackageName
       ) {
         this.selectedPackageName = this.whichPackageToShow =
-          res.data.practiceData[0].selectedPackageName;
+          responseData.sales_person_promotion_type
         this.expandHardware = true;
         // console.log(this.whichPackageToShow, 'selectedPackageName');
         if (this.selectedPackageName == 'Adit Lite') {
@@ -785,7 +819,7 @@ showOnlyTechStack: boolean = false;
         this.updateArrayWithFeatures(this.operations, featuresArray);
       }
       if (responseData.techStack.length > 0) {
-        this.totalCost = responseData.techStack[0].tech_stack_total_price;
+        this.totalCost = responseData.techStack[0].tech_stack_total_prices;
       }
       this.activation_fee = responseData.activation_fee;
 
@@ -1730,6 +1764,7 @@ checkReviewStep(): boolean {
       return 0;
     }
   }
+
   getSubscriptionsTotalMonthly() {
     if (this.multiple_location === 'yes') {
       return this.subscriptionPlans.reduce(

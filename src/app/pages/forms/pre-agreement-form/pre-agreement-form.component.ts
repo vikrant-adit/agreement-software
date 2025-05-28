@@ -506,6 +506,7 @@ export class PreAgreementFormComponent implements OnInit {
     // Form is valid if basic fields are valid AND 
     // either displayPricing is false OR pricing details were validated above
     // AND if displayTechComparison is true, then techStack must be valid
+    this.ensureAllPricingKeys()
     if (basicFieldsValid && 
         (displayPricing || displayTechComparison)) {
       
@@ -609,6 +610,47 @@ export class PreAgreementFormComponent implements OnInit {
     }
   }
   
+// Helper method to ensure all possible pricing keys are included
+private ensureAllPricingKeys() {
+  if (!this.preAgreementForm.get('displayPricing')?.value) {
+    return; // Skip this if pricing isn't being displayed/used
+  }
+
+  // Get the current pricing details form group
+  const pricingDetails = this.preAgreementForm.get('pricingDetails') as FormGroup;
+  if (!pricingDetails) return;
+  
+  // Get the selected promotion type
+  const selectedPromo = this.preAgreementForm.get('sales_person_promotion_type')?.value;
+  if (!selectedPromo) return;
+  
+  // Create a set of all possible pricing keys from all promotion types
+  const allPossibleKeys = new Set<string>();
+  
+  // Iterate through all promotion types to collect all possible keys
+  Object.values(this.promotionPricing).forEach((pricing:any) => {
+    Object.keys(pricing).forEach(key => {
+      // Skip min/max metadata keys
+      if (!key.endsWith('_Min') && !key.endsWith('_Max')) {
+        allPossibleKeys.add(key);
+      }
+    });
+  });
+  
+  // Log for debugging
+  console.log('All possible pricing keys:', allPossibleKeys);
+  
+  // Ensure each key exists in the form group
+  allPossibleKeys.forEach(key => {
+    if (!pricingDetails.get(key)) {
+      // Add control with null value if it doesn't exist
+      pricingDetails.addControl(key, new FormControl(null));
+    }
+  });
+  
+  // Log the final pricing details for debugging
+  console.log('Final pricing details before submission:', pricingDetails.value);
+}
   promotionPricing: any = promotionPricing;
   get promotionKeys() {
     // console.log('this.promotionPricing', Object.keys(this.promotionPricing));

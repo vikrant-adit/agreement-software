@@ -328,7 +328,7 @@
             <span class="action-bar">
               <mat-icon style="color: var(--secondary-color)" (click)="editAgreement(element.agreementId)">edit</mat-icon>
               @if (element.status != 'Completed') {
-                <mat-icon style="color: var(--secondary-color)" (click)="viewAgreement(element.agreementId)">remove_red_eye</mat-icon>
+                <mat-icon style="color: var(--secondary-color)" (click)="viewAgreement(element.agreementId,element.multipleLocations)">remove_red_eye</mat-icon>
                 @if (element.status != 'Expired') {
                   <mat-icon style="color: var(--secondary-color)" (click)="markExpireAgreement(element.agreementId)">cancel</mat-icon>
                 }
