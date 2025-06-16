@@ -28,7 +28,7 @@ import { DatePipe } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import {MatDialogModule, MatDialog} from '@angular/material/dialog'
 import { SelectColumnDialogComponent } from './select-column-dialog/select-column-dialog.component';
-
+import { mockData } from '../../../assets/mock-data/mock-data';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dashboard',
@@ -335,19 +335,30 @@ export class DashboardComponent {
 
 
   //edit dagreement
-  editAgreement(agreementId:any){
-      this.route.navigate(['/pre-agreement-form',agreementId]);
+  editAgreement(agreementId: string) {
+    this.route.navigate(['/pre-agreement-form', agreementId]);
   }
-  viewAgreement(agreementId:any,multipleOrNot:any){
-    if(multipleOrNot=='yes'){
-      this.route.navigate(['/view-agreements',agreementId]);
-    }else{
-      this.route.navigate(['/view-agreement',agreementId]);
+  viewAgreement(agreementId: string, multipleLocations: boolean) {
+    // Find the agreement in mock data
+    const agreement = mockData.agreements.find(a => a.id === agreementId);
+    
+    if (agreement) {
+      // Store the selected agreement in localStorage or a service for access in the view page
+      localStorage.setItem('selectedAgreement', JSON.stringify(agreement));
+      
+      // Navigate to the view agreement page
+      this.route.navigate(['/view-agreement', agreementId], {
+        queryParams: {
+          multipleLocations: multipleLocations
+        }
+      });
+    } else {
+      console.error('Agreement not found with ID:', agreementId);
+      // Optionally show an error notification to the user
     }
-
   }
 
-  markExpireAgreement(agreementId: any): void {
+  markExpireAgreement(agreementId: string): void {
     Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to mark this agreement as expired?',

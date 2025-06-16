@@ -1,63 +1,83 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { MatDialogModule,MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PermissionsService } from '../../../../services/permissons/permissions.service';
+import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-assign-permission',
   standalone: true,
-  imports: [MatDialogModule,MatButtonModule,MatCheckboxModule],
+  imports: [FormsModule, MatCheckboxModule, MatButtonModule],
   templateUrl: './assign-permission.component.html',
   styleUrl: './assign-permission.component.scss'
 })
 export class AssignPermissionComponent implements OnInit {
-    readonly dialogRef = inject(MatDialogRef<AssignPermissionComponent>);
-    readonly data = inject(MAT_DIALOG_DATA);
-    private permissionService = inject(PermissionsService)
-    allPermission:any[]=[]
-    selectedPermission:any[]=[]
-    mappedPermissions:any[]=[]
-    ngOnInit(): void {
-      console.log(this.data)
-      this.permissionService.getPermissionsForRole(this.data).subscribe((res:any) => {
-        this.selectedPermission = res.data.permissions;
-      
-        this.permissionService.getPermissions().subscribe((res:any) => {
-          this.allPermission = res.data;
-      
-          // Transform allPermission to mark selected permissions
-          this.mappedPermissions = this.allPermission.map(permission => ({
-            ...permission,
-            checked: this.selectedPermission.some(selected => selected.id === permission.id) // Assuming permissions have an 'id' property
-          }));
-        });
-      });
-      
-    }
+  permissions: any[] = [];
+  assignedPermissions: string[] = [];
+  role: any;
+  selectedPermissions: number[] = [];
 
-    updatePermissions() {
-      const selectedPermissionIds = this.mappedPermissions
-        .filter(permission => permission.checked) // Get only checked ones
-        .map(permission => permission.id); // Extract their IDs
-    
-      const roleId = this.data; // Assuming 'this.data' holds the role ID
-    
-      this.assignPermission(roleId, selectedPermissionIds);
+  constructor(
+    private dialogRef: MatDialogRef<AssignPermissionComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: number,
+    private permissionService: PermissionsService,
+    private toastr: ToastrService
+  ) {}
 
+  ngOnInit() {
+    this.loadRolePermissions();
+  }
+
+  loadRolePermissions() {
+    this.permissionService.getPermissionsForRole(this.data).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.role = res.data.role;
+          this.permissions = res.data.permissions;
+          this.assignedPermissions = res.data.assignedPermissions;
+          
+          // Set initial selected permissions
+          this.selectedPermissions = this.permissions
+            .filter(p => this.assignedPermissions.includes(p.name))
+            .map(p => p.id);
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Failed to load role permissions');
+        console.error('Error loading role permissions:', error);
+      }
+    });
+  }
+
+  onPermissionChange(permissionId: number, checked: boolean) {
+    if (checked) {
+      this.selectedPermissions.push(permissionId);
+    } else {
+      const index = this.selectedPermissions.indexOf(permissionId);
+      if (index > -1) {
+        this.selectedPermissions.splice(index, 1);
+      }
     }
-    
-    assignPermission(roleId: number, permissionIds: number[]) {
-      this.permissionService.assignPermissions(roleId, permissionIds).subscribe(() => {
-        alert(`Permissions assigned to Selected Role Id ${roleId}`);
-        this.dialogRef.close()
-      });
-    }
-    
-    addNremovePermission(event:any, id:any){
-        this.mappedPermissions.forEach(perm=>{
-          if(perm.id==id){
-            perm.checked=event.checked
-          }
-        })
-    }
+  }
+
+  savePermissions() {
+    this.permissionService.assignPermissions(this.data, this.selectedPermissions).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.toastr.success('Permissions assigned successfully');
+          this.dialogRef.close(true);
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Failed to assign permissions');
+        console.error('Error assigning permissions:', error);
+      }
+    });
+  }
+
+  close() {
+    this.dialogRef.close();
+  }
 }

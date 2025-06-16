@@ -13,6 +13,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ToastrService } from 'ngx-toastr';
 
 import { RolesService } from '../../../../services/roles/roles.service';
 import { UserService } from '../../../../services/users/user.service';
@@ -61,6 +62,7 @@ export class CreateUserComponent implements OnInit {
   // private permissionService = inject(PermissionsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
 
   userId: number | null = null;
   roles: Role[] = [];
@@ -92,7 +94,7 @@ export class CreateUserComponent implements OnInit {
       }
     });
 
-    this.getRoles();
+    this.loadRoles();
   }
 
   selectedPermission: any[] = [];
@@ -103,26 +105,13 @@ export class CreateUserComponent implements OnInit {
         email: user.data.email,
         username: user.data.username,
         role_id: user.data.role.id,
-        // overridePermission: user.data.override_permisson === 1 ? true : false,
-        // extraPermissions: user.data.extraPermissions,
       });
      const mockEvent = { value: user.data.role.id };
     this.getRadioInfo(mockEvent);
-      // if (user.override_permisson == 1) {
-      //   this.viewPermission = true;
-      // }
-      // Password should not be prefilled for security reasons
+
       this.userForm.get('password')?.setValidators([]);
       this.userForm.get('password')?.updateValueAndValidity();
-      // this.permissionService.getPermissions().subscribe((permissionsData: any) => {
-      //   let permissions = permissionsData.data;
-      //   console.log(permissions, 'asdaseqweqweqweqweqwe');
-      //   this.permissionList = permissions.map((permission: any) => ({
-      //     ...permission,
-      //     checked: user.extraPermissions.includes(permission.id), // Mark selected
-      //   }));
-      //   console.log(this.permissionList);
-      // });
+
     });
   }
 
@@ -185,41 +174,42 @@ export class CreateUserComponent implements OnInit {
     }
   }
 
-  getRoles() {
-    this.roleService.getRoleswithPermissions().subscribe((response: any) => {
-      if (response.success) {
-        this.roles = response.data.roles;
-        this.rolesList = response.data.rolesList;
-        
-        // Process allPermissions from the response
-        if (response.data.allPermissions && Array.isArray(response.data.allPermissions)) {
-          // Store allPermissions in component property
-          this.allPermission = response.data.allPermissions;
+  loadRoles() {
+    this.roleService.getRolesWithPermissions().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.roles = response.data.roles;
+          this.rolesList = response.data.rolesList;
           
-          // Map permissions with checked status (all false by default)
-          this.mappedPermissions = response.data.allPermissions.map((permission: any) => ({
-            ...permission,
-            checked: false
-          }));
-          
-          // If we're in edit mode and a role is already selected, check permissions accordingly
-          if (this.selectedRoleId && this.edit) {
-            const selectedRole = this.roles.find(role => role.id === this.selectedRoleId);
-            if (selectedRole && selectedRole.permissions) {
-              const rolePermissionIds = selectedRole.permissions.map(p => p.id);
-              
-              // Mark permissions as checked if they belong to the selected role
-              this.mappedPermissions.forEach(permission => {
-                permission.checked = rolePermissionIds.includes(permission.id);
-              });
+          // Process allPermissions from the response
+          if (response.data.allPermissions && Array.isArray(response.data.allPermissions)) {
+            // Store allPermissions in component property
+            this.allPermission = response.data.allPermissions;
+            
+            // Map permissions with checked status (all false by default)
+            this.mappedPermissions = response.data.allPermissions.map((permission: any) => ({
+              ...permission,
+              checked: false
+            }));
+            
+            // If we're in edit mode and a role is already selected, check permissions accordingly
+            if (this.selectedRoleId && this.edit) {
+              const selectedRole = this.roles.find(role => role.id === this.selectedRoleId);
+              if (selectedRole && selectedRole.permissions) {
+                const rolePermissionIds = selectedRole.permissions.map(p => p.id);
+                
+                // Mark permissions as checked if they belong to the selected role
+                this.mappedPermissions.forEach(permission => {
+                  permission.checked = rolePermissionIds.includes(permission.id);
+                });
+              }
             }
           }
-          
-          console.log('Mapped permissions:', this.mappedPermissions);
         }
-        
-        console.log(this.rolesList, 'rolesList');
-        console.log(this.roles, 'roles');
+      },
+      error: (error) => {
+        this.toastr.error('Failed to load roles and permissions');
+        console.error('Error loading roles and permissions:', error);
       }
     });
   }
@@ -303,6 +293,6 @@ export class CreateUserComponent implements OnInit {
   }
 
   hasPermission(permission: string): boolean {
-    return this.authService.getUserPermissions().includes(permission);
+    return true;
   }
 }

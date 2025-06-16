@@ -5,9 +5,11 @@ import {
   HttpParams,
   HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environment';
+import { mockData } from '../../assets/mock-data/mock-data';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -21,6 +23,27 @@ export class UserService {
     limit: number = 10,
     searchTerm: string = ''
   ): Observable<any> {
+    if (environment.useMockData) {
+      const mockUsers = [
+        { id: 1, name: 'John Doe', email: 'john@example.com' },
+        { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+        { id: 3, name: 'Bob Johnson', email: 'bob@example.com' }
+      ];
+
+      const filteredUsers = searchTerm
+        ? mockUsers.filter(user => 
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : mockUsers;
+
+      return of({
+        success: true,
+        data: filteredUsers,
+        total: filteredUsers.length
+      });
+    }
+
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString())
@@ -32,6 +55,16 @@ export class UserService {
   }
 
   createUser(data: any): Observable<any> {
+    if (environment.useMockData) {
+      const newUser = {
+        id: mockData.users.length + 1,
+        ...data,
+        status: 'active'
+      };
+      mockData.users.push(newUser);
+      return of(newUser);
+    }
+
     return this.http
       .post<any>(this.baseUrl + '/users', data)
       .pipe(catchError(this.handleError));
@@ -49,6 +82,26 @@ export class UserService {
   }
 
   login(email: string, password: string): Observable<any> {
+    if (environment.useMockData) {
+      const user = mockData.users.find(u => u.email === email && u.password === password);
+      if (user) {
+        // Generate mock tokens
+        const accessToken = 'mock-access-token-' + Date.now();
+        const refreshToken = 'mock-refresh-token-' + Date.now();
+        
+        return of({
+          accessToken,
+          refreshToken,
+          userId: user.id,
+          role: user.role,
+          permissions: user.permissions,
+          message: 'Login successful',
+          firstLogin: false
+        });
+      }
+      return throwError(() => 'Invalid email or password');
+    }
+
     return this.http
       .post(`${this.baseUrl}/users/login`, { email, password })
       .pipe(catchError(this.handleError));
@@ -82,9 +135,14 @@ export class UserService {
     return throwError(() => errorMessage);
   }
 
-  getUser(id:any){
+  getUser(id: any): Observable<any> {
+    if (environment.useMockData) {
+      const user = mockData.users.find(u => u.id === id);
+      return user ? of(user) : throwError(() => 'User not found');
+    }
+
     return this.http
-    .get<any>(this.baseUrl + '/users/'+id)
-    .pipe(catchError(this.handleError));
+      .get<any>(this.baseUrl + '/users/' + id)
+      .pipe(catchError(this.handleError));
   }
 }

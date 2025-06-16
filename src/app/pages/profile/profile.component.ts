@@ -17,6 +17,8 @@ import { HeaderComponent } from '../../header/header.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { UserService } from '../../../services/users/user.service';
+import { mockData } from '../../../assets/mock-data/mock-data';
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -44,17 +46,28 @@ export class ProfileComponent  implements OnInit{
       role:['']
     });
   }
-ngOnInit(): void {
-  let id = localStorage.getItem('userId')
-  this.userService.getUser(id).subscribe(res=>{
-    this.userForm.patchValue(res.data)
-    this.userForm.get('role')?.setValue(res.data.role.name)
-  })
-}
+
+  ngOnInit(): void {
+    // Get user ID from localStorage
+    const userId = localStorage.getItem('userId');
+    
+
+    // Find user in mock data
+    const user = mockData.users.find(u => u.id.toString() === userId);
+    
+    if (user) {
+      // Find role details
+      const role = mockData.roles.find(r => r.name === user.role);
+      
+      // Create user data object with role information
+    
+      // Patch form with user data
+      this.userForm.patchValue(user);
+    }
+  }
 
   // createUser() {
   //   console.log(this.userForm.value);
   // }
-
 
 }

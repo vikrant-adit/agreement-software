@@ -7,10 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { AssignPermissionComponent } from './assign-permission/assign-permission.component';
 import { AuthService } from '../../../services/auth.service';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-role-manage',
   standalone: true,
-  imports: [FormsModule, MatButtonModule, MatInputModule,MatFormFieldModule],
+  imports: [FormsModule, MatButtonModule, MatInputModule, MatFormFieldModule],
   templateUrl: './role-manage.component.html',
   styleUrl: './role-manage.component.scss'
 })
@@ -19,24 +21,50 @@ export class RoleManageComponent implements OnInit {
   newRole: string = '';
   editRoleId: number | null = null;
   editRoleName: string = '';
-  private authService=inject(AuthService)
-  constructor(private roleService: RolesService, private dialog:MatDialog) {}
+  private authService = inject(AuthService);
+
+  constructor(
+    private roleService: RolesService,
+    private dialog: MatDialog,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit() {
     this.loadRoles();
   }
 
   loadRoles() {
-    this.roleService.getRoles().subscribe((res: any) => {
-      this.roles = res.data;
+    this.roleService.getRoles().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.roles = res.data;
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Failed to load roles');
+        console.error('Error loading roles:', error);
+      }
     });
   }
 
   addRole() {
-    if (!this.newRole.trim()) return;
-    this.roleService.addRole(this.newRole).subscribe(() => {
-      this.newRole = '';
-      this.loadRoles();
+    if (!this.newRole.trim()) {
+      this.toastr.warning('Please enter a role name');
+      return;
+    }
+
+    this.roleService.addRole(this.newRole).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.toastr.success('Role added successfully');
+          this.newRole = '';
+          this.loadRoles();
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Failed to add role');
+        console.error('Error adding role:', error);
+      }
     });
   }
 
@@ -46,30 +74,58 @@ export class RoleManageComponent implements OnInit {
   }
 
   updateRole() {
-    if (this.editRoleId === null || !this.editRoleName.trim()) return;
-    this.roleService.updateRole(this.editRoleId, this.editRoleName).subscribe(() => {
-      this.editRoleId = null;
-      this.editRoleName = '';
-      debugger
-      this.loadRoles();
+    if (this.editRoleId === null || !this.editRoleName.trim()) {
+      this.toastr.warning('Please enter a role name');
+      return;
+    }
+
+    this.roleService.updateRole(this.editRoleId, this.editRoleName).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.toastr.success('Role updated successfully');
+          this.editRoleId = null;
+          this.editRoleName = '';
+          this.loadRoles();
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Failed to update role');
+        console.error('Error updating role:', error);
+      }
     });
   }
 
   deleteRole(id: number) {
-    this.roleService.deleteRole(id).subscribe(() => {
-      this.loadRoles();
+    if (confirm('Are you sure you want to delete this role?')) {
+      this.roleService.deleteRole(id).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.toastr.success('Role deleted successfully');
+            this.loadRoles();
+          }
+        },
+        error: (error) => {
+          this.toastr.error('Failed to delete role');
+          console.error('Error deleting role:', error);
+        }
+      });
+    }
+  }
+
+  managePermission(id: number) {
+    const dialogRef = this.dialog.open(AssignPermissionComponent, {
+      minWidth: '30vw',
+      data: id
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadRoles();
+      }
     });
   }
-  managePermission(id:number){
-    this.dialog.open(AssignPermissionComponent,
-      {
-        minWidth:'30vw',
-        data:id
-      }
-    )
-  }
+
   hasPermission(permission: string): boolean {
-    return this.authService.getUserPermissions().includes(permission);
+    return this.authService.hasPermission(permission);
   }
-  
 }

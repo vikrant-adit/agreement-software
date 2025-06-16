@@ -125,16 +125,16 @@ export class UsersComponent implements OnInit {
     this.router.navigate(['/create-user'])
   }
 
-  editUser(id: any) {
-    this.router.navigate(['/update-user', id])
-  }
-  deleteUser(id: any) {
-    this.userService.deleteUser(id).subscribe(res => {
-      this.toasterService.success(res.message)
-    })
-  }
-  hasPermission(permission: string): boolean {
-    return this.authService.getUserPermissions().includes(permission);
-  }
-
+    editUser(id:any){
+      this.router.navigate(['/update-user',id])
+    }
+    deleteUser(id:any){
+      this.userService.deleteUser(id).subscribe(res=>{
+        this.toasterService.success(res.message)
+      })
+    }
+    hasPermission(permission: string): boolean {
+      return true;
+    }
+    
 }

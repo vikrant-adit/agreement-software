@@ -35,62 +35,62 @@ export const routes: Routes = [
   {
     path:'users',
     component:UsersComponent,
-    canActivate:[AuthGuard],
+     canActivate:[AuthGuard],
     data: { permission: 'view_users' }
   },
   {
     path:'update-user/:id',
     component:CreateUserComponent,
-     canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
      data: { permission: 'edit_users' }
   }, 
   {
     path:'create-user',
     component:CreateUserComponent,
-     canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
      data: { permission: 'add_users' }
   },
   {
     path:'dashboard',
     component:DashboardComponent,
-     canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
      data: { permission: 'view_agreements' }
   },
   {
     path:'in-person-lead-form',
     component:InPersonLeadFormComponent,
-     canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
      data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-welcome',
     component:PreAgreementWelcomeComponent,
-     canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
      data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-form',
     component:PreAgreementFormComponent,
-     canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
      data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-form/:id',
     component:PreAgreementFormComponent,
-     canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
      data: { permission: 'add_agreements' }
   },
   {
     path:'view-agreement/:agreementId',
     component:ViewAgreementComponent,
-    //  canActivate:[AuthGuard],
-    //  data: { permission: 'add_agreements' }
+      canActivate:[AuthGuard],
+      data: { permission: 'add_agreements' }
   },
   {
     path:'view-agreements/:agreementId',
     component:ViewAgreementMultipleComponent,
-    //  canActivate:[AuthGuard],
-    //  data: { permission: 'add_agreements' }
+      canActivate:[AuthGuard],
+      data: { permission: 'add_agreements' }
   },
   {
     path:'pre-agreement-form-verification',
@@ -113,7 +113,8 @@ export const routes: Routes = [
   {
     path:'profile',
     component:ProfileComponent,
-     canActivate:[AuthGuard],data: { permission: 'view_users' }
+     canActivate:[AuthGuard],
+     data: { permission: 'view_users' }
   },
   {
     path:'roles',
