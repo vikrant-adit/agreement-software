@@ -1,0 +1,76 @@
+<div class="permissiontabsetting-block">
+  <div class="title-head">
+    <h2>Permission Management</h2>
+
+    @if(hasPermission('add_permissions')){
+    <div class="add-permission">
+      <mat-form-field class="white-formfield nowarnmsg-field">
+        <mat-label>Permission Name</mat-label>
+        <input type="text" matInput [(ngModel)]="newPermissionName" />
+      </mat-form-field>
+      <!-- <mat-form-field>
+          <mat-label>Permission Description</mat-label>
+          <input type="text" matInput [(ngModel)]="newPermissionDescription" />
+        </mat-form-field> -->
+      <button mat-raised-button (click)="addPermission()">
+        Add Permission
+      </button>
+    </div>
+    }
+  </div>
+  <div class="permissiontable-block">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Role Name</th>
+            <!-- <th>Description</th> -->
+            @if(hasPermission("edit_permissions") ||hasPermission("delete_permission") ){
+            <th class="roletable-action">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for(permission of permissions;track permission){
+          <tr>
+            <td>{{ permission.id }}</td>
+            <td>
+              @if(editPermId !== permission.id){
+              <span>{{ permission.name }}</span>
+              }@else if(editPermId === permission.id){
+              <input [(ngModel)]="editPermName" />
+              }
+            </td>
+
+            <!-- <td>
+              @if(editPermId !== permission.id){
+              <span>{{ permission.description }}</span>
+              }@else if(editPermId === permission.id){
+              <input [(ngModel)]="editPermDescription" />
+              }
+            </td> -->
+            <td class="roletable-action">
+              @if(hasPermission("edit_permissions")){
+              @if(editPermId !== permission.id){
+              <button mat-raised-button (click)="startEdit(permission)">
+                Edit
+              </button>
+              }@else if (editPermId === permission.id) {
+              <button mat-raised-button (click)="updatePermission()">Save</button>
+              }
+              }
+              @if(hasPermission("delete_permission")){
+              <button mat-raised-button (click)="deletePermission(permission.id)">
+                Delete
+              </button>
+              }
+
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

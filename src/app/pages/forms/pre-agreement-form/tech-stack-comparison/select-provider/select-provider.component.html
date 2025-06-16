@@ -1,0 +1,27 @@
+<div class="dialog-container">
+  @if(data=='Current Phone Provider?'){
+    <h2> Select Current Phone Provider </h2>  
+  }@else if(data=='Patient Texting?'||data=='Reminders & Recall?'||data=='Digital Forms?'||data=='Treatment Presentations & Payment Plans?'||data=='Current Payments Provider?'||data=='Reviews?'||data=='Online Scheduling?'||data=='Mass Texting?'||data=='Mass Emailing?') {
+    <h2>  Select Current Provider for Forms, Reminders/Recalls, Tx Plans, Payments, Reviews, Mass Texting/Reviews, Scheduling</h2>
+  }@else if(data=='Analytics & Morning Huddle?'){
+    <h2> Select Current Analytics Provider </h2>  
+  }
+  <mat-form-field class="search-field" appearance="outline">
+    <mat-label>Search</mat-label>
+    <input matInput type="text" [(ngModel)]="searchTerm" (input)="filterOptions()" placeholder="Search providers">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div class="radio-group">
+    <mat-radio-group>
+      <div class="column">
+        @for(option of filteredProviders;track option){
+          <mat-radio-button [value]="option" (click)="setValue(option)">
+            {{ option }}
+          </mat-radio-button>
+        }
+       
+      </div>  
+    </mat-radio-group>
+  </div>
+</div>

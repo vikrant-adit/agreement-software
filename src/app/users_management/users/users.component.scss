@@ -1,0 +1,153 @@
+.dashboard-container {
+  background-color: var(--light-grey-color);
+  height: calc(100vh - 53px);
+
+  .dashboard-block {
+    --mat-table-row-item-label-text-font: "Work Sans", sans-serif;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .table-container {
+      width: 100%;
+      overflow: auto;
+      max-height: calc(100vh - 274px);
+
+      .users-table mat-header-cell {
+        font-family: "Work Sans", sans-serif;
+      }
+
+      .usertableid-th,
+      .usertableid-td {
+        max-width: 60px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .usertableaction-th,
+      .usertableaction-td {
+        max-width: 100px;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .action-bar {
+        display: inline-flex;
+
+        .mat-icon {
+          color: var(--secondary-color);
+          cursor: pointer;
+
+          &:hover {
+            color: var(--primary-color);
+          }
+
+          &.dltusers-icon {
+            color: #dc3545;
+
+            &:hover {
+              color: #b02a37;
+            }
+          }
+        }
+      }
+    }
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #b0afaf;
+      border-radius: 6px;
+
+      &:hover {
+        background: #898888;
+      }
+    }
+
+    .tablebtm-pagination {
+      border-top: 2px solid #e5e5e5;
+    }
+  }
+
+}
+
+.mat-mdc-header-row {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
+}
+
+.mat-mdc-cell {
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.8);
+  border-collapse: collapse;
+}
+
+.search-pagination-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: white;
+  height: 68px;
+  padding: 5px;
+  margin-block-end: 1rem;
+
+  mat-form-field {
+    flex-grow: 0;
+    min-width: 400px;
+  }
+
+  mat-paginator {
+    flex-grow: 1;
+    min-width: 200px;
+    background-color: white;
+    border-radius: 6px;
+  }
+
+  button {
+    height: 100%;
+    flex-grow: 0;
+    color: white;
+    font-weight: 600;
+    border: none;
+    background-color: var(--primary-color);
+    border-radius: 6px;
+    min-width: 100px;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--secondary-color);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .search-pagination-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.table-head {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .search-pagination-container {
+    flex-direction: column;
+    /* Stack items vertically on smaller screens */
+    align-items: stretch;
+    /* Stretch items to fill the width */
+  }
+}

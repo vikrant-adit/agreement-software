@@ -1,0 +1,67 @@
+<div class="roletabsetting-block">
+  <div class="title-head">
+    <h2>Role Management</h2>
+
+    <!-- Add Role -->
+    @if(hasPermission('add_roles')){
+    <div class="add-role">
+      <mat-form-field class="white-formfield nowarnmsg-field">
+        <mat-label> Enter Role Name </mat-label>
+        <input matInput [(ngModel)]="newRole" placeholder="Enter Role Name" />
+      </mat-form-field>
+      <button mat-raised-button (click)="addRole()">Add Role</button>
+    </div>
+    }
+  </div>
+
+  <!-- Role List -->
+  <div class="roletable-block">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Role Name</th>
+            @if(hasPermission('edit_roles')||hasPermission('delete_roles')||hasPermission('assign_permissions')){
+            <th class="roletable-action">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+
+          @for(role of roles;track role){
+          <tr>
+            <td>{{ role.id }}</td>
+            <td>
+              @if(editRoleId !== role.id){
+              <span>{{ role.name }}</span>
+              }@else if(editRoleId === role.id){
+              <input [(ngModel)]="editRoleName" />
+              }
+            </td>
+            @if(hasPermission('edit_roles')||hasPermission('delete_roles')||hasPermission('assign_permissions')){
+            <td class="roletable-action">
+              @if(hasPermission('edit_roles')){
+              @if(editRoleId !== role.id){
+              <button mat-raised-button (click)="startEdit(role)">Edit</button>
+              }@else if (editRoleId === role.id) {
+              <button mat-raised-button (click)="updateRole()">Update</button>
+              }
+              }
+              @if(hasPermission('delete_roles')){
+              <button mat-raised-button (click)="deleteRole(role.id)">Delete</button>
+              }
+              @if(hasPermission('assign_permissions')){
+              <button mat-raised-button (click)="managePermission(role.id)">Manage Permission</button>
+
+              }
+            </td>
+            }
+          </tr>
+          }
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

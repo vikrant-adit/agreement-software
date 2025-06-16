@@ -1,0 +1,129 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the theme object.
+$demo-enfolytics-theme: mat.define-theme((color: (theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      density: (scale: 0,
+      )));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+:root {
+  @include mat.all-component-themes($demo-enfolytics-theme);
+}
+
+// Comment out the line below if you want to use the pre-defined typography utility classes.
+// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
+// @include mat.typography-hierarchy($demo-enfolytics-theme);
+
+// Comment out the line below if you want to use the deprecated `color` inputs.
+// @include mat.color-variants-backwards-compatibility($demo-enfolytics-theme);
+/* You can add global styles to this file, and also import other style files */
+
+:root {
+  --primary-color: #f48a1f; // orange
+  --secondary-color: #25a8e0; // light blue
+  --darktext-color: #58595B; // dark text color
+  --light-text-color: #939598; // light text color
+  --background-color: rgb(227, 224, 224);
+  --light-grey-color: #E5E5E5;
+  --mdc-filled-button-container-color: #25a8e0;
+  --mdc-protected-button-label-text-color: #25a8e0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: "Work Sans", sans-serif;
+  font-weight: normal;
+  color: var(--darktext-color);
+  margin: 0;
+}
+
+img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  vertical-align: middle;
+}
+*, ::after, ::before {
+    box-sizing: border-box;
+}
+// .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+//   background-color: white !important;
+// }
+
+.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,
+.mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background {
+  border-color: var(--primary-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+/* Start: Header */
+.header-main button .mat-mdc-button-touch-target {
+  width: 30px;
+  height: 30px;
+}
+
+.headprofile-dropdwn.mat-mdc-menu-panel {
+  background-color: #ffffff;
+  min-width: 180px;
+
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
+
+  .mat-mdc-menu-item {
+    border-top: 1px solid #e0e0e0;
+    min-height: inherit;
+    padding: 6px 12px;
+
+    &:first-child {
+      border: none;
+    }
+    .mat-icon {
+      margin-right: 6px;
+    }
+    .mat-mdc-menu-item-text {
+      font-weight: normal;
+      color: var(--darktext-color);
+    }
+  }
+}
+
+
+#mainContainer {
+  padding-top: 53px;
+}
+/* End: Header */
+/* Start: Dashboard Page */
+.white-formfield .mat-mdc-text-field-wrapper {
+  background-color: #fff !important;
+}
+.white-formfield .mat-mdc-form-field-focus-overlay {
+  --mat-form-field-state-layer-color: #145874;
+}
+.nowarnmsg-field .mat-mdc-form-field-subscript-wrapper.mat-mdc-form-field-bottom-align {
+  display: none;
+}
+/* End: Dashboard Page */
+.agreeform-btns {
+  .mdc-button__label {
+    width: 100%;
+  }
+}

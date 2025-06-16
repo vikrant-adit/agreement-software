@@ -1,0 +1,20 @@
+<app-header></app-header>
+<div id="mainContainer">
+  <div class="agreeformbtns-block">
+    <div class="container">
+      <div class="actions-container">
+        @for(action of actions;track action){
+        <div class="action-item">
+          <button class="agreeform-btns" mat-raised-button color="primary" (click)="routeToForms(action.route)">
+            <span class="actionbtn-icontitle">
+              <mat-icon class="icon">{{ action.icon }}</mat-icon>
+              <strong>{{ action.label }}</strong>
+            </span>
+            <mat-icon class="arrow-icon">east</mat-icon>
+          </button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

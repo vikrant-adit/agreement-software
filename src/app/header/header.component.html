@@ -1,0 +1,29 @@
+<div id="header">
+  <div class="container">
+    <div class="header-main">
+      <div class="header-logo">
+        <img src="https://demo.enfolytics.com/assets/images/adit-logo.png" alt="Company Logo" class="logo">
+      </div>
+      <div class="header-right">
+        <div class="controls">
+          <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>menu</mat-icon></button>
+          <mat-menu #menu="matMenu" class="headprofile-dropdwn">
+            <div class="menuList">
+              <button mat-menu-item (click)="routeTo('users')"><mat-icon>supervised_user_circle</mat-icon>Users</button>
+              <button mat-menu-item (click)="routeTo('dashboard')"><mat-icon>dashboard</mat-icon>Dashboard</button>
+            </div>
+          </mat-menu>
+
+          <button mat-icon-button [matMenuTriggerFor]="menu2"><mat-icon>settings</mat-icon></button>
+          <mat-menu #menu2="matMenu" class="headprofile-dropdwn">
+            <div class="menuList">
+              <button mat-menu-item (click)="routeTo('profile')"><mat-icon>person</mat-icon>My Profile</button>
+              <button mat-menu-item (click)="routeTo('settings')"><mat-icon>settings</mat-icon>Settings</button>
+              <button mat-menu-item (click)="routeTo('login')"><mat-icon>logout</mat-icon>Logout</button>
+            </div>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

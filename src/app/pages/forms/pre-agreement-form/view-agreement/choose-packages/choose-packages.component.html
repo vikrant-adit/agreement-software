@@ -1,0 +1,821 @@
+@if(whichOneToShow=='new_package'){
+  <div class="container">
+    <div class="check">
+      @if(multiple_location=='yes'){
+        <!-- <h1>Step 1: Choose a Package</h1> -->
+      }@else{
+        <h1>Step 1: Choose a Package</h1>
+        @if(techSelected || analyticSelected){
+          <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
+        }
+      }
+     
+     
+    </div>
+    <div class="title-head">
+      <h4>How would you like to pay?</h4>
+      <div class="toggles">
+        <div class="toggle-container">
+          <button
+            [class]="{ active: isAnnually }"
+            (click)="toggleView('annually')"
+            class="toggle-btn"
+          >
+            Annually
+          </button>
+          <button
+            [class]="{ active: !isAnnually }"
+            (click)="toggleView('monthly')"
+            class="toggle-btn"
+          >
+            Monthly
+          </button>
+        </div>
+        <p>Keep In Mind There Is No Contract, Cancel Anytime!</p>
+      </div>
+      @if(multiple_location=='yes'){
+        <!-- <h1>Step 1: Choose a Package</h1> -->
+        <!-- <div class="total">
+          <span class="titles">
+            {{ !isAnnually ? "Monthly" : "Annually" }} Total
+          </span>
+          <span class="price-value">${{ isAnnually ? newPackageTotalAnnualy : newPackageTotalMonthly }}</span>
+        </div> -->
+      }@else{
+        <div class="total">
+          <span class="titles"
+            >{{ !isAnnually ? "Monthly" : "Annually" }} Total
+          </span>
+          <span class="price-value">${{ isAnnually ? newPackageTotalAnnualy : newPackageTotalMonthly }}</span>
+        </div>
+      }
+    
+    </div>
+    <!-- <div class="offer-banner">
+      <p>
+        <span style="color: white">
+          Get Insurance Verification Free for Life –</span
+        >
+        <span style="color: var(--primary-color)">Sign Up with Adit Now!</span>
+      </p>
+      <button mat-flat-button>Offer Applied!</button>
+    </div> -->
+    <span class="save">
+      <h2>
+        {{
+          !isAnnually
+            ? "You Can Save $1050 By Paying Annual"
+            : "Save $1050 By Paying Annual Upfront"
+        }}
+      </h2></span
+    >
+    <div class="about-package">
+      <div class="adit-core">
+        <div class="heading">
+          <h2>Adit Core</h2>
+          <h2>${{ isAnnually ?  pricingArray.aditCore_annually : pricingArray.aditCore_monthly }} <span>/month</span></h2>
+         @if(isAnnually){
+          <span class="subtext"> +$250 Hardware Credit </span>
+         }
+        </div>
+        <div class="stacks">
+          <div class="col">
+            <p><mat-icon>check_circle_outline</mat-icon> Patient Texting</p>
+            <p><mat-icon>check_circle_outline</mat-icon>Reminders & Recalls</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Patient Forms</p>
+            <p><mat-icon>check_circle_outline</mat-icon>ASAP Lists</p>
+          </div>
+          <div class="col">
+            <p><mat-icon>check_circle_outline</mat-icon> Adit Pay</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Payment Reminders</p>
+            <p><mat-icon>check_circle_outline</mat-icon>Pozative Reviews</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Email Campaigns</p>
+          </div>
+          <div class="col">
+            <p><mat-icon>check_circle_outline</mat-icon> Online Scheduling</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Check-In Kiosk</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Internal Chat</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Mobile App</p>
+          </div>
+        </div>
+      </div>
+      <div class="all-package">
+        <!-- @if(add_on_phones || add_on_analytic || add_on_verification){
+          <h2>Please Select one of the following packages:</h2>
+        }@else{
+          <h2>Please Select one of the following packages:</h2>
+        } -->
+        <!-- <h2>Please add-on at least one of the following packages:</h2> -->
+        <div class="package">
+          @if(pricingArray.add_on_phones!=null){
+            <div class="phone-package" [class.selected]="!phoneSelected"  (click)="handlePhoneAddOnClick(pricingArray.add_on_phones)">
+              <div class="heading">
+                <h2>
+                  <mat-icon> settings_phone </mat-icon>
+                  Phones
+                </h2>
+                <span class="price"> +${{pricingArray.add_on_phones}} </span>
+              </div>
+              <span class="credits">
+                <span>+$300 Hardware Credit</span>
+              </span>
+              <div class="stack">
+              <div class="col">
+                <p><mat-icon>check_circle_outline</mat-icon>Adit Voice</p>
+                <p><mat-icon>check_circle_outline</mat-icon> Visual Voicemail</p>
+                <p><mat-icon>check_circle_outline</mat-icon>Mobile and Webphone</p>
+                <p>
+                  <mat-icon>check_circle_outline</mat-icon> Integrated Caller ID
+                  (Call Pop)
+                </p>
+                <p><mat-icon>check_circle_outline</mat-icon>eFax</p>
+                <p>
+                  <mat-icon>check_circle_outline</mat-icon>Call Tracking & Recording
+                </p>
+              </div>
+              </div>
+            </div>
+          }
+          @if(pricingArray.add_on_analytic){
+            <div class="analytic-pacakge" [class.selected]="!analyticsSelected" (click)="handleAnalyticsAddOnClick(pricingArray.add_on_analytic)">
+              <div class="heading">
+                <h2>
+                  <mat-icon> analytics </mat-icon>
+                  Analytics
+                </h2>
+                <span class="price"> +${{pricingArray.add_on_analytic}} </span>
+              </div>
+              <div class="stack">
+               <div class="col">
+                <p><mat-icon>check_circle_outline</mat-icon> Treatment Plans</p>
+                <p><mat-icon>check_circle_outline</mat-icon> Recall Dashboard</p>
+                <p><mat-icon>check_circle_outline</mat-icon> Health Score Report</p>
+                <p><mat-icon>check_circle_outline</mat-icon> Bulk Quick Texts</p>
+                <p><mat-icon>check_circle_outline</mat-icon> Morning Huddle</p>
+                <p><mat-icon>check_circle_outline</mat-icon>Follow Ups</p>
+                <p><mat-icon>check_circle_outline</mat-icon>  Patient Listss</p>
+    
+               </div>
+               <div class="col">
+                <p><mat-icon>check_circle_outline</mat-icon>Track Provider Hours</p>
+               <p><mat-icon>check_circle_outline</mat-icon> Practice Performance</p>
+                <p><mat-icon>check_circle_outline</mat-icon>Provider Performance</p>
+                <p><mat-icon>check_circle_outline</mat-icon>Hygiene Performance</p>
+               <p><mat-icon>check_circle_outline</mat-icon> Operatory Utilization</p>
+               <p><mat-icon>check_circle_outline</mat-icon> Growth Dashboards</p>
+               <p><mat-icon>check_circle_outline</mat-icon> Collections Dashboards</p>
+               </div>
+              </div>
+            </div>
+          }
+          @if(pricingArray.add_on_verification){
+            <div class="verification-package" [class.selected]="!verificationSelected" (click)="handleVerificationAddOnClick(pricingArray.add_on_verification)">
+              <div class="heading">
+                <h2>
+                  <mat-icon> price_check </mat-icon>
+                  Verifications
+                </h2>
+                <span class="price"> +${{pricingArray.add_on_verification}} </span>
+              </div>
+              <span class="credits">
+                <span>+$300 Hardware Credit</span>
+              </span>
+              <div class="stack">
+                <div class="col">
+                  <p><mat-icon>check_circle_outline</mat-icon> Adit integration pulls eligibility from insurance portal</p>
+                  <p><mat-icon>check_circle_outline</mat-icon> Patients get verified automatically based on schedule</p>
+                  <p><mat-icon>check_circle_outline</mat-icon> Auto post PDF & notes in EHR</p>
+                  <p><mat-icon>check_circle_outline</mat-icon> Customize treatment codes & verification frequency</p>
+              </div>
+                
+              </div>
+            </div>
+          }
+          
+        </div>
+        <p> 
+          <i>All of our services include <strong>
+              a dedicated Customer Success Team
+          </strong> </i>
+        </p>
+      </div>
+    </div>
+  </div>
+}@else if(whichOneToShow=='old_package'){
+  <div class="container">
+    <div class="check">
+      @if(multiple_location=='yes'){
+        <!-- <h1>Step 1: Choose a Package</h1> -->
+      }@else{
+        <h1>Step 1: Choose a Package</h1>
+        @if(techSelected || analyticSelected){
+          <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
+        }
+      }
+     
+    </div>
+    @if(promotionDateSelected && promotionDate){
+  <div class="promotion-date-banner">
+    Your Special Prices Are Valid Until {{promotionDate}}
+  </div>
+}
+    <div class="head">
+      <div class="title-head">
+        <h3>How would you like to pay?</h3>
+        <div class="toggles">
+          <div class="toggle-container">
+            <button
+              [class]="{ active: isAnnually }"
+              (click)="toggleView('annually')"
+              class="toggle-btn">
+              Annually
+            </button>
+            <button
+              [class]="{ active: !isAnnually }"
+              (click)="toggleView('monthly')"
+              class="toggle-btn">
+              Monthly
+            </button>
+          </div>
+        </div>
+        <span class="save_second"> <mat-icon>keyboard_backspace</mat-icon> <h2> {{!isAnnually?'You Can Save $1050 By Paying Annual':'Save $1050 When You Pay Annually!'}}</h2></span>
+      </div>
+      @if(!techSelected && !analyticSelected){
+     <h2 style="text-align: center;"> Select One of the following Packages</h2>  
+      }
+      <div class="content">
+        <div class="mini-card tech" [class.selected]="!techSelected" (click)="multiple_location=='yes'?'': oldPacakSelection('tech')">
+          <h1>Tech Bundle</h1>
+          <h2>
+            Reg Price <span class="striked">${{isAnnually?pricingArray.techAnnual:pricingArray.techMonthly}}</span>
+            <span class="org_price">${{isAnnually? pricingArray.techAnnual_Disc:pricingArray.techMonthly_Disc}}</span>
+          </h2>
+          <div style="margin-block: 5px; text-align: center;">
+            <p>$600 Saved By Going Annual</p>
+            <p>+${{!isAnnually?pricingArray.hardwareCreditMonthly:pricingArray.hardwareCreditAnnually}} Hardware Credit</p>
+          </div>
+          <div class="techs">
+            <span> <mat-icon>check_circle_outline</mat-icon> Adit Voice </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Patient Texting
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Reminders & Recalls
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Patient Forms
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> Adit Pay </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon>Online Scheduling
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon>TeleMed </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Call Tracking
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Pozative Reviews
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Email Campaigns
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> eFax </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Customer Success Team
+            </span>
+          </div>
+        </div>
+        <div class="mini-card analytics" [class.selected]="!analyticSelected" (click)="multiple_location=='yes'?'':oldPacakSelection('analytic')">
+          <div class="popular-tag">Most Popular</div>
+          <h1>Analytics Bundle</h1>
+          <h2>
+            Reg Price <span class="striked">${{isAnnually?pricingArray.analyticAnnual:pricingArray.analyticMonthly}}</span>
+            <span class="org_price">${{isAnnually?pricingArray.analyticAnnual_Disc : pricingArray.analyticMonthly_Disc}}</span>
+          </h2>
+          <div style="margin-block: 5px;text-align: center;">
+            <p>$600 Saved By Going Annual</p>
+            <p>+${{!isAnnually?pricingArray.hardwareCreditMonthly:pricingArray.hardwareCreditAnnually}} Hardware Credit</p>
+          </div>
+          <div class="techs">
+            <div class="tech_column">
+              <span class="techBundle"> All Tech Bundle Features Plus </span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Treatment Plans
+              </span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Health Score
+                Report</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Bulk Quick Text</span>
+            </div>
+            <div class="tech_column">
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Morning Huddle</span>
+              <span> <mat-icon>check_circle_outline</mat-icon>Follow Ups</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Patient Lists</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Track Provider
+                Hours</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Practice
+                Performance</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Provider
+                Performance</span>
+            </div>
+            <div class="tech_column">
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Hygiene
+                Performance</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Operatory
+                Utilization</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Growth
+                Dashboards</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Collections
+                Dashboards
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="btnClass">
+        <button mat-raised-button class="nextbtn" (click)="goNext()">Next</button>
+      </div> -->
+    </div>
+  </div>
+  
+}@else if (whichOneToShow=='no_vendor_promo') {
+  <div class="container">
+    <div class="check">
+       @if(multiple_location!='yes'){
+        <!-- <h1>Step 1: Choose a Package</h1> -->
+        <h1>Step 1: Choose a Package</h1>
+        @if(techSelected || analyticSelected){
+          <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
+        }
+      }
+      <!-- @else{
+       
+      } -->
+     
+    </div>
+  
+    <div class="title-head">
+      <h4>How would you like to pay?</h4>
+      <div class="toggles">
+        <div class="toggle-container">
+          <button
+            [class]="{ active: isAnnually }"
+            (click)="toggleView('annually')"
+            class="toggle-btn">
+            Annually
+          </button>
+          <button
+            [class]="{ active: !isAnnually }"
+            (click)="toggleView('monthly')"
+            class="toggle-btn">
+            Monthly
+          </button>
+        </div>
+        <p>Keep In Mind There Is No Contract, Cancel Anytime!</p>
+      </div>
+      <div class="total">
+        <span class="titles">
+          {{ !isAnnually ? "Monthly" : "Annually" }} Total
+        </span>
+        <span class="price-value">${{ isAnnually? newPackageTotalAnnuallyForNoVendorPromo ||0:newPackageTotalMonthlyForNoVendorPromo || 0 }}</span>
+      </div>
+    </div>
+    <span class="save">
+      <h2>
+        {{
+          !isAnnually
+            ? "You Can Save $1050 By Paying Annual"
+            : "Save $1050 By Paying Annual Upfront"
+        }}
+      </h2>
+    </span>
+    <div class="about-package">
+      <div class="all-package">
+        <h2>Please Select one of the following packages:</h2>
+        <div class="package">
+        @if(pricingArray.pozative_Only_Monthly && pricingArray.pozative_Only_Annually){
+          <div class="pozative-pacakge" [class.selected]="!pozativeSelected" (click)="selectpackage('pozative')">
+            <div class="heading">
+              <h2>
+                <mat-icon> stars </mat-icon>
+                Pozative
+              </h2> 
+              <span class="price"> +$ {{isAnnually ? pricingArray.pozative_Only_Annually : pricingArray.pozative_Only_Monthly}} </span>
+            </div>
+            <!-- <span class="credits">
+              <span>+$300 Hardware Credit</span>
+            </span> -->
+            <div class="stack">
+            <div class="col">
+              <p><mat-icon>check_circle_outline</mat-icon>Integrate Google,Facebook,Yelp, RateMD, and more</p>
+              <p><mat-icon>check_circle_outline</mat-icon>Automatically send Review requests</p>
+              <p><mat-icon>check_circle_outline</mat-icon>Privately collect feedback from unhappy patients</p>
+              <p><mat-icon>check_circle_outline</mat-icon>Track your progress & reward your team!</p>
+            </div>
+            </div>
+          </div>
+        }
+       @if(pricingArray.aditCore_annually && pricingArray.aditCore_monthly){
+        <div class="adit-core-pacakge" [class.selected]="!aditCoreSelected" (click)="selectpackage('aditCore')">
+          <div class="heading">
+            <h2>
+              <mat-icon> <img src="https://demo.enfolytics.com/assets/images/adit-core-icon.svg" alt=""> </mat-icon>
+              Adit Core
+            </h2>
+            <span class="price">+$ {{isAnnually ? pricingArray.aditCore_annually : pricingArray.aditCore_monthly}} </span>
+          </div>
+          <div class="stack">
+           <div class="col">
+            <p><mat-icon>check_circle_outline</mat-icon> Pozative Reviews</p>
+            <p><mat-icon>check_circle_outline</mat-icon>  Patient Texting</p>
+            <p><mat-icon>check_circle_outline</mat-icon>   Reminders & Recalls</p>
+            <p><mat-icon>check_circle_outline</mat-icon>  Patient Forms</p>
+            <p><mat-icon>check_circle_outline</mat-icon>  ASAP Lists</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Adit Pay</p>
+            <p><mat-icon>check_circle_outline</mat-icon>  Payment Reminders</p>
+          </div>
+           <div class="col">
+            <p><mat-icon>check_circle_outline</mat-icon> Email Campaigns</p>
+           <p><mat-icon>check_circle_outline</mat-icon>Online Scheduling</p>
+            <p><mat-icon>check_circle_outline</mat-icon>Check-In Kiosk</p>
+            <p><mat-icon>check_circle_outline</mat-icon>Internal Chat</p>
+           <p><mat-icon>check_circle_outline</mat-icon>Mobile App</p>
+           </div>
+          </div>
+        </div>
+       }
+         @if(pricingArray.verifications_Only_Annually && pricingArray.verifications_Only_Monthly){
+          <div class="verification-package" [class.selected]="!verificationsSelected" (click)="selectpackage('verification')">
+            <div class="heading">
+              <h2>
+                <mat-icon> price_check </mat-icon>
+                Verifications
+              </h2>
+              <span class="price"> +${{isAnnually ? pricingArray.verifications_Only_Annually : pricingArray.verifications_Only_Monthly}} </span>
+            </div>
+
+            <div class="stack">
+              <div class="col">
+                  <p><mat-icon>check_circle_outline</mat-icon>  Eligibility Verification</p>
+                  <p><mat-icon>check_circle_outline</mat-icon> Verification Reporting</p>
+                  <p><mat-icon>check_circle_outline</mat-icon> Auto-Insurance Requests</p>
+                  <p><mat-icon>check_circle_outline</mat-icon> Auto-Post Eligibility PDF in EHR</p>
+              </div>
+              
+            </div>
+          </div>
+         }
+        </div>
+      </div>
+ @if(aditCoreSelected){
+  <div class="all-package">
+    <h2>Please add-on at least one of the following packages:</h2>
+    <div class="package">
+      @if(pricingArray.add_on_phones){
+        <div class="phone-package" [class.selected]="!phoneSelected" (click)="phoneAddOnPriceAddNoVendor(pricingArray.add_on_phones)">
+          <div class="heading">
+            <h2>
+              <mat-icon> settings_phone </mat-icon>
+              Phones
+            </h2>
+            <span class="price"> +$100 </span>
+          </div>
+          <span class="credits">
+            <span>+$300 Hardware Credit</span>
+          </span>
+          <div class="stack">
+          <div class="col">
+            <p><mat-icon>check_circle_outline</mat-icon>Adit Voice</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Visual Voicemail</p>
+            <p><mat-icon>check_circle_outline</mat-icon>Mobile and Webphone</p>
+            <p><mat-icon>check_circle_outline</mat-icon> Integrated Caller ID(Call Pop)</p>
+            <p><mat-icon>check_circle_outline</mat-icon>eFax</p>
+            <p><mat-icon>check_circle_outline</mat-icon>Call Tracking & Recording</p>
+          </div>
+          </div>
+        </div>
+      }
+     @if(pricingArray.add_on_analytic){
+      <div class="analytic-pacakge" [class.selected]="!analyticsSelected" (click)="analyticAddOnPriceAddNoVendor(pricingArray.add_on_analytic)">
+        <div class="heading">
+          <h2>
+            <mat-icon> analytics </mat-icon>
+            Analytics
+          </h2>
+          <span class="price"> +$100 </span>
+        </div>
+        <div class="stack">
+         <div class="col">
+          <p><mat-icon>check_circle_outline</mat-icon> Treatment Plans</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Recall Dashboard</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Health Score Report</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Bulk Quick Texts</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Morning Huddle</p>
+          <p><mat-icon>check_circle_outline</mat-icon>Follow Ups</p>
+          <p><mat-icon>check_circle_outline</mat-icon>  Patient Listss</p>
+
+         </div>
+         <div class="col">
+          <p><mat-icon>check_circle_outline</mat-icon>Track Provider Hours</p>
+         <p><mat-icon>check_circle_outline</mat-icon> Practice Performance</p>
+          <p><mat-icon>check_circle_outline</mat-icon>Provider Performance</p>
+          <p><mat-icon>check_circle_outline</mat-icon>Hygiene Performance</p>
+         <p><mat-icon>check_circle_outline</mat-icon> Operatory Utilization</p>
+         <p><mat-icon>check_circle_outline</mat-icon> Growth Dashboards</p>
+         <p><mat-icon>check_circle_outline</mat-icon> Collections Dashboards</p>
+         </div>
+        </div>
+      </div>
+     }
+     
+      @if(pricingArray.add_on_verification){
+        <div class="verification-package" [class.selected]="!verificationSelected" (click)="verificationAddOnPriceAddNoVendor(pricingArray.add_on_verification)">
+          <div class="heading">
+            <h2>
+              <mat-icon> price_check </mat-icon>
+              Verifications
+            </h2>
+            <span class="price"> +$100 </span>
+          </div>
+          <span class="credits">
+            <span>+$300 Hardware Credit</span>
+          </span>
+          <div class="stack">
+            <div class="col">
+              <p><mat-icon>check_circle_outline</mat-icon> Adit integration pulls eligibility from insurance portal</p>
+              <p><mat-icon>check_circle_outline</mat-icon> Patients get verified automatically based on schedule</p>
+              <p><mat-icon>check_circle_outline</mat-icon> Auto post PDF & notes in EHR</p>
+              <p><mat-icon>check_circle_outline</mat-icon> Customize treatment codes & verification frequency</p>
+          </div>
+            
+          </div>
+        </div>
+      }
+    </div>
+    <p> 
+      <i>All of our services include <strong>
+          a dedicated Customer Success Team
+      </strong> </i>
+    </p>
+  </div>
+ }
+    </div>
+  </div>
+}@else if (whichOneToShow=='only_lite') {
+  <div class="container">
+    <div class="check">
+      @if(multiple_location=='yes'){
+        <!-- <h1>Step 1: Choose a Package</h1> -->
+      }@else{
+        <h1>Step 1: Choose a Package</h1>
+        @if(techSelected || analyticSelected){
+          <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
+        }
+      }
+     
+    </div>
+    <div class="head">
+      <div class="title-head">
+        <h3>How would you like to pay?</h3>
+        <div class="toggles">
+          <div class="toggle-container">
+            <button
+              [class]="{ active: isAnnually }"
+              (click)="toggleView('annually')"
+              class="toggle-btn">
+              Annually
+            </button>
+            <button
+              [class]="{ active: !isAnnually }"
+              (click)="toggleView('monthly')"
+              class="toggle-btn">
+              Monthly 
+            </button>
+          </div>
+        </div>
+        <span class="save_second"> <mat-icon>keyboard_backspace</mat-icon> <h2> {{!isAnnually?'You Can Save $1800 By Paying Annual':'Save $1800 When You Pay Annually!'}}</h2></span>
+      </div>
+  </div>
+  <div class="about-package">
+    <div class="only-lite">
+      <div class="heading">
+        
+        <p style="margin: 0;"> 
+          <span class="titles">Reg Price</span> 
+          <span style="text-decoration: line-through;font-size: 16px;"> 
+          ${{isAnnually?pricingArray.aditLiteAnnual:pricingArray.aditLiteMontly}}
+          </span> 
+        </p>
+        @if(isAnnually){
+          <p style="margin:0;"> 
+            <!-- <span style="font-size:16px"> -->
+            <span style="font-size: 32px; color: rgb(255, 128, 0); font-weight: 700;">${{newPackageTotalAnnualy}}</span>
+             <!-- /mo 1st year</span> -->
+            </p>
+            <!-- <p style="font-size: 16px;">
+              <span style="font-weight: 700;font-size: 20px;">${{newPackageTotalAnnualy}}</span>
+              /mo after
+            </p> -->
+            <span class="subtext"> $600 Saved By Going Annular</span>
+        }@else {
+          <h2 style="margin:5px;font-size: 36px;"> ${{newPackageTotalMonthly}} </h2>
+        }
+          
+        
+      </div>
+      <div class="stacks">
+        <div class="col">
+          <p><mat-icon>check_circle_outline</mat-icon> Patient Texting</p>
+          <p><mat-icon>check_circle_outline</mat-icon>Reminders & Recalls</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Patient Forms</p>
+          <!-- <p><mat-icon>check_circle_outline</mat-icon>ASAP Lists</p> -->
+        </div>
+        <div class="col">
+          <p><mat-icon>check_circle_outline</mat-icon> Adit Pay</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Online Scheduling</p>
+          <p><mat-icon>check_circle_outline</mat-icon>TeleMed</p>
+          <!-- <p><mat-icon>check_circle_outline</mat-icon> Email Campaigns</p> -->
+        </div>
+        <div class="col">
+          <p><mat-icon>check_circle_outline</mat-icon> Pozative Reviews</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Email Campaigns</p>
+          <p><mat-icon>check_circle_outline</mat-icon> Customer Success Team</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+}@else if(whichOneToShow=='adit_lite_and_tech_analytics'){
+  <div class="container">
+    <div class="check">
+      @if(multiple_location=='yes'){
+        <!-- <h1>Step 1: Choose a Package</h1> -->
+      }@else{
+        <h1>Step 1: Choose a Package</h1>
+        @if(techSelected || analyticSelected || aditLiteSelected){
+          <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
+        }
+      }
+     
+    </div>
+    <div class="head">
+      <div class="title-head">
+        <h3>How would you like to pay?</h3>
+        <div class="toggles">
+          <div class="toggle-container">
+            <button
+              [class]="{ active: isAnnually }"
+              (click)="toggleView('annually')"
+              class="toggle-btn">
+              Annually
+            </button>
+            <button
+              [class]="{ active: !isAnnually }"
+              (click)="toggleView('monthly')"
+              class="toggle-btn">
+              Monthly
+            </button>
+          </div>
+        </div>
+        <span class="save_second"> <mat-icon>keyboard_backspace</mat-icon> <h2> {{!isAnnually?'You Can Save $1050 By Paying Annual':'Save $1050 When You Pay Annually!'}}</h2></span>
+      </div>
+      @if(!techSelected && !analyticSelected && !aditLiteSelected){
+        <h2 style="text-align: center;"> Select One of the following Packages</h2>  
+         }
+      <div class="content">
+        <div class="mini-card adit" [class.selected]="!aditLiteSelected" (click)="multiple_location=='yes'?'': oldPacakSelection('aditLite')">
+          <h1>Adit Lite</h1>
+          <h2>
+            Reg Price <span class="striked">${{isAnnually?pricingArray.aditLiteAnnual:pricingArray.aditLiteMontly}}</span>
+            <span class="org_price">${{isAnnually? pricingArray.aditLiteAnnual_Disc:pricingArray.aditLiteMontly_Disc}}</span>
+          </h2>
+          <div style="margin-block: 5px; text-align: center;">
+            <p>$600 Saved By Going Annual</p>
+          
+          </div>
+          <div class="techs">
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Patient Texting
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Reminders & Recalls
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Patient Forms
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> Adit Pay </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon>Online Scheduling
+            </span>
+            <span> <mat-icon>check_circle_outline</mat-icon>TeleMed </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Call Tracking
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Pozative Reviews
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Email Campaigns
+            </span>
+            <span>
+              <mat-icon>check_circle_outline</mat-icon> Customer Success Team
+            </span>
+          </div>
+        </div>
+        <div class="mini-card tech_2_adit" [class.selected]="!techSelected" (click)="multiple_location=='yes'?'': oldPacakSelection('tech_withAditLite')">
+          <h1>Tech Bundle</h1>
+          <h2>
+            Reg Price <span class="striked">${{isAnnually?pricingArray.techAnnual:pricingArray.techMonthly}}</span>
+            <span class="org_price">${{isAnnually? pricingArray.techAnnual_Disc:pricingArray.techMonthly_Disc}}</span>
+          </h2>
+          <div style="margin-block: 5px; text-align: center;">
+            <p>$600 Saved By Going Annual</p>
+            <p>+${{!isAnnually?pricingArray.hardwareCreditMonthly:pricingArray.hardwareCreditAnnually}} Hardware Credit</p>
+          </div>
+          <div class="techs">
+            <span class="techBundle"> All Adit Lite Features Plus </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> Adit Voice </span>
+            <span> <mat-icon>check_circle_outline</mat-icon>   Visual Voicemail </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> Mobile and Webphone </span>
+            <span> <mat-icon>check_circle_outline</mat-icon> Integrated Caller ID (Call Pop) </span>   
+            <span> <mat-icon>check_circle_outline</mat-icon> eFax </span>
+            <span> <mat-icon>check_circle_outline</mat-icon>  Call Tracking & Recording </span>
+          </div>
+        </div>
+        <div class="mini-card analytics_2_adit" [class.selected]="!analyticSelected" (click)="multiple_location=='yes'?'':oldPacakSelection('analytic_withAditLite')">
+          <div class="popular-tag">Most Popular</div>
+          <h1>Analytics Bundle</h1>
+          <h2>
+            Reg Price <span class="striked">${{isAnnually?pricingArray.analyticAnnual:pricingArray.analyticMonthly}}</span>
+            <span class="org_price">${{isAnnually?pricingArray.analyticAnnual_Disc : pricingArray.analyticMonthly_Disc}}</span>
+          </h2>
+          <div style="margin-block: 5px;text-align: center;">
+            <p>$600 Saved By Going Annual</p>
+            <p>+${{!isAnnually?pricingArray.hardwareCreditMonthly:pricingArray.hardwareCreditAnnually}} Hardware Credit</p>
+          </div>
+         
+          <div class="techs">
+            <span class="techBundle"> All Features Plus </span>
+            <div class="techs_sub">
+              
+            <div class="tech_column">
+              
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Treatment Plans
+              </span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Health Score
+                Report</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Bulk Quick Text</span>
+                <span>
+                  <mat-icon>check_circle_outline</mat-icon>Morning Huddle</span>
+                <span> <mat-icon>check_circle_outline</mat-icon>Follow Ups</span>
+                <span>
+                  <mat-icon>check_circle_outline</mat-icon> Patient Lists</span>
+            </div>
+
+            <div class="tech_column">
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Track Provider
+                Hours</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Practice
+                Performance</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon>Provider
+                Performance</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Hygiene
+                Performance</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Operatory
+                Utilization</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Growth
+                Dashboards</span>
+              <span>
+                <mat-icon>check_circle_outline</mat-icon> Collections
+                Dashboards
+              </span>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="btnClass">
+        <button mat-raised-button class="nextbtn">Next</button>
+      </div> -->
+    </div>
+  </div>
+}
