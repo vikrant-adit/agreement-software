@@ -4,6 +4,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { RoleManageComponent } from "../role-manage/role-manage.component";
 import { SystemSettingComponent } from './system-setting/system-setting.component';
 import { PermissionsComponent } from '../permissions/permissions.component';
+
 @Component({
   selector: 'app-settings',
   standalone: true,

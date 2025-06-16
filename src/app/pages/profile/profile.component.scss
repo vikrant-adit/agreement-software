@@ -1,57 +1,73 @@
-.container{
-    background-color:var(--background-color);
-    height: 100%;
-    h1{
-        text-align: center;
-        color: var(--primary-color);
-    }
-}
-.user-form {
-    display: flex;
-    flex-direction: column;
-    background-color: white;
-    border-radius: 6px;
-    box-shadow:0 6px 21px rgb(0 0 0 / 26%);
-    padding: 10px;
-    gap: 15px;
-    max-width: 70vw;
-    margin: 2rem auto;
-    .group{
-        display: flex;
-        gap: 2rem;
-        justify-content: center;
-        align-items: center;
-        .full-width {
-            width: 400px;
-          }
-          button {
-            background-color: var(--primary-color);
-            color: white;
-            width: 20rem;
-            // align-self: center;
-          }
-          .title{
-            position: absolute;
-            // top:0;
+.progileinfo-block {
+  padding: 30px 0;
+  background-color: var(--background-color);
+  height: calc(100vh - 53px);
 
-          }
-          .checkboxes{
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            align-items: center;
-            // border: 1px solid black;
-          }
-          mat-icon{
-            font-size: 150px;
-            width: 150px;
-            height: 150px;
-            color: rgb(165, 163, 163);
-          }
-    }
-  
-      
-   
+  .container {
+    padding: 0 30px;
+    gap: 15px;
+    margin: 0 auto;
   }
-  
-  
+
+  h1 {
+    font-size: 25px;
+    color: var(--light-text-color);
+    font-weight: 700;
+    margin: 0 0 10px 0;
+  }
+}
+
+.user-form {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 6px 21px rgb(0 0 0 / 26%);
+  padding: 10px 20px;
+
+  .group {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    .userprofile-icon {
+      font-size: 100px;
+      width: 100px;
+      height: 100px;
+    }
+
+    .full-width {
+      width: 400px;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      width: 20rem;
+      // align-self: center;
+    }
+
+    .title {
+      position: absolute;
+      // top:0;
+
+    }
+
+    .checkboxes {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      // border: 1px solid black;
+    }
+
+    mat-icon {
+      font-size: 150px;
+      width: 150px;
+      height: 150px;
+      color: rgb(165, 163, 163);
+    }
+  }
+
+
+
+}

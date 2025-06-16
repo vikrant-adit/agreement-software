@@ -1,5 +1,3 @@
-
-
 .container {
   width: 100%;
   height: 100%;
@@ -8,22 +6,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #092a3d;
 }
 
 .login-container {
   text-align: center;
   min-width: 20rem;
-  color: white;
-}
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.25);
+  padding: 24px;
 
-.logo {
-  width: 150px;
-  margin-bottom: 20px;
+  .full-width {
+    width: 100%;
+  }
+
+  .logo {
+    width: 120px;
+    margin-bottom: 28px;
+  }
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   text-align: left;
+}
+
+.password-toggle {
+  color: var(--darktext-color);
+  border: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
 }
 
 label {
@@ -33,35 +47,36 @@ label {
   color: #f4891f;
 }
 
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
+// input[type="text"],
+// input[type="password"] {
+//   width: 100%;
+//   padding: 10px;
+//   margin-top: 5px;
+//   border: 1px solid #ccc;
+//   border-radius: 4px;
+//   box-sizing: border-box;
+// }
 
-button {
-  width: 100%;
-  margin-block-start: 0.5rem;
-  padding: 10px;
-  background-color: #22a9e1;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
+// button {
+//   width: 100%;
+//   margin-block-start: 0.5rem;
+//   padding: 10px;
+//   background-color: #22a9e1;
+//   color: #fff;
+//   border: none;
+//   border-radius: 4px;
+//   cursor: pointer;
+//   font-size: 16px;
+// }
 
-button:hover {
-  background-color: #0056b3;
-}
+// button:hover {
+//   background-color: #0056b3;
+// }
 
-.error{
+.error {
   color: rgb(255, 98, 98);
 }
+
 .loader-overlay {
   position: fixed;
   top: 0;
@@ -85,9 +100,15 @@ button:hover {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
-::ng-deep .mdc-text-field--filled.mdc-text-field--disabled .mdc-text-field__input{
+
+::ng-deep .mdc-text-field--filled.mdc-text-field--disabled .mdc-text-field__input {
   color: black !important;
 }

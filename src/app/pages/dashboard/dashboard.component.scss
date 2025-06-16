@@ -1,45 +1,114 @@
+.dashboard-container {
+  background-color: var(--light-grey-color);
+  height: calc(100vh - 53px);
 
-.dashboard-container{
-  height: 100%;
-  background: rgb(216, 216, 216);
-  background-size: cover;
-  .container{
-    width: 98%;
-    overflow: hidden;
-    margin-block-start: 1rem;
+  .dashboard-block {
+    padding: 40px 30px;
     display: flex;
     flex-direction: column;
-    margin-inline: 15px;
-    .head{
+    overflow: hidden;
+
+    .dashtabletop-btn:hover {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+
+    table th,
+    table td {
+      font-family: "Work Sans", sans-serif;
+    }
+
+    .head {
       width: 100%;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      .group{
+
+      .group {
         display: flex;
         flex-direction: row;
         // align-items: baseline;
         gap: 1rem;
-        button{
+
+        button {
           border-radius: 6px;
           height: 3.5rem;
+          background-color: #fff;
+          &:hover {
+            background-color: var(--secondary-color);
+            color: #fff;
+          }
         }
       }
     }
+
     .table-container {
       width: 100%;
       overflow: auto;
-      max-height: 60vh;
-      th {
-        position: sticky;
-        top: 0; /* Stick the header to the top */
-        background-color: var(--primary-color); /* Background color for the header */
-        z-index: 2; /* Ensure the header stays above the table rows */
-        text-align: center;
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
+      max-height: calc(100vh - 270px);
+
+      .dashboard-table {
+        white-space: nowrap;
+        background-color: #fff;
+
+        th {
+          position: sticky;
+          top: 0;
+          background-color: var(--primary-color);
+          font-weight: 600;
+          color: #fff;
+          text-align: center;
+          padding: 8px;
+          border: none;
+          border-right: 1px dotted #e5e5e5;
+          z-index: 2;
+
+          &:nth-last-child(2) {
+            right: 105px;
+            box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.10);
+          }
+
+          &:last-child {
+            position: sticky;
+            right: 0;
+            width: 105px;
+            min-width: 105px;
+          }
+        }
+
+        td {
+          border: 1px dashed #E5E5E5;
+          overflow: inherit;
+
+          .action-bar {
+            display: inline-flex;
+
+            .mat-icon {
+              color: var(--secondary-color);
+              cursor: pointer;
+
+              &:hover {
+                color: var(--primary-color);
+              }
+            }
+          }
+
+          &:nth-last-child(2) {
+            position: sticky;
+            right: 105px;
+            box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.10);
+          }
+
+          &:last-child {
+            position: sticky;
+            right: 0;
+            width: 105px;
+            min-width: 105px;
+          }
+        }
       }
+
       &::-webkit-scrollbar {
         width: 10px;
         height: 10px;
@@ -62,95 +131,20 @@
   }
 }
 
-
-
-.mat-mdc-header-row{
-background-color: var(--primary-color);
-color: white;
-font-weight: 600;
-}
-.mat-mdc-header-cell{
-  text-align: center;
-  border-left: 1px dashed rgba(0, 0, 0, 0.3);
+::ng-deep .mat-tooltip {
+  position: relative;
 }
 
-.mat-mdc-cell {
-  border-bottom: 1px dotted rgba(0, 0, 0, 0.8); 
-  border-collapse: collapse;
-  text-align: center;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-}
-.sticky-right-1-head, .sticky-right-2-head {
-
-  position: sticky;
-  right: 0;
-  z-index: 3; /* Optional: Adjust as needed */
-}
-.sticky-right-1-row, .sticky-right-2-row {
-  position: sticky;
-  right: 0;
-  z-index: 1; /* Optional: Adjust as needed */
-}
-
-.sticky-right-1-head {
-  right: 95px; /* Adjust as needed */
-
-}
-
-.sticky-right-2-head {
-  right: 0;
-  min-width: 6.2rem;
-}
-.sticky-right-1-row {
-  right: 95px; /* Adjust as needed */
-}
-
-.sticky-right-2-row {
-  right: 0;
-  min-width: 6.2rem;
-}
-
-.sticky-left-1-head, .sticky-left-2-head {
-  min-width: 8rem;
-  position: sticky;
-  left: 0;
-  z-index: 3; /* Optional: Adjust as needed */
-}
-.sticky-left-1-row, .sticky-left-2-row {
-  position: sticky;
-  min-width: 8rem;
-
-  left: 0;
-  z-index: 1; /* Optional: Adjust as needed */
-}
-
-.sticky-left-1-head {
-  left: 120px; /* Adjust as needed */
-}
-
-.sticky-left-2-head {
-  left: 0;
-}
-.sticky-left-1-row {
-  left: 120px; /* Adjust as needed */
-}
-
-.sticky-left-2-row {
-  left: 0;
-}
-
-.table-head-1{
-  position: sticky;
-  top: 56px;
-  width: 100%;
-  z-index: 10;
-  }
-  .table-head-2{
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 10;
-    }
-.action-bar{
-  display: inline-flex;
+/* Arrow pointing downward (because tooltip is above) */
+::ng-deep .mat-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  /* slightly overlaps the element */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: red transparent transparent transparent;
+  /* top arrow color */
 }

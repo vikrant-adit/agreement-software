@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   FormControl,
   FormGroup,
@@ -49,6 +50,7 @@ import Swal from 'sweetalert2';
     MatPaginatorModule,
     MatSelectModule,
     MatDatepickerModule,
+    MatTooltipModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -104,7 +106,7 @@ export class DashboardComponent {
     { id: 'sales_person_account_name', name: 'Sales Person Account Name', selected: true },
     { id: 'sales_person_name', name: 'Sales Person Name', selected: true },
     {id:'newOrExistingClient',name:'Customer Type',selected:true},
-    { id: 'multipleLocations', name: 'Multi Location', selected: true },
+    { id: 'multipleLocations', name: 'Multi Locations?', selected: true },
     { id: 'display_pricing', name: 'Display Pricing', selected: true },
     { id: 'display_techstack', name: 'Display Tech Stack', selected: true },
     { id: 'sales_person_promotion_type', name: 'Sales Person Promotion Type', selected: true },

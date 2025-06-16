@@ -7,10 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-system-setting',
   standalone: true,
-  imports: [FormsModule,ReactiveFormsModule,MatInputModule,MatFormFieldModule,NgxMatSelectSearchModule,MatSelectModule],
+  imports: [FormsModule,ReactiveFormsModule,MatInputModule,MatFormFieldModule,NgxMatSelectSearchModule,MatSelectModule, MatIconModule, MatTooltipModule],
   templateUrl: './system-setting.component.html',
   styleUrl: './system-setting.component.scss'
 })

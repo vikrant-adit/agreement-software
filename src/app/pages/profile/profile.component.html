@@ -1,37 +1,42 @@
-<div class="container">
-    <app-header></app-header>
-    <h1>My Profile Information</h1>
-    <form [formGroup]="userForm" class="user-form">
+<app-header></app-header>
+<div id="mainContainer">
+  <div class="progileinfo-block">
+    <div class="container">
+      <h1>My Profile Information</h1>
+      <form [formGroup]="userForm" class="user-form">
         <div class="group">
-            <mat-icon>account_box</mat-icon>
+          <mat-icon class="userprofile-icon">account_box</mat-icon>
         </div>
-      <div class="group">
-        <mat-form-field class="full-width">
-          <mat-label> Name</mat-label>
-          <input matInput formControlName="name" [readonly]="true" />
-        </mat-form-field>
-        <mat-form-field class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" [readonly]="true" />
-        </mat-form-field>
-    </div>
+        <div class="group">
+          <mat-form-field class="full-width">
+            <mat-label> Name</mat-label>
+            <input matInput formControlName="name" [readonly]="true" />
+          </mat-form-field>
+        </div>
+        <div class="group">
+          <mat-form-field class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" [readonly]="true" />
+          </mat-form-field>
+        </div>
 
-      <div class="group">
-        <!-- <mat-form-field class="full-width">
-          <mat-label>Username</mat-label>
-          <input matInput formControlName="username" [readonly]="true" />
-        </mat-form-field> -->
-  
+        <div class="group">
           <!-- <mat-form-field class="full-width">
-            <mat-label>New Password</mat-label>
-            <input matInput formControlName="password" [readonly]="true" />
-          </mat-form-field> -->
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username" [readonly]="true" />
+            </mat-form-field> -->
+
+          <!-- <mat-form-field class="full-width">
+                <mat-label>New Password</mat-label>
+                <input matInput formControlName="password" [readonly]="true" />
+              </mat-form-field> -->
           <mat-form-field class="full-width">
             <mat-label>Role</mat-label>
             <input matInput formControlName="role" [readonly]="true" />
           </mat-form-field>
-      </div>
-     
-    </form>
+        </div>
+
+      </form>
+    </div>
   </div>
-  
+</div>

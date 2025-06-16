@@ -1,16 +1,24 @@
-.container{
-    background-color: var(--background-color);
-    min-height: 100%;
-    h1{
-        text-align: center;
-        color: var(--primary-color);
-    }
-    .content{
-        width: 80%;
-        margin: auto;
-        border-radius: 10px;
-        box-shadow:0 0px 5px rgba(0, 0, 0, 20%);
-        background-color: white;
-        min-height: 60vh;
-    }
+.settingmain-block {
+	background-color: var(--light-grey-color);
+	height: calc(100vh - 53px);
+	padding: 40px 30px;
+	overflow: auto;
+
+	.container {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: 0 12px;
+		h1 {
+			text-align: center;
+			color: var(--darktext-color);
+			margin: 0 0 20px 0;
+		}
+
+		.content {
+			border-radius: 10px;
+			box-shadow: 0 0px 5px rgba(0, 0, 0, 20%);
+			background-color: white;
+			min-height: 60vh;
+		}
+	}
 }

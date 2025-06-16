@@ -1,44 +1,48 @@
+.systemsetting-block {
+  padding: 20px;
+}
 ul {
-    list-style-type: none; // Remove default bullet points
-    padding: 0; // Remove default padding
-    margin: 0; // Remove default margin
-  
-    li {
-      display: flex; // Use flexbox for alignment
-      justify-content: space-between; // Space between name and button
-      align-items: center; // Vertically center items
-      padding: 10px 15px; // Add padding
-      margin: 5px 0; // Add margin between list items
-      background-color: #f9f9f9; // Light background color
-      border: 1px solid #ddd; // Add a border
+  list-style-type: none; // Remove default bullet points
+  padding: 0; // Remove default padding
+  margin: 0; // Remove default margin
+
+  li {
+    display: flex; // Use flexbox for alignment
+    justify-content: space-between; // Space between name and button
+    align-items: center; // Vertically center items
+    padding: 10px 15px; // Add padding
+    margin: 5px 0; // Add margin between list items
+    background-color: #f9f9f9; // Light background color
+    border: 1px solid #ddd; // Add a border
+    border-radius: 4px; // Rounded corners
+    transition: background-color 0.3s ease; // Smooth hover effect
+
+    &:hover {
+      background-color: #f1f1f1; // Change background on hover
+    }
+
+    button {
+      background-color: #ff4d4d; // Red background for delete button
+      color: white; // White text
+      border: none; // Remove default border
+      padding: 4px 4px 2px 4px; // Add padding
       border-radius: 4px; // Rounded corners
+      cursor: pointer; // Pointer cursor on hover
       transition: background-color 0.3s ease; // Smooth hover effect
-  
+
       &:hover {
-        background-color: #f1f1f1; // Change background on hover
+        background-color: #cc0000; // Darker red on hover
       }
-  
-      button {
-        background-color: #ff4d4d; // Red background for delete button
-        color: white; // White text
-        border: none; // Remove default border
-        padding: 5px 10px; // Add padding
-        border-radius: 4px; // Rounded corners
-        cursor: pointer; // Pointer cursor on hover
-        transition: background-color 0.3s ease; // Smooth hover effect
-  
-        &:hover {
-          background-color: #cc0000; // Darker red on hover
-        }
-  
-        &:active {
-          background-color: #990000; // Even darker red on click
-        }
+
+      &:active {
+        background-color: #990000; // Even darker red on click
       }
     }
   }
-  .empty-state {
-    text-align: center; // Center the text
-    color: #888; // Gray text color
-    font-style: italic; // Italic text
-  }
+}
+
+.empty-state {
+  text-align: center; // Center the text
+  color: #888; // Gray text color
+  font-style: italic; // Italic text
+}

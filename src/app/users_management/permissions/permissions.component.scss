@@ -1,37 +1,87 @@
-.container{
+.title-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--light-grey-color);
+  padding: 16px 20px;
+
+  h2 {
+    color: var(--secondary-color);
+    margin: 0;
+  }
+
+  .add-permission {
+    display: flex;
+
+    button {
+      background-color: var(--secondary-color);
+      color: #fff;
+      padding: 8px 15px;
+      margin-top: 5px;
+      margin-left: 12px;
+      cursor: pointer;
+    }
+  }
+}
+
+.permissiontable-block {
+  padding: 20px;
+}
+
+.table-container {
+  max-height: calc(100vh - 370px);
+  overflow-y: auto;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    background-color: var(--primary-color);
+    color: white;
     padding: 10px;
-    overflow: hidden;
-    .head{
-        display: flex;
-        justify-content: space-between;
-        h2{
-            color: var(--secondary-color);
-        }
-        .add-permission{
-            display: inline;
-            gap: 1rem;
-        }
+    z-index: 10;
+    text-align: left;
+    border-left: 1px dotted var(--light-grey-color);
+
+    &:first-child {
+      width: 50px;
     }
-    .table-container{
-            max-height: 50vh;
-            overflow-y: auto;
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            
-          }
-          th{
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: white;
-          }
-          th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-          }
+
+    &.roletable-action {
+      text-align: right;
     }
-  
-      
+  }
+
+  td {
+    padding: 10px;
+    border: 1px dotted var(--light-grey-color);
+    text-align: left;
+
+    &:first-child {
+      width: 50px;
+    }
+
+    &.roletable-action {
+      text-align: right;
+
+      button:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+button {
+  padding: 8px 15px;
+  margin: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--secondary-color);
+    color: #fff;
+  }
 }

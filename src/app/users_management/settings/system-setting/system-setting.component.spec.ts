@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SystemSettingComponent } from './system-setting.component';
 
 describe('SystemSettingComponent', () => {
