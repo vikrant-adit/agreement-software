@@ -1,0 +1,26 @@
+<div class="container">
+  <h2>Update Agreement Days</h2>
+  <form [formGroup]="agreementForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="agreementId">TS agreement ID</label>
+      <input
+        type="text"
+        id="agreementId"
+        formControlName="agreementId"
+        placeholder="Enter TS agreement ID"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="numberOfDays">No. of days</label>
+      <input
+        type="number"
+        id="numberOfDays"
+        formControlName="numberOfDays"
+        placeholder="Enter no. of days"
+      />
+    </div>
+
+    <button type="submit" [disabled]="agreementForm.invalid">Save</button>
+  </form>
+</div>

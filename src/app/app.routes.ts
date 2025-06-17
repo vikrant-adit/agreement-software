@@ -18,6 +18,8 @@ import { AuthGuard } from './auth.guard';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 import { ViewAgreementComponent } from './pages/forms/pre-agreement-form/view-agreement/view-agreement.component';
 import { ViewAgreementMultipleComponent } from './pages/forms/pre-agreement-form/view-agreement-multiple/view-agreement-multiple.component';
+import { PreAgreementTestComponent } from './pages/forms/pre-agreement-test/pre-agreement-test.component';
+import { YourOrderComponent } from './pages/forms/your-order/your-order.component';
 export const routes: Routes = [
   {
     path: '',
@@ -80,6 +82,18 @@ export const routes: Routes = [
      canActivate:[AuthGuard],
      data: { permission: 'add_agreements' }
   },
+  //  {
+  //   path:'pre-agreement-form',
+  //   component:PreAgreementTestComponent,
+  //    canActivate:[AuthGuard],
+  //    data: { permission: 'add_agreements' }
+  // },
+  // {
+  //   path:'pre-agreement-form/:id',
+  //   component:PreAgreementTestComponent,
+  //    canActivate:[AuthGuard],
+  //    data: { permission: 'add_agreements' }
+  // },
   {
     path:'view-agreement/:agreementId',
     component:ViewAgreementComponent,
@@ -137,6 +151,11 @@ export const routes: Routes = [
      canActivate:[AuthGuard],
      data: { permission: 'view_settings' }
   },
-  
+   {
+    path:'agreement/:agreementId',
+    component:YourOrderComponent,
+    //  canActivate:[AuthGuard],
+    //  data: { permission: 'add_agreements' }
+  },
   
 ];

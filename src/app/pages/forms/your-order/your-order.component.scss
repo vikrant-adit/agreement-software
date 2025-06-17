@@ -1,0 +1,137 @@
+  .heading{
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  .content{
+    display: flex;
+    width: 90%;
+    padding: 2% 5%;
+    gap: 2rem;
+  }
+  .card {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    margin: 2rem auto;
+    border-radius: 10px;
+    padding: 5px 10px;
+  }
+  .summary-topinfo{
+    background-color: #efefef;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    .practice-name{
+      display: flex;
+      gap: 2rem;
+      .p-values{
+        display: flex;
+        flex-direction: column;
+      }
+    }
+    .about-package{
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      .titles{
+        display: flex;
+        flex-direction: column;
+      }
+      .values{
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+  .belowSignature{
+    display: flex;
+    justify-content: space-between;
+    .nameOfSignatory{
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      input{
+        border: none;
+        border-bottom: 2px solid var(--primary-color);
+        height: 1.3rem;
+      &:focus{
+        border-bottom: 2px solid var(--primary-color);
+        outline: none;
+      }
+      }
+    }
+    button{
+       margin-top: 10px;
+        background-color: transparent;
+        border:1px solid var(--primary-color);
+        color: black;
+        font-size: 20px;
+        .deleteIcon{
+          font-size: 30px;
+          width: 30px;
+          height: 30px;
+          color: var(--primary-color);
+        }
+    }
+    
+  }
+  .terms{
+    margin-top: 20px;
+    display: flex;
+    gap: 0.2rem;
+    align-items: center;
+    .checkBox{
+      height: 30px;
+      width: 30px;
+      accent-color: var(--primary-color);
+    }
+    span{
+      font-size: 18px;
+      width: fit-content;
+    }
+  }
+  .short-card {
+        background-color: #f5f3f3;
+        padding: 5px 10px;
+        border-radius: 10px;
+        h3 {
+          margin: 10px 0;
+          width: 100%;
+          display:inline-flex;
+          justify-content: space-between;
+          mat-icon{
+            color: var(--primary-color);
+          }
+        }
+        .context{
+          display: flex;
+          justify-content: space-between;
+          .title{
+            display: flex;
+            align-items: center;
+            mat-icon{
+              font-size: 20px;
+              color: grey;
+            }
+          }
+          .value{
+            color: var(--primary-color);
+            
+          }
+          .hardwareValue{
+            color: var(--secondary-color);
+          }
+        }
+        .subtext{
+         width: 100%;
+         display: block;
+         text-align: right;
+         color: #00af4b;     
+         font-size: 14px;
+         font-weight: 600;
+        }
+        .subDate{
+          font-size: 14px;
+          font-weight: 600;
+        }
+      }

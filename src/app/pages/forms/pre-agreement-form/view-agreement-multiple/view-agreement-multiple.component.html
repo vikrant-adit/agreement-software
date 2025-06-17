@@ -112,12 +112,12 @@
     <!-- -------------------------------------------------------------------- -->
     @if(!showOnlyTechStack){
          @if(!hideAllcards){
-    <div class="card">
+    <div class="card" >
 
         @if(multiple_location=='yes'){
           @if(ifPackageisAditCore){
-            <app-choose-packages
-            #choosePackages
+            <app-choose-packages class="not-clickable"
+            #choosePackages 
             [item]="whichPackageToShow"
             [multiple_location]="multiple_location"
             [pricingArray]="pricingArray"
@@ -138,7 +138,7 @@
           </app-choose-packages>
           }@else {
     
-          <app-choose-packages
+          <app-choose-packages  class="not-clickable"
           [item]="whichPackageToShow"
           [multiple_location]="multiple_location"
           [pricingArray]="pricingArray"
@@ -1024,7 +1024,7 @@
         </div>
         
         <div class="btnClass">
-          <button mat-raised-button class="nextbtn" (click)="goNextToReview()">
+          <button mat-raised-button class="nextbtn" >
             Next
           </button>
         </div>
@@ -1045,7 +1045,7 @@
             </div>
           }
         </div>
-          @if(expandReview){
+         
     
               <div class="toggles">
                 <div class="toggle-container">
@@ -1225,7 +1225,7 @@
             <div class="bllling-start">
               <strong> Billing Start: </strong>For all annual billing, the total
               yearly fee will be charged within one business day of sign date.
-              Subsequent billing will occur 1 year + 45 days of sign date, annually.
+              Subsequent billing will occur 1 year + {{no_of_days}} days of sign date, annually.
               Any necessary, prorated refunds of annual charges will incur a 3%
               processing fee.
             </div>
@@ -1316,7 +1316,7 @@
                 >
               </div>
             </div>
-          }
+          
         </div>
       </div>
       <!-- multiple location   -->

@@ -215,8 +215,7 @@
                         <span class="price">$100</span>
                         <span class="description"
                           >Best for staff who are constantly on their feet and handle
-                          less than 10 calls per day.</span
-                        >
+                          less than 10 calls per day.</span>
                         <div class="counter-container">
                           <button (click)="decrement(2,true)">−</button>
                           <span>{{ counts_for_phone[2] }}</span>
@@ -857,7 +856,7 @@
           <div class="bllling-start">
             <strong> Billing Start: </strong>For all annual billing, the total
             yearly fee will be charged within one business day of sign date.
-            Subsequent billing will occur 1 year + 45 days of sign date, annually.
+            Subsequent billing will occur 1 year + {{no_of_days}} days of sign date, annually.
             Any necessary, prorated refunds of annual charges will incur a 3%
             processing fee.
           </div>
@@ -925,7 +924,6 @@
                 matTooltip="Please accepet these terms to continuse"
                 [checked]="acceptTermsAndConditions"
                 (click)="toggleTermsAndConditions()"
-                
               />
               <span>
                 I accept the Terms and Conditions outlined at
@@ -952,7 +950,7 @@
       </div>
     </div>
     <!-- single location -->
-@if(totalAnnually>0 && multiple_location=='no'){
+    @if(totalAnnually>0 && multiple_location=='no'){
       <div class="right-card">
         <div class="toggle-container">
           <button
@@ -980,7 +978,7 @@
           <p class="context">
             <span class="title">Subscription Fee</span>
             <span class="value"
-            >${{ isAnnually ?  subscriptionPriceAnnually*12:0  }}
+            >${{ isAnnually ?  subscriptionPriceAnnually*12 ||0:0  }}
           </span>
            <!-- } -->
           </p>
@@ -1003,7 +1001,7 @@
                 ${{getMinValue(getHarwareCreditTotal(), hardware_TotalFor_Singlecoation)}}
               } @else if(selectTerminal === true) {
                 ${{getMinValue(getHarwareCreditTotal(), hardware_TotalFor_Singlecoation)}}
-              }@else if (selectPhone === false) {
+              }@else if (selectPhone === false|| selectTerminal === false) {
                 $0
               } @else {
                 $0
@@ -1013,12 +1011,12 @@
           <!-- add line -->
           <mat-divider></mat-divider>
   
-          <H3 class="context">
+          <h3 class="context">
             <span class="title">Total Payment Today</span>
             <span class="value">
               ${{ getTotal() }}
             </span>
-          </H3>
+          </h3>
           <!-- if condtion for annual and monthly -->
           @if(isAnnually){
           <!-- <span class="subtext">Saved By Going Annual $600</span> -->
@@ -1028,7 +1026,7 @@
           <h3 class="context">
             <span class="title">Next {{ isAnnually ? "Annually " : "Monthly" }} Payment</span>
               <span class="value">
-                ${{ isAnnually ?  subscriptionPriceAnnually*12:subscriptionPriceMonthly  }}
+                ${{ isAnnually ?  subscriptionPriceAnnually*12 || 0:subscriptionPriceMonthly ||0  }}
               </span>
   
           </h3>

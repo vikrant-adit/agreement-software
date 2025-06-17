@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   inject,
+  NgZone,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -104,11 +105,11 @@ export class ViewAgreementMultipleComponent implements OnInit, AfterViewInit {
   packageToBeShown: boolean = false;
 
   separateCard: boolean = true;
-
+  no_of_days=45
   // nextToHardware:boolean=false
   // signatureUrlFromApi: string | null = null; // Add this property to your class
 
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
     this.practiceData = this.fb.group({
       locations: this.fb.array([this.createLocationGroup()]),
     });
@@ -537,7 +538,9 @@ showOnlyTechStack: boolean = false;
       // Convert grouped keys to an array
       this.dynamicPackages = Object.values(groupedKeys);
       console.log('Dynamic Packages:', this.dynamicPackages);
-      
+      if(responseData.no_of_days>0 && responseData.no_of_days!=null){
+        this.no_of_days = responseData.no_of_days;
+      }
       //packages
       if (this.dynamicPackages[0].value == 'aditCore') {
         this.ifPackageisAditCore = true;
@@ -663,7 +666,6 @@ showOnlyTechStack: boolean = false;
       // Check if responseData is an object and has practiceData property
       if (
         responseData.practiceData &&
-        
         Array.isArray(responseData.practiceData) &&
         responseData.practiceData.length > 0
       ) {
@@ -924,26 +926,19 @@ showOnlyTechStack: boolean = false;
         responseData.hardwareOrders &&
         Array.isArray(responseData.hardwareOrders)
       ) {
-        // Reset counts
-        this.counts_for_phone = [2, 0, 0, 0, 0, 0];
-        this.counts_for_terminal = [0, 0];
-
-        responseData.hardwareOrders.forEach((order: any) => {
-          // Check if it's a phone
-          const phoneIndex = this.name_of_phone.indexOf(order.hardwareName);
-          if (phoneIndex !== -1) {
-            this.counts_for_phone[phoneIndex] = order.count;
-          }
-          // Check if it's a terminal
-          const terminalNames = ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock'];
-          const terminalIndex = terminalNames.indexOf(order.hardwareName);
-          if (terminalIndex !== -1) {
-            this.counts_for_terminal[terminalIndex] = order.count;
-          }
-        });
-
-        // Update total prices after patching
-        this.calculateTotalPrice();
+        // Initialize arrays if needed
+        if (!this.purchasePhones) {
+          this.purchasePhones = Array(this.locations.controls.length).fill(false);
+        }
+        if (!this.purchaseTerminals) {
+          this.purchaseTerminals = Array(this.locations.controls.length).fill(false);
+        }
+        
+        // Call the method to patch hardware counts
+        this.patchHardwareCounts(responseData.hardwareOrders);
+        
+        // Recalculate totals
+        this.calculateTotalHardwarePriceTotal();
       }
 
       // Update loadAgreementData method to handle the shipping addresses array
@@ -1358,35 +1353,90 @@ checkReviewStep(): boolean {
       });
   }
 
-  getHardwareCountsObject(): { [key: string]: number } {
-    // If selectPhone is false, return empty object
-    if (!this.selectPhone) {
-      return {};
+  // Method to patch hardware counts from API response
+  patchHardwareCounts(hardwareOrders: any[]): void {
+    if (!hardwareOrders || !Array.isArray(hardwareOrders) || hardwareOrders.length === 0) {
+      return;
     }
 
-    // If selectPhone is true, return the hardware counts
-    return this.name_of_phone.reduce((acc, phoneName, index) => {
-      if (this.counts_for_phone[index] > 0) {
-        acc[phoneName] = this.counts_for_phone[index];
+    // Group hardware orders by location name
+    const ordersByLocation = hardwareOrders.reduce((acc, order) => {
+      if (!acc[order.locationName]) {
+        acc[order.locationName] = [];
       }
+      acc[order.locationName].push(order);
       return acc;
-    }, {} as { [key: string]: number });
-  }
+    }, {} as { [locationName: string]: any[] });
 
-  getTerminalCountsObject(): { [key: string]: number } {
-    // If selectTerminal is false, return empty object
-    if (!this.selectTerminal) {
-      return {};
-    }
-
-    // If selectTerminal is true, return the terminal counts
-    const terminalNames = ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock']; // Replace with your actual terminal names if different
-    return terminalNames.reduce((acc, terminalName, index) => {
-      if (this.counts_for_terminal[index] > 0) {
-        acc[terminalName] = this.counts_for_terminal[index];
+    // Match orders to locations in the form
+    this.locations.controls.forEach((locationControl, locationIndex) => {
+      const locationName = locationControl.get('location_name')?.value;
+      
+      if (locationName && ordersByLocation[locationName]) {
+        const locationOrders = ordersByLocation[locationName];
+        
+        // Initialize hardware counts for this location if not already done
+        if (!this.hardware_counts[locationIndex]) {
+          this.hardware_counts[locationIndex] = this.hardwarePrices.map((_, index) => ({
+            count: 0,
+            price: 0
+          }));
+        }
+        
+        // Set purchase flags based on whether there are phone or terminal orders
+        let hasPhones = false;
+        let hasTerminals = false;
+        
+        // Update hardware counts based on orders
+        locationOrders.forEach((order:any) => {
+          // Map hardware name to index in the hardware_counts array
+          let hardwareIndex = -1;
+          
+          // Phone hardware
+          if (order.hardwareName === 'Grandstream GRP 2616') {
+            hardwareIndex = 0;
+            hasPhones = true;
+          } else if (order.hardwareName === 'Grandstream GRP 2613') {
+            hardwareIndex = 1;
+            hasPhones = true;
+          } else if (order.hardwareName === 'Grandstream DP 720') {
+            hardwareIndex = 2;
+            hasPhones = true;
+          } else if (order.hardwareName === 'GRP 2616 Wall Mount') {
+            hardwareIndex = 3;
+            hasPhones = true;
+          } else if (order.hardwareName === 'GRP 2613 Wall Mount') {
+            hardwareIndex = 4;
+            hasPhones = true;
+          } else if (order.hardwareName === 'Headset + Adapter') {
+            hardwareIndex = 5;
+            hasPhones = true;
+          } 
+          // Terminal hardware
+          else if (order.hardwareName === 'BBPOS WisePOS E') {
+            hardwareIndex = 6;
+            hasTerminals = true;
+          } else if (order.hardwareName === 'BBPOS WisePOS E Dock') {
+            hardwareIndex = 7;
+            hasTerminals = true;
+          }
+          
+          // If hardware found, update count and price
+          if (hardwareIndex >= 0) {
+            this.hardware_counts[locationIndex][hardwareIndex].count = order.count;
+            this.hardware_counts[locationIndex][hardwareIndex].price = 
+              order.count * this.getHardwarePrice(hardwareIndex);
+          }
+        });
+        
+        // Update purchase flags
+        this.purchasePhones[locationIndex] = hasPhones;
+        this.purchaseTerminals[locationIndex] = hasTerminals;
+        
+        // Update hardware purchase price for this location
+        this.updateHardwarePurchasePrice(locationIndex);
       }
-      return acc;
-    }, {} as { [key: string]: number });
+    });
   }
   showTable: boolean = false;
   ngAfterViewInit() {
@@ -2023,7 +2073,7 @@ checkReviewStep(): boolean {
       setTimeout(() => {
         if (this.signatureCanvas && this.signatureCanvas.nativeElement) {
           this.signaturePad = new SignaturePad(
-            this.signatureCanvas?.nativeElement,
+            this.signatureCanvas.nativeElement,
             {
               backgroundColor: 'white',
               penColor: 'black',
@@ -2077,13 +2127,13 @@ checkReviewStep(): boolean {
     // Create an icon state for each location
     this.iconStates = Array(this.locations.length)
       .fill(null)
-      .map(() => ({
-        phoneActive: true,
-        analyticActive: true,
-        verificationActive: true,
-        phoneSelectionActive: true,
-        purchasePhone: true,
-      }));
+     .map((_, index) => ({
+      phoneActive: true,
+      analyticActive: true,
+      verificationActive: true,
+      phoneSelectionActive: true,
+      purchasePhone: this.purchasePhones[index] || true
+    }));
 
     // Initialize related arrays
     this.purchasePhones = this.iconStates.map((state) => state.purchasePhone);
@@ -2433,4 +2483,15 @@ checkReviewStep(): boolean {
     this.expandReview = true;
     this.hideAllcards = false;
   }
+
+  // Add this method to your component class
+// Add this method to your component class
+// updatePhoneActiveState(isActive: boolean): void {
+//   // Use setTimeout to push the change to the next change detection cycle
+//   setTimeout(() => {
+//     this.allActivePhone = isActive;
+//     // Trigger change detection explicitly
+//     this.cdr.detectChanges();
+//   }, 0);
+// }
 }

@@ -4,10 +4,11 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { RoleManageComponent } from "../role-manage/role-manage.component";
 import { SystemSettingComponent } from './system-setting/system-setting.component';
 import { PermissionsComponent } from '../permissions/permissions.component';
+import { UpdateAgreementDaysComponent } from './update-agreement-days-component/update-agreement-days-component.component';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [HeaderComponent, MatTabsModule, RoleManageComponent,PermissionsComponent,SystemSettingComponent],
+  imports: [HeaderComponent, UpdateAgreementDaysComponent, MatTabsModule, RoleManageComponent,PermissionsComponent,SystemSettingComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss'
 })

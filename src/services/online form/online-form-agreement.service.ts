@@ -29,7 +29,11 @@ export class OnlineFormAgreementService {
       catchError(this.handleError)
     );
   }
-
+  updateDays(no_of_days: any,agreementId:any): Observable<any> {
+    return this.http.put<any>(this.baseUrl+'/agreements/'+agreementId, no_of_days).pipe(
+      catchError(this.handleError)
+    );
+  }
   getAgreement(agreementId:any): Observable<any>{
     return this.http.get<any>(this.baseUrl+'/agreements/'+agreementId).pipe(
       catchError(this.handleError)
@@ -71,4 +75,10 @@ fetchDeal(accountId:any){
     .post(this.baseUrl + '/zoho/check-account' ,{sales_person_account_id:accountId})
     .pipe(catchError(this.handleError));
 }
+  updateCRMData(locationId: string, agreementId: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/update-crm`, {
+      location_id: locationId,
+      agreement_id: agreementId
+    });
+  }
 }

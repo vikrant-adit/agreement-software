@@ -1,3 +1,4 @@
+//chose comontne ts
 import {
   Component,
   EventEmitter,
@@ -94,6 +95,7 @@ export class ChoosePackagesComponent implements OnInit {
     tech_withAditLite: 'adit_lite_and_tech_analytics',
     analytic_withAditLite: 'adit_lite_and_tech_analytics',
     aditLite: 'adit_lite_and_tech_analytics',
+    Pozative :'no_vendor_promo'
   };
 
   @Input() item = '';
@@ -105,13 +107,13 @@ export class ChoosePackagesComponent implements OnInit {
   @Input() analyticsSelected: boolean = false;
   isAnnually: boolean = true;
 
-  selectAddonPhone = false;
-  selectAddonAnalytics = false;
-  selectAddonVerification = false;
+  selectAddonPhone = true;
+  selectAddonAnalytics = true;
+  selectAddonVerification = true;
 
   aditCoreSelected = true;
-  pozativeSelected = true;
-  verificationsSelected = true;
+  pozativeSelected = false;
+  verificationsSelected = false;
 
   techSelected: boolean = false;
   analyticSelected: boolean = false;
@@ -143,78 +145,70 @@ export class ChoosePackagesComponent implements OnInit {
     this.promotionDateSelected = !!this.promotionDate;
 
     // For debugging
-    console.log('Promotion date on init:', this.promotionDate);
+    console.log('prizing on init:', this.pricingArray);
 
     setTimeout(() => {
       this.promotionDateSelected = true;
-      console.log('item', this.promotionDate);
-    }, 2000);
+    }, 100);
     this.isAnnually = this.annulaOrMonth;
     if (this.item && this.packagesArray.hasOwnProperty(this.item)) {
       const value = this.packagesArray[this.item];
       this.whichOneToShow = value;
-      // console.log(` Value: ${value}, Item: ${this.item}`);
+      if (value == 'new_package') {
+        console.log('new package selected');
+        this.getPricingOverallForOtherPacakge();
+        this.selectedPhone.emit(this.selectAddonPhone);
+        this.selectedAnalytics.emit(this.selectAddonAnalytics);
+        this.selectedVerification.emit(this.selectAddonVerification);
+      }
+      console.log(` Value: ${value}, Item: ${this.item}`);
       if (this.item == 'tech') {
+        this.oldPacakSelection('tech');
         this.techSelected = true;
         this.analyticSelected = false;
         this.aditLiteSelected = false;
       } else if (this.item == 'analytic') {
+        this.oldPacakSelection('analytic');
         this.analyticSelected = true;
         this.techSelected = false;
         this.aditLiteSelected = false;
       } else if (this.item == 'tech_withAditLite') {
+        this.oldPacakSelection('tech_withAditLite');
         this.techSelected = true;
         this.analyticSelected = false;
         this.aditLiteSelected = false;
       } else if (this.item == 'analytic_withAditLite') {
+        this.oldPacakSelection('analytic_withAditLite');
         this.analyticSelected = true;
         this.techSelected = false;
         this.aditLiteSelected = false;
       } else if (this.item == 'aditLite' || this.item == 'Adit Lite') {
+        this.oldPacakSelection('aditLite');
         this.aditLiteSelected = true;
         this.analyticSelected = false;
         this.techSelected = false;
+      } else if(this.item == 'Pozative'){
+        console.log('Pozative selected')
+      this.aditCoreSelected = false;
+      this.phoneSelected = false;
+      this.verificationSelected = false;
+      this.analyticsSelected = false;
+      this.pozativeSelected = true;
+      this.verificationsSelected = false;
+
       }
     } else {
       alert('Package not found');
     }
-    if (
-      this.whichOneToShow == 'old_package' ||
-      this.whichOneToShow == 'adit_lite_and_tech_analytics'
-    ) {
-      console.log(this.whichOneToShow);
-      this.getPricingOverallForOld_pacakge();
-    } else {
-      this.getPricingOverallForOtherPacakge();
-      // console.log('other package',this.whichOneToShow)
-    }
-
-    if (this.pricingArray.add_on_phones) {
-      this.phoneAddOnPriceAddNoVendor(this.pricingArray.add_on_phones);
-    }
-    if (this.pricingArray.add_on_analytic) {
-      this.analyticAddOnPriceAddNoVendor(this.pricingArray.add_on_analytic);
-    }
-
-    if (this.pricingArray.add_on_verification) {
-      this.verificationAddOnPriceAddNoVendor(
-        this.pricingArray.add_on_verification
-      );
-    }
-
-    // if(this.pricingArray.length>0){
-    this.pozativeSelected = false;
-    this.verificationsSelected = false;
-    // Print totalMonthly
-
-    // }
+    
     if (this.multiple_location == 'yes') {
       this.techSelected = true;
       this.analyticSelected = true;
       this.aditLiteSelected = true;
       this.phoneSelected = true;
-      this.verificationSelected = true;
+      // this.verificationSelected = true;
       this.analyticsSelected = true;
+      // this.pozativeSelected=true
       //  console.log('Yess multiple location')
     } else {
       this.pozativeSelected = false;
@@ -389,10 +383,10 @@ export class ChoosePackagesComponent implements OnInit {
         // console.log('totalMonthly',totalMonthly,item)
       } else {
         // Add to both totals for keys that don't contain "monthly" or "annually"
-        if (this.multiple_location == 'no') {
-          totalAnnually += numericValue;
-          totalMonthly += numericValue;
-        }
+        // if (this.multiple_location != 'no') {
+        //   totalAnnually += numericValue;
+        //   totalMonthly += numericValue;
+        // }
       }
     });
     this.newPackageTotalAnnualy = totalAnnually;
@@ -474,7 +468,10 @@ export class ChoosePackagesComponent implements OnInit {
   newPackageTotalAnnuallyForNoVendorPromo: number = 0;
   packagePrice: any;
   selectpackage(pacakgeName: string) {
-    if (pacakgeName === 'aditCore') {
+    
+    if (pacakgeName == 'aditCore') {
+          this.packageSelectedChange.emit(pacakgeName); // <-- Emit to parent
+
       this.phoneSelected = true;
       this.verificationSelected = true;
       this.analyticsSelected = true;
@@ -482,21 +479,24 @@ export class ChoosePackagesComponent implements OnInit {
       this.pozativeSelected = false;
       this.verificationsSelected = false;
       this.newPackageTotalMonthlyForNoVendorPromo =
-        parseInt(this.pricingArray.aditCore_monthly) +
-        parseInt(this.pricingArray.add_on_phones) +
-        parseInt(this.pricingArray.add_on_analytic) +
-        parseInt(this.pricingArray.add_on_verification);
+        parseInt(this.pricingArray.aditCore_monthly || '0') +
+        parseInt(this.pricingArray.add_on_phones || '0') +
+        parseInt(this.pricingArray.add_on_analytic || '0') +
+        parseInt(this.pricingArray.add_on_verification || '0');
+
       this.newPackageTotalAnnuallyForNoVendorPromo =
-        parseInt(this.pricingArray.aditCore_annually) +
-        parseInt(this.pricingArray.add_on_phones) +
-        parseInt(this.pricingArray.add_on_analytic) +
-        parseInt(this.pricingArray.add_on_verification);
+        parseInt(this.pricingArray.aditCore_annually || '0') +
+        parseInt(this.pricingArray.add_on_phones || '0') +
+        parseInt(this.pricingArray.add_on_analytic || '0') +
+        parseInt(this.pricingArray.add_on_verification || '0');
       this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo);
       this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo);
       this.pozativeSelectedChange.emit(false);
       this.verificationsNVPSelectedChange.emit(false);
       // this.packagePrice = totalPrice;
     } else if (pacakgeName == 'pozative') {
+        this.packageSelectedChange.emit(pacakgeName); // <-- Emit to parent
+
       this.aditCoreSelected = false;
       this.phoneSelected = false;
       this.verificationSelected = false;
@@ -515,10 +515,13 @@ export class ChoosePackagesComponent implements OnInit {
       this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo);
       // this.packagePrice = totalPrice;
     } else if (pacakgeName == 'verification') {
+        this.packageSelectedChange.emit(pacakgeName); // <-- Emit to parent
+
       this.aditCoreSelected = false;
-      this.pozativeSelected = false;
+     this.pozativeSelected = false;
       this.verificationsSelected = true;
       this.phoneSelected = false;
+
       this.verificationSelected = false;
       this.analyticsSelected = false;
       this.verificationsNVPSelectedChange.emit(true);
@@ -537,9 +540,8 @@ export class ChoosePackagesComponent implements OnInit {
   }
 
   phoneAddOnPriceAddNoVendor(price: any) {
-    this.selectAddonPhone = !this.selectAddonPhone;
     this.phoneSelected = !this.phoneSelected;
-    if (!this.selectAddonPhone) {
+    if (!this.phoneSelected) {
       this.newPackageTotalAnnuallyForNoVendorPromo =
         this.newPackageTotalAnnuallyForNoVendorPromo - parseInt(price);
       this.newPackageTotalMonthlyForNoVendorPromo =
@@ -550,19 +552,18 @@ export class ChoosePackagesComponent implements OnInit {
       this.newPackageTotalMonthlyForNoVendorPromo =
         parseInt(price) + this.newPackageTotalMonthlyForNoVendorPromo;
     }
-    // this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
-    // this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
+    this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
+    this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
     let valueNeedTobeSend = {
-      selected: this.selectAddonPhone,
+      selected: this.phoneSelected,
       price: price,
     };
     this.selectedPhone_nvp.emit(valueNeedTobeSend);
     // console.log('totalAnnually',this.newPackageTotalAnnuallyForNoVendorPromo,this.selectAddonPhone)
   }
   analyticAddOnPriceAddNoVendor(price: any) {
-    this.selectAddonAnalytics = !this.selectAddonAnalytics;
     this.analyticsSelected = !this.analyticsSelected;
-    if (!this.selectAddonAnalytics) {
+    if (!this.analyticsSelected) {
       this.newPackageTotalAnnuallyForNoVendorPromo =
         this.newPackageTotalAnnuallyForNoVendorPromo - parseInt(price);
       this.newPackageTotalMonthlyForNoVendorPromo =
@@ -573,18 +574,17 @@ export class ChoosePackagesComponent implements OnInit {
       this.newPackageTotalMonthlyForNoVendorPromo =
         parseInt(price) + this.newPackageTotalMonthlyForNoVendorPromo;
     }
-    //  this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
-    // this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
+     this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
+    this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
     let valueNeedTobeSend = {
-      selected: this.selectAddonPhone,
+      selected: this.analyticsSelected,
       price: price,
     };
     this.selectedAnalytics_nvp.emit(valueNeedTobeSend);
   }
   verificationAddOnPriceAddNoVendor(price: any) {
-    this.selectAddonVerification = !this.selectAddonVerification;
     this.verificationSelected = !this.verificationSelected;
-    if (!this.selectAddonVerification) {
+    if (!this.verificationSelected) {
       this.newPackageTotalAnnuallyForNoVendorPromo =
         this.newPackageTotalAnnuallyForNoVendorPromo - parseInt(price);
       this.newPackageTotalMonthlyForNoVendorPromo =
@@ -596,10 +596,10 @@ export class ChoosePackagesComponent implements OnInit {
         parseInt(price) + this.newPackageTotalMonthlyForNoVendorPromo;
     }
 
-    // this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
-    // this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
+    this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
+    this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
     let valueNeedTobeSend = {
-      selected: this.selectAddonPhone,
+      selected: this.verificationSelected,
       price: price,
     };
     console.log(

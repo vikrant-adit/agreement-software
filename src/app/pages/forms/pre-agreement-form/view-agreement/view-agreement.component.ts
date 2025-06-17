@@ -1,3 +1,4 @@
+//view agreement comppoet
 import {
   AfterViewInit,
   Component,
@@ -87,7 +88,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   private subscriptionService = inject(SubscriptionService);
   private paymentCalculator = inject(PaymentCalculatorService);
   private agreementService = inject(OnlineFormAgreementService);
-
+  showPaymentcard=false
   multiple_location: string = 'no'; // Toggle for multiple locations
   practiceData!: FormGroup;
   shippingAddressForm!: FormGroup;
@@ -167,7 +168,9 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   }
   onTotalAnnually(total: any, source: any) {
     this.subscriptionPriceAnnually = this.totalAnnually = total;
-    console.log(this.subscriptionPriceAnnually, 'this is calledd', source);
+    console.log(this.subscriptionPriceAnnually,this.totalAnnually, 'this is calledd', source);
+    // this.calculateSubscriptionPrices();
+    this.cdr.detectChanges()
   }
   onAnnuallyorMonthlly(isAnnual: any) {
     this.isAnnually = isAnnual;
@@ -216,7 +219,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   }[] = [];
 
   checkConditionForHardware: boolean = false;
-
+  no_of_days=45
   // Method to add a new location form group
   addLocation(): void {
     const newIndex = this.locations.length;
@@ -380,7 +383,10 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
             };
           }
         });
-
+      if(responseData.no_of_days>0 && responseData.no_of_days!=null){
+        this.no_of_days = responseData.no_of_days;
+      }
+      // if(responseData.tech)
       // Convert grouped keys to an array
       this.dynamicPackages = Object.values(groupedKeys);
         console.log(this.dynamicPackages, 'Dynamic Packages');
@@ -409,17 +415,6 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
     if (responseData.shippingAddresses.length>0) {
         console.log('Shipping Address from API:', responseData.shippingAddresses); // Debug log
 
-        // Make sure the form is initialized
-        // if (!this.shippingAddressForm) {
-        //   this.shippingAddressForm = this.fb.group({
-        //     address_line_1: ['', Validators.required],
-        //     address_line_2: [''],
-        //     city: ['', Validators.required],
-        //     state: ['', Validators.required],
-        //     postalCode: ['', Validators.required],
-        //     country: ['', Validators.required],
-        //   });
-        // }
 
         // Create a patching object with a match between API and form control names
         const patchData = {
@@ -457,6 +452,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       }
 
       // console.log(this.pricingArray, 'EARRRRRRRRRRRRRR');
+      this.activation_fee = responseData.activation_fee;
       this.analyticAnnual = responseData.analyticAnnual;
       this.techMonthly_Disc = responseData.techMonthly_Disc;
       this.analyticAnnual_Disc = responseData.analyticAnnual_Disc;
@@ -482,8 +478,9 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       this.verifications_Only_Annually = responseData.verifications_Only_Annually;
       this.hardwareCreditAnnually = responseData.hardwareCreditAnnually;
       this.hardwareCreditMonthly = responseData.hardwareCreditMonthly;
+      console.log('Hardwaeresersdfsdfsdfsdf', this.hardwareCreditAnnually,this.hardwareCreditMonthly);
       const responsefileData = responseData.fileData; // Assuming this is the key in the response
-
+      
       // Check if responsefileData is an array and has data
       if (responsefileData && Array.isArray(responsefileData)) {
         // Clear existing locations
@@ -610,16 +607,39 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
           this.locations.updateValueAndValidity();
         });
 
-        setTimeout(() => {
-          this.signaturePad = new SignaturePad(
-            this.signatureCanvas?.nativeElement,
-            {
-              backgroundColor: 'white',
-              penColor: 'black',
+        if(responseData.signatory_name || responseData.signature_url) {
+          // Store the signature data from the API
+          if(responseData.signatory_name) {
+            this.signature_name = responseData.signatory_name;
+          }
+          
+          if(responseData.signature_url) {
+            this.signature_url = responseData.signature_url;
+          }
+
+          setTimeout(() => {
+            if (this.signatureCanvas && this.signatureCanvas.nativeElement) {
+              this.signaturePad = new SignaturePad(
+                this.signatureCanvas.nativeElement,
+                {
+                  backgroundColor: 'white',
+                  penColor: 'black',
+                }
+              );
+              
+              this.resizeCanvas();
+              
+              // After initialization, load the signature from URL if available
+              if (this.signature_url) {
+                const img = new Image();
+            
+                
+                // Set the image source to the signature URL
+                img.src = this.signature_url;
+              }
             }
-          );
-          this.resizeCanvas();
-        }, 200);
+          }, 200);
+        }
       }
 
       if (responseData.selectPhone != null) {
@@ -639,165 +659,107 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
         responseData.practiceData.length > 0 &&
         responseData.practiceData[0].selectedPackageName
       ) {
-        this.selectedPackageName = this.whichPackageToShow = responseData.practiceData[0].selectedPackageName;
+        // Check if promotion type is "No Vendor Promo" and prioritize it
+        if (responseData.sales_person_promotion_type === 'No Vendor Promo') {
+          this.selectedPackageName = this.whichPackageToShow = responseData.sales_person_promotion_type;
+          
+        } else {
+          this.selectedPackageName = this.whichPackageToShow = responseData.practiceData[0].selectedPackageName;
+        }
+         this.calculateSubscriptionPrices()
         this.expandHardware = true;
-        // console.log(this.whichPackageToShow, 'selectedPackageName');
+         this.showPaymentcard=true
+        console.log(this.whichPackageToShow, 'selectedPackageName');
+        
         if (this.selectedPackageName == 'Adit Lite') {
           this.ifPackageAditLite = true;
           this.showSelection_of_phone = false;
         }
       } else {
-        if( responseData.sales_person_promotion_type=='') {
-        this.showOnlyTechStack=true
+        if (responseData.sales_person_promotion_type == '') {
+          this.showOnlyTechStack = true;
         }
         this.whichPackageToShow = responseData.sales_person_promotion_type;
       }
+      
       if (responseData.displayTechStackComparison == false) {
         this.showtechStackGap = false;
       } else {
         this.showtechStackGap = true;
+
         const featuresArray = responseData.techStack[0].features;
-        console.log(featuresArray, 'featuresArray',communicationsList);
+        this.totalCost= responseData.techStack[0].tech_stack_total_prices;
+        console.log(featuresArray, 'featuresArray', communicationsList);
         this.updateArrayWithFeatures(this.communicationsList, featuresArray);
-
-        this.updateArrayWithFeatures(this.analytics, featuresArray);
-
-        this.updateArrayWithFeatures(this.mobile, featuresArray);
-        this.updateArrayWithFeatures(this.operations, featuresArray);
       }
-      if (responseData.techStack.length > 0) {
-        this.totalCost = responseData.techStack[0].tech_stack_total_prices;
+    if (responseData.hardwareOrders && responseData.hardwareOrders.length > 0) {
+      // Initialize the default hardware counts if not already done
+      if (!this.hardware_counts) {
+        this.initializeHardwareCounts();
       }
-      this.activation_fee = responseData.activation_fee;
-
-      // addon data patching
-      if (
-        responseData.priceAddons &&
-        typeof responseData.priceAddons === 'object'
-      ) {
-        // Reset add-on arrays to hold the correct state for each location
-        this.phoneAddOnPricesByLocation = [];
-        this.analyticsAddOnPricesByLocation = [];
-        this.verificationAddOnPricesByLocation = [];
-
-        // Get all location names from the priceAddons object
-        const locationNames = Object.keys(responseData.priceAddons);
-
-        // For each location in the form
-        this.locations.controls.forEach((locationControl, index) => {
-          const locationName = locationControl.get('location_name')?.value;
-
-          // Find the matching priceAddons entry for this location
-          if (locationName && locationNames.includes(locationName)) {
-            const locationAddons = responseData.priceAddons[locationName];
-
-            // Set add-on flags based on the API response
-            this.phoneAddOnPricesByLocation[index] =
-              locationAddons.phone_show === 'Yes';
-            this.analyticsAddOnPricesByLocation[index] =
-              locationAddons.analytics_show === 'Yes';
-            this.verificationAddOnPricesByLocation[index] =
-              locationAddons.verification_show === 'Yes';
-
-            // Update add-on prices
-            this.add_on_phones =
-              locationAddons.phone_orginal_price || this.add_on_phones;
-            this.add_on_analytic =
-              locationAddons.analytics_orginal_price || this.add_on_analytic;
-            this.add_on_verification =
-              locationAddons.verification_orginal_price ||
-              this.add_on_verification;
-
-            // Set AditCore flag if applicable
-            if (locationAddons.allow_adit_core_only === 1) {
-              this.ifPackageisAditCore = true;
-            }
-          } else {
-            // Default values for locations without priceAddons data
-            this.phoneAddOnPricesByLocation[index] = false;
-            this.analyticsAddOnPricesByLocation[index] = false;
-            this.verificationAddOnPricesByLocation[index] = false;
-          }
-        });
-
-        // For single location mode, set the NVP addon properties
-        if (this.multiple_location !== 'yes' && locationNames.length > 0) {
-          const firstLocation = responseData.priceAddons[locationNames[0]];
-          this.selectedAddonPhone_nvp = firstLocation.phone_show === 'Yes';
-          this.selectedAddonAnalytic_nvp =
-            firstLocation.analytics_show === 'Yes';
-          this.selectedAddonVerification_nvp =
-            firstLocation.verification_show === 'Yes';
+      
+      // Reset phone and terminal counts to zero first
+      this.counts_for_phone = [0, 0, 0, 0, 0, 0]; // Reset all phone counts
+      this.counts_for_terminal = [0, 0]; // Reset all terminal counts
+      
+      // Set the selectPhone and selectTerminal flags to true if any hardware is ordered
+      const hasPhones = responseData.hardwareOrders.some((order:any) => 
+        ['Grandstream GRP 2616', 'Grandstream GRP 2613', 'Grandstream DP 720', 
+         'GRP 2616 Wall Mount', 'GRP 2613 Wall Mount', 'Headset + Adapter'].includes(order.hardwareName));
+      
+      const hasTerminals = responseData.hardwareOrders.some((order:any) => 
+        ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock'].includes(order.hardwareName));
+      
+      this.selectPhone = hasPhones;
+      this.selectTerminal = hasTerminals;
+      
+      // Process each hardware order
+      responseData.hardwareOrders.forEach((order:any) => {
+        const hardwareName = order.hardwareName;
+        const count = order.count;
+        
+        // Map hardware name to the appropriate index in counts arrays
+        switch (hardwareName) {
+          case 'Grandstream GRP 2616':
+            this.counts_for_phone[0] = count;
+            break;
+          case 'Grandstream GRP 2613':
+            this.counts_for_phone[1] = count;
+            break;
+          case 'Grandstream DP 720':
+            this.counts_for_phone[2] = count;
+            break;
+          case 'GRP 2616 Wall Mount':
+            this.counts_for_phone[3] = count;
+            break;
+          case 'GRP 2613 Wall Mount':
+            this.counts_for_phone[4] = count;
+            break;
+          case 'Headset + Adapter':
+            this.counts_for_phone[5] = count;
+            break;
+          case 'BBPOS WisePOS E':
+            this.counts_for_terminal[0] = count;
+            break;
+          case 'BBPOS WisePOS E Dock':
+            this.counts_for_terminal[1] = count;
+            break;
         }
+      });
+         this.calculateTotalPrice();
+     
+      // If this is a single location, also update the checkConditionForHardware
+      if (this.multiple_location === 'no' && hasPhones) {
+        this.checkConditionForHardware = true;
       }
-
-      if (responseData.signature_url) {
-        this.signature_url = responseData.signature_url;
-      }
-      if (responseData.signatory_name) {
-        this.signature_name = responseData.signatory_name;
-      }
-      if (responseData.isAnnually == 'Monthly') {
-        this.isAnnually = false;
-      } else if (responseData.isAnnually == 'Annually') {
-        this.isAnnually = true;
-      }
-
-      if (responseData.organization_name) {
-        this.organization_name = responseData.organization_name;
-      }
-
-      if (responseData.organization_poc_name) {
-        this.organization_poc_name = responseData.organization_poc_name;
-      }
-
-      if (responseData.organization_poc_email) {
-        this.organization_poc_email = responseData.organization_poc_email;
-      }
-
-      if (responseData.organization_poc_work_number) {
-        this.organization_poc_work_number =
-          responseData.organization_poc_work_number;
-      }
-
-      if (responseData.organization_poc_cell_number) {
-        this.organization_poc_cell_number =
-          responseData.organization_poc_cell_number;
-      }
-
-      // After you receive the API response and have access to hardwareOrders:
-      if (
-        responseData.hardwareOrders &&
-        Array.isArray(responseData.hardwareOrders)
-      ) {
-        // Reset counts
-        this.counts_for_phone = [2, 0, 0, 0, 0, 0];
-        this.counts_for_terminal = [0, 0];
-
-        responseData.hardwareOrders.forEach((order: any) => {
-          // Check if it's a phone
-          const phoneIndex = this.name_of_phone.indexOf(order.hardwareName);
-          if (phoneIndex !== -1) {
-            this.counts_for_phone[phoneIndex] = order.count;
-          }
-          // Check if it's a terminal
-          const terminalNames = ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock'];
-          const terminalIndex = terminalNames.indexOf(order.hardwareName);
-          if (terminalIndex !== -1) {
-            this.counts_for_terminal[terminalIndex] = order.count;
-          }
-        });
-
-        // Update total prices after patching
-        this.calculateTotalPrice();
-      }
-
-      // Initialize hardware counts after loading locations
-      this.initializeHardwareCounts();
-
-      // After locations are loaded and initialized, initialize icon states
-      this.initializeIconStates();
+      
+      // Force the hardware section to be expanded
+      this.expandHardware = true;
+      this.showPaymentcard=true
+    }
+  
     });
+
     this.activatePricingForharware();
   }
 
@@ -807,13 +769,124 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
     this.hardware_counts =  this.hardwareService.initializeHardwareCounts(
       this.locations.length,
       this.hardwarePrices)
-  
   }
 
   selectedPackageName: string = '';
+calculateSubscriptionPrices() {
+  
+  // Reset prices
+  this.subscriptionPriceAnnually = 0;
+  this.subscriptionPriceMonthly = 0;
+  
+  if (!this.selectedPackageName) return;
 
+  // Calculate based on the selected package
+  switch (this.selectedPackageName) {
+    case 'Tech Bundle':
+      this.subscriptionPriceAnnually = Number(this.techAnnual_Disc || 0);
+      this.subscriptionPriceMonthly = Number(this.techMonthly_Disc || 0);
+      break;
+    case 'Analytic Bundle':
+      this.subscriptionPriceAnnually = Number(this.analyticAnnual_Disc || 0);
+      this.subscriptionPriceMonthly = Number(this.analyticMonthly_Disc || 0);
+      break;
+    case 'Adit Core':
+      this.subscriptionPriceAnnually = Number(this.aditCore_annually || 0);
+      this.subscriptionPriceMonthly = Number(this.aditCore_monthly || 0);
+      break;
+    case 'Adit Lite':
+      this.subscriptionPriceAnnually = Number(this.aditLiteAnnual_Disc || 0);
+      this.subscriptionPriceMonthly = Number(this.aditLiteMontly_Disc || 0);
+      break;
+    case 'Pozative':
+      this.subscriptionPriceAnnually = Number(this.pozative_Only_Annually || 0);
+      this.subscriptionPriceMonthly = Number(this.pozative_Only_Monthly || 0);
+      break;
+    case 'Verification':
+      this.subscriptionPriceAnnually = Number(this.verifications_Only_Annually || 0);
+      this.subscriptionPriceMonthly = Number(this.verifications_Only_Monthly || 0);
+      break;
+    case 'No Vendor Promo':
+      // For No Vendor Promo, sum all the active components
+      let annualTotal = 0;
+      let monthlyTotal = 0;
+      
+      // Check if Adit Core is active
+      if (this.ifPackageisAditCore === false) {
+        annualTotal += Number(this.aditCore_annually || 0);
+        monthlyTotal += Number(this.aditCore_monthly || 0);
+      }
+      
+      // Check if Pozative is active
+      if (this.pozativeSelectedChange === false) {
+        annualTotal += Number(this.pozative_Only_Annually || 0);
+        monthlyTotal += Number(this.pozative_Only_Monthly || 0);
+      }
+      
+      // Check if Verification is active
+      if (this.verificationActive === false) {
+        annualTotal += Number(this.verifications_Only_Annually || 0);
+        monthlyTotal += Number(this.verifications_Only_Monthly || 0);
+      }
+      
+      this.subscriptionPriceAnnually = annualTotal;
+      this.subscriptionPriceMonthly = monthlyTotal;
+      break;
+  }
+  
+  // Add add-on prices if they're enabled
+  if (this.addOnPhone) {
+    this.subscriptionPriceAnnually += Number(this.add_on_phones || 0);
+    this.subscriptionPriceMonthly += Number(this.add_on_phones || 0);
+  }
+  
+  if (this.addOnAnalytic) {
+    this.subscriptionPriceAnnually += Number(this.add_on_analytic || 0);
+    this.subscriptionPriceMonthly += Number(this.add_on_analytic || 0);
+  }
+  
+  if (this.addOnVerification) {
+    this.subscriptionPriceAnnually += Number(this.add_on_verification || 0);
+    this.subscriptionPriceMonthly += Number(this.add_on_verification || 0);
+  }
+  
+  // Update the total values
+  this.totalAnnually = this.subscriptionPriceAnnually;
+  this.totalMonthly = this.subscriptionPriceMonthly;
+  if(this.totalAnnually>0||this.totalMonthly>0){
+  this.showPaymentcard=true
+  }
+}
+originaHardwarePriceAnnually: number = 0;
+originaHardwarePriceMonthly: number = 0;
   onPackageSelectedChange(selected: string) {
+    console.log(selected, 'selected');
     this.selectedPackageName = selected;
+    if(selected=='aditLite'){
+      this.originaHardwarePriceMonthly=this.hardwareCreditMonthly
+      this.originaHardwarePriceAnnually=this.hardwareCreditAnnually
+      if(this.hardwareCreditAnnually){
+        this.hardwareCreditAnnually=0
+      }
+      if(this.hardwareCreditMonthly){
+        this.hardwareCreditMonthly=0
+      }
+    }else{
+      if(this.originaHardwarePriceAnnually==0 && this.originaHardwarePriceMonthly==0){
+        this.originaHardwarePriceAnnually = this.hardwareCreditAnnually;
+        this.originaHardwarePriceMonthly = this.hardwareCreditMonthly;
+      }
+      this.hardwareCreditAnnually = this.originaHardwarePriceAnnually;
+      this.hardwareCreditMonthly = this.originaHardwarePriceMonthly;
+    }
+    // Add this at the end of the method
+  }
+  onPozativeSelectedChange(event: any) {
+    // console.log(event, 'selected');
+    this.pozativeSelectedChange = event 
+    if(event ==true){
+      this.selectedPackageName = 'Pozative';
+    }
   }
   updateArrayWithFeatures(
     array: { text: string; value: boolean }[],
@@ -873,6 +946,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       selectTerminal?: any;
       isAnnually?: string;
       aditCore?: any;
+      uploaded_image?: string; // Add this field for the uploaded image
       priceAddons?: {
         [locationName: string]: {
           phone_show?: string;
@@ -889,10 +963,30 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       };
     } = {
       isAnnually: this.isAnnually ? 'Annually' : 'Monthly',
-       priceAddons: {}
+      priceAddons: {}
     };
 
+    // Include the uploaded image if available
+    if (this.previewImage) {
+      // If it's already a string (base64), use it directly
+      if (typeof this.previewImage === 'string') {
+        formData.uploaded_image = this.previewImage;
+      } 
+      // If it's an ArrayBuffer, convert it to base64
+      else if (this.previewImage instanceof ArrayBuffer) {
+        const binary = Array.from(new Uint8Array(this.previewImage))
+          .map(b => String.fromCharCode(b))
+          .join('');
+        formData.uploaded_image = 'data:image/jpeg;base64,' + btoa(binary);
+      }
+    }
 
+    if(this.whichPackageToShow=='No Vendor Promo'){
+      console.log('No Vendor Promo selected');
+      console.log(this.selectedPackageName, 'selectedPackageName');
+      console.log(this.pozativeSelectedChange, 'ifPackageisAditCore');
+      console.log(this.ifPackageAditLite, 'ifPackageAditLite');
+    }
   
       // For single location, create a simpler hardware inventory object
       if (this.selectPhone || this.selectTerminal) {
@@ -901,6 +995,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
           [locationName]: {
             ...(this.selectPhone ? this.getHardwareCountsObject() : {}),
             ...(this.selectTerminal ? this.getTerminalCountsObject() : {})
+            
           }
         };
       }
@@ -922,24 +1017,6 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       verification_discnt_price: this.add_on_verification || '',
       allow_adit_core_only: this.ifPackageisAditCore ? 1 : 0
     };
-  } else {
-    // For multiple locations, add an entry for each location
-    this.locations.controls.forEach((locationControl, index) => {
-      const locationName = locationControl.get('location_name')?.value || `Location ${index + 1}`;
-      
-      formData.priceAddons![locationName] = {
-        phone_show: this.phoneAddOnPricesByLocation[index] ? 'Yes' : 'No',
-        phone_orginal_price: this.add_on_phones || '',
-        phone_discnt_price: this.add_on_phones || '',
-        analytics_show: this.analyticsAddOnPricesByLocation[index] ? 'Yes' : 'No',
-        analytics_orginal_price: this.add_on_analytic || '',
-        analytics_discnt_price: this.add_on_analytic || '',
-        verification_show: this.verificationAddOnPricesByLocation[index] ? 'Yes' : 'No',
-        verification_orginal_price: this.add_on_verification || '',
-        verification_discnt_price: this.add_on_verification || '',
-        allow_adit_core_only: this.ifPackageisAditCore ? 1 : 0
-      };
-    });
   }
 
 
@@ -1061,6 +1138,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
 
   clearPad() {
     this.signaturePad.clear();
+    this.signature_url = '';
   }
 
   name_of_phone: string[] = [
@@ -1210,12 +1288,6 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   }
 
   // Method to handle multiple location events
-  //tech
-
-
-
-
-
 
   // hande subscription plan when select multiple location
 
@@ -1272,9 +1344,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
 
   // Update the total hardware purchase price for a specific row
   updateHardwarePurchasePrice(rowIndex: number): void {
-    const hardwareCredit = this.isAnnually
-      ? this.hardwareCreditAnnually
-      : this.hardwareCreditMonthly;
+    const hardwareCredit = this.isAnnually? this.hardwareCreditAnnually : this.hardwareCreditMonthly;
 
     this.hardwareService.updateHardwarePurchasePrice(
       this.hardware_counts,
@@ -1284,24 +1354,7 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       this.extraharwarePrices
     );
   }
-  // Increment the hardware count for a specific row and column
-  increment_forMultiple(rowIndex: number, hardwareIndex: number): void {
-    const hardware = this.hardware_counts[rowIndex][hardwareIndex];
-    hardware.count++;
-    hardware.price = hardware.count * this.getHardwarePrice(hardwareIndex);
-    this.updateHardwarePurchasePrice(rowIndex);
-  }
-
-  // Decrement the hardware count for a specific row and column
-  decrement_forMultiple(rowIndex: number, hardwareIndex: number): void {
-    const hardware = this.hardware_counts[rowIndex][hardwareIndex];
-    if (hardware.count > 0) {
-      hardware.count--;
-      hardware.price = hardware.count * this.getHardwarePrice(hardwareIndex);
-      this.updateHardwarePurchasePrice(rowIndex);
-    }
-  }
-
+ 
   // Get the price of a specific hardware item
   getHardwarePrice(hardwareIndex: number): number {
     // const prices = [150, 100, 100, 10, 10, 275, 250, 49]; // Prices for each hardware item
@@ -1328,22 +1381,10 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
 
       // Get extraharwarePrice for this index (use 0 if undefined)
       const extraPrice = this.extraharwarePrices[i] || 0;
-
-      // Get hardware credit for comparison
-      // const hardwareCredit = this.isAnnually
-      //   ? Number(this.hardwareCreditAnnually) || 0
-      //   : Number(this.hardwareCreditMonthly) || 0;
-
-      // Add the total for this location
       totalHardwarePrice += Number(purchasePrice) + Number(extraPrice);
     }
 
-    // Determine total hardware credit across all locations
-    // const totalLocations = this.hardwarepurchasePrices.length;
-    // const totalHardwareCredit =
-    //   (this.isAnnually
-    //     ? Number(this.hardwareCreditAnnually)
-    //     : Number(this.hardwareCreditMonthly)) * totalLocations || 0;
+ 
     return totalHardwarePrice;
   }
   getSubscriptionsTotal() {
@@ -1395,7 +1436,7 @@ if (this.multiple_location == 'no') {
         }
       }
     }
-    return total;
+    return total || 0;
   }
 
   activatePricingForharware() {
@@ -1422,7 +1463,7 @@ if (this.multiple_location == 'no') {
     value1: number | null | undefined,
     value2: number | null | undefined
   ): number | null {
-    // console.log(value1, value2, 'value1 and value2')
+    console.log(value1, value2, 'value1 and value2')
     if (value1 != null && value2 != null) {
       return Math.min(value1, value2);
     }
@@ -1475,7 +1516,7 @@ if (this.multiple_location == 'no') {
     this.selectPhone = event;
     this.addOnPhone = event;
     this.calculateTotalPrice()
-    // console.log(event, 'event of phone');
+    console.log(event, 'event of phone');
   }
 
   onSelectedAnalytics(event: any) {
@@ -1555,7 +1596,7 @@ if (this.multiple_location == 'no') {
       setTimeout(() => {
         if (this.signatureCanvas && this.signatureCanvas.nativeElement) {
           this.signaturePad = new SignaturePad(
-            this.signatureCanvas?.nativeElement,
+            this.signatureCanvas.nativeElement,
             {
               backgroundColor: 'white',
               penColor: 'black',
@@ -1865,7 +1906,7 @@ if (this.multiple_location == 'no') {
     const hardwareInventory = this.getLocationHardwareInventory();
 
     const locationsWithHardware = Object.keys(hardwareInventory).length;
-
+    console.log('locationsWithHardware', locationsWithHardware,hardwareInventory);
     // Calculate hardware credit based on number of locations with hardware
     const totalHardwareCredit =
       Number(
@@ -1873,6 +1914,10 @@ if (this.multiple_location == 'no') {
           ? this.hardwareCreditAnnually
           : this.hardwareCreditMonthly
       ) * locationsWithHardware || 0;
+    console.log(this.isAnnually
+          ? this.hardwareCreditAnnually
+          : this.hardwareCreditMonthly,this.hardwareCreditAnnually,
+this.hardwareCreditMonthly,'dsaaaaaaaaaaaaa', totalHardwareCredit);
 
     return totalHardwareCredit;
   }
@@ -1900,8 +1945,7 @@ if (this.multiple_location == 'no') {
  
   showSameAddressPractice() {
     this.sameAsPracticeAddress = !this.sameAsPracticeAddress;
-        this.cdr.detectChanges();
-  }
+      }
 
 
   //accept condtions after signature

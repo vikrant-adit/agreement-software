@@ -1,14 +1,16 @@
 <div class="header">
   <img src="https://demo.enfolytics.com/assets/images/adit-logo.png" alt="Company Logo" class="logo">
-  <div class="controls">
-
+  
+  <!-- Only show controls if not on an agreement route -->
+   @if(!isAgreementRoute) {
+  <div class="controls" >
     <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>menu</mat-icon></button>
-       <mat-menu #menu="matMenu">
-        <div class="menuList">
-          <button mat-menu-item (click)="routeTo('users')"><mat-icon>supervised_user_circle</mat-icon>Users</button>
-          <button mat-menu-item (click)="routeTo('dashboard')"><mat-icon>dashboard</mat-icon>Dashboard</button>
-        </div>
-      </mat-menu>
+    <mat-menu #menu="matMenu">
+      <div class="menuList">
+        <button mat-menu-item (click)="routeTo('users')"><mat-icon>supervised_user_circle</mat-icon>Users</button>
+        <button mat-menu-item (click)="routeTo('dashboard')"><mat-icon>dashboard</mat-icon>Dashboard</button>
+      </div>
+    </mat-menu>
 
     <button mat-icon-button [matMenuTriggerFor]="menu2"><mat-icon>settings</mat-icon></button>
     <mat-menu #menu2="matMenu">
@@ -18,6 +20,6 @@
         <button mat-menu-item (click)="routeTo('login')"><mat-icon>logout</mat-icon>Logout</button>
       </div>
     </mat-menu>
-
   </div>
+}
 </div>

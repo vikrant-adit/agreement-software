@@ -1,0 +1,116 @@
+<div class="container">
+    <app-header></app-header>
+    <div class="heading">
+        <h1>Your Order</h1>
+    </div>
+    <div class="content">
+        <div class=" card left_content">
+          <h2>Your Order</h2>
+          <div class="summary-topinfo">
+            <div class="practice-name">
+              <span class="practice">Practice</span>
+              <span class="p-values">
+                @if(multiple_location=='no'){
+                  @for(location of locations ;track location; let i = $index) {
+                    <span class="p-name"><strong>{{ location.get("practice_name")?.value }}</strong></span>
+                    <span class="p-loc">{{ location.get("location_name")?.value }}</span>
+                  }
+                }
+              </span>
+            </div>
+            <div class="about-package">
+              <span class="titles">
+                <span>Package:</span>
+                <span>Pay Cycle:</span>
+              </span>
+              <span class="values">
+                @if(ifPackageisAditCore){
+                  <span>{{ makeFirstLetterCapital('core')  }} 
+                    @if(addOnPhone==true){
+                     + Phones 
+                    }
+                    @if(addOnAnalytic==true){
+                     + Analytics 
+                    }
+                    @if(addOnVerification==true){
+                     + Verifications 
+                    }
+                  </span>
+                }@else {
+                  <span>{{ makeFirstLetterCapital(selectedPackageName) }} Bundle</span>
+                }
+                <span>{{isAnnually?'Annually':'Monthly'}}</span>
+              </span>
+            </div>
+          </div>
+        
+          <div class="bllling-start">
+            <strong> Billing Start: </strong>For all annual billing, the total
+            yearly fee will be charged within one business day of sign date.
+            Subsequent billing will occur 1 year + {{no_of_days}} days of sign date, annually.
+            Any necessary, prorated refunds of annual charges will incur a 3%
+            processing fee.
+          </div>
+          <div class="compliance">
+            <strong> 10DLC Charges & FCC Compliance:</strong> As mandated by the
+            Federal Communications Commission, 10DLC Campaign Charges(mandatory)
+            and Text Messaging Surcharges(if applicable) will be charged monthly
+            on top of the subscription fees to the payment method on file. The
+            average customer pays ~$18 per month.
+          </div>
+        </div>
+        <div class="right_content">
+   <div class="short-card">
+          <h3>One time payment Due Today <mat-icon>shopping_cart</mat-icon></h3>
+          <!-- add line -->
+          <mat-divider></mat-divider>
+  
+          <p class="context">
+            <span class="title">Activation Fee <mat-icon matTooltip="The activation fee is non-refundable once the server installation has taken place.">info</mat-icon></span>
+            <span class="value"> ${{ activation_fee }} </span>
+          </p>
+          <p class="context">
+            <span class="title">Subscription Fee</span>
+            <span class="value"
+            >${{ selectedSubscriptionPrice }}
+          </span>
+           <!-- } -->
+          </p>
+          <p class="context">
+            <span class="title">Hardware Selected</span>
+            <span class="value">
+
+                ${{ hardware_Total }}
+
+            </span>
+          </p>
+          <p class="context">
+            <span class="title">Hardware Credit Applied <mat-icon matTooltip="With the annual upfront package, Adit will be paying for the first $250 towards your phones and payment terminals.">info</mat-icon></span>
+            <span class="hardwareValue">
+                {{hardwareCreditApplied}}
+            </span>
+          </p>
+          <!-- add line -->
+          <mat-divider></mat-divider>
+  
+          <h3 class="context">
+            <span class="title">Total Payment Today</span>
+            <span class="value">
+              ${{ totalPayment }}
+            </span>
+          </h3>
+        </div>
+        <div class="short-card">
+          <h3 class="context">
+            <span class="title">Next {{ isAnnually ? "Annually " : "Monthly" }} Payment</span>
+              <span class="value">
+                ${{ selectedSubscriptionPrice }}
+              </span>
+  
+          </h3>
+          <span class="subDate">On {{ nextPaymentDate }}</span>
+         </div>
+
+        </div>
+    </div>
+</div>
