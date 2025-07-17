@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    console.log('Header component initialized');
+    // console.log('Header component initialized');
     
     // Check the initial route immediately
     this.checkAgreementRoute(this.router.url);
@@ -50,8 +50,8 @@ export class HeaderComponent implements OnInit {
       this.currentRoute.startsWith(pattern)
     );
     
-    console.log('Current route:', this.currentRoute);
-    console.log('Is agreement route:', this.isAgreementRoute);
+    // console.log('Current route:', this.currentRoute);
+    // console.log('Is agreement route:', this.isAgreementRoute);
   }
 
   routeTo(path: string) {

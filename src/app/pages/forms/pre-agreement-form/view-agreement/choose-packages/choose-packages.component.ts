@@ -105,6 +105,10 @@ export class ChoosePackagesComponent implements OnInit {
   @Input() phoneSelected: boolean = false;
   @Input() verificationSelected: boolean = false;
   @Input() analyticsSelected: boolean = false;
+
+  @Input() phoneSelect: boolean = false;
+  @Input() verificationSelect: boolean = false;
+  @Input() analyticSelect: boolean = false;
   isAnnually: boolean = true;
 
   selectAddonPhone = true;
@@ -145,7 +149,7 @@ export class ChoosePackagesComponent implements OnInit {
     this.promotionDateSelected = !!this.promotionDate;
 
     // For debugging
-    console.log('prizing on init:', this.pricingArray);
+    // console.log('prizing on init:', this.pricingArray);
 
     setTimeout(() => {
       this.promotionDateSelected = true;
@@ -161,7 +165,7 @@ export class ChoosePackagesComponent implements OnInit {
         this.selectedAnalytics.emit(this.selectAddonAnalytics);
         this.selectedVerification.emit(this.selectAddonVerification);
       }
-      console.log(` Value: ${value}, Item: ${this.item}`);
+      // console.log(` Value: ${value}, Item: ${this.item}`);
       if (this.item == 'tech') {
         this.oldPacakSelection('tech');
         this.techSelected = true;
@@ -215,6 +219,9 @@ export class ChoosePackagesComponent implements OnInit {
       this.aditCoreSelected = false;
       this.verificationsSelected = false;
     }
+    this.selectAddonPhone=this.phoneSelect
+    this.selectAddonAnalytics=this.analyticSelect;
+    this.selectAddonVerification=this.verificationSelect
   }
   @Output() packageSelectedChange = new EventEmitter<string>();
 

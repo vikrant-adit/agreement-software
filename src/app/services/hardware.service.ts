@@ -42,48 +42,42 @@ export class HardwareService {
     }
     return null;
   }
+calculateHardwareInventoryForLocation(
+  purchasePhones: boolean[], 
+  purchaseTerminals: boolean[], 
+  hardware_counts: any[][], 
+  locationNames: string[]
+): { [locationId: string]: { [hardwareName: string]: number } } {
+  const locationHardware: { [locationId: string]: { [hardwareName: string]: number } } = {};
 
-  calculateHardwareInventoryForLocation(
-    purchasePhones: boolean[], 
-    purchaseTerminals: boolean[], 
-    hardware_counts: any[][], 
-    locationNames: string[]
-  ): { [locationId: string]: { [hardwareName: string]: number } } {
-    const locationHardware: { [locationId: string]: { [hardwareName: string]: number } } = {};
+  locationNames.forEach((locationName, locationIndex) => {
+    locationHardware[locationName] = {};
 
-    // Process each location
-    locationNames.forEach((locationName, locationIndex) => {
-      locationHardware[locationName] = {};
+    // Add phones if they're purchased for this location
+    if (purchasePhones[locationIndex]) {
+      this.hardwareConfig.names.slice(0, 6).forEach((phoneName, phoneIndex) => {
+        const count = hardware_counts?.[locationIndex]?.[phoneIndex]?.count ?? 0;
+        if (count > 0) {
+          locationHardware[locationName][phoneName] = count;
+        }
+      });
+    }
 
-      // Add phones if they're purchased for this location
-      if (purchasePhones[locationIndex]) {
-        // Add each type of phone hardware
-        this.hardwareConfig.names.slice(0, 6).forEach((phoneName, phoneIndex) => {
-          const count = hardware_counts[locationIndex][phoneIndex].count;
-          if (count > 0) {
-            locationHardware[locationName][phoneName] = count;
-          }
-        });
-      }
+    // Add terminals if they're purchased for this location
+    if (purchaseTerminals[locationIndex]) {
+      const terminalNames = ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock'];
+      terminalNames.forEach((terminalName, terminalIndex) => {
+        const hardwareIndex = 6 + terminalIndex;
+        const count = hardware_counts?.[locationIndex]?.[hardwareIndex]?.count ?? 0;
+        if (count > 0) {
+          locationHardware[locationName][terminalName] = count;
+        }
+      });
+    }
+  });
 
-      // Add terminals if they're purchased for this location
-      if (purchaseTerminals[locationIndex]) {
-        // Add each type of terminal hardware
-        const terminalNames = ['BBPOS WisePOS E', 'BBPOS WisePOS E Dock'];
-        terminalNames.forEach((terminalName, terminalIndex) => {
-          // Terminal indices start after the phone indices
-          const hardwareIndex = 6 + terminalIndex;
-          const count = hardware_counts[locationIndex][hardwareIndex].count;
-          if (count > 0) {
-            locationHardware[locationName][terminalName] = count;
-          }
-        });
-      }
-    });
-
-    return locationHardware;
-  }
-
+  return locationHardware;
+}
   initializeHardwareCounts(locationsLength: number, hardwarePrices: number[]): { count: number; price: number }[][] {
     const hardware_counts: { count: number; price: number }[][] = [];
     
@@ -111,17 +105,17 @@ export class HardwareService {
     hardwarepurchasePrices: number[],
     extraharwarePrices: number[]
   ): void {
-    const totalHardwarePrice = hardware_counts[rowIndex].reduce(
-      (total, hardware) => total + hardware.price,
-      0
-    );
+    console.log("Updating hardwaressssssssssssssss purchase price for location", hardware_counts, hardwarepurchasePrices, extraharwarePrices);
+    const totalHardwarePrice = hardwarepurchasePrices[rowIndex]
 
-    if (totalHardwarePrice > hardwareCreditValue) {
-      hardwarepurchasePrices[rowIndex] = Number(hardwareCreditValue);
-      extraharwarePrices[rowIndex] = Number(totalHardwarePrice - hardwareCreditValue);
-    } else {
-      hardwarepurchasePrices[rowIndex] = Number(totalHardwarePrice);
-      extraharwarePrices[rowIndex] = 0;
-    }
+    // if (totalHardwarePrice > hardwareCreditValue) {
+    //   hardwarepurchasePrices[rowIndex] = Number(hardwareCreditValue);
+    //   extraharwarePrices[rowIndex] = Number(totalHardwarePrice - hardwareCreditValue);
+    //   debugger
+    // } else {
+    //   hardwarepurchasePrices[rowIndex] = Number(totalHardwarePrice);
+    //   extraharwarePrices[rowIndex] = 0;
+    //   debugger
+    // }
   }
 }

@@ -8,6 +8,10 @@
     <button class="edit" mat-flat-button type="button" (click)="editForm()">
       Edit
     </button>
+    <div style="width: 100%;text-align: center;">
+        <h1 style="font-size: 40px;font-weight: 800; color: #707070;">Your Exclusive Pricing</h1>
+    </div>
+   
     @if(!hideAllcards){
         @if(showtechStackGap || showOnlyTechStack){
       <div class="card">
@@ -20,7 +24,7 @@
         }
           <div class="spend-title">
             <h2>
-              So You’re Spending <span>${{ totalCost }}</span> Per Month On
+              So You're Spending <span>${{ totalCost }}</span> Per Month On
             </h2>
           </div>
           <div class="logo-img"></div>
@@ -125,6 +129,9 @@
             (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
             (totalAnnually)="onTotalAnnually($event,'aditcore')"
             (totalMonthly)="onTotalMonthly($event)"
+            (selectedPhone)="onSelectedPhone($event)"
+            (selectedAnalytics)="onSelectedAnalytics($event)"
+            (selectedVerification)="onSelectedVerification($event)"
             (selectedPhone_nvp)="onSelectedPhone_nvp($event)"
             (selectedAnalytics_nvp)="onSelectedAnalytics_nvp($event)"
             (selectedVerification_nvp)="onSelectedVerification_nvp($event)"
@@ -137,7 +144,6 @@
             (packageSelectedChange)="onPackageSelectedChange($event)">
           </app-choose-packages>
           }@else {
-    
           <app-choose-packages  class="not-clickable"
           [item]="whichPackageToShow"
           [multiple_location]="multiple_location"
@@ -620,7 +626,7 @@
                 <td>{{ location.get("location_name")?.value }}</td>
                   @if(!ifPackageAditLite){
                     <td>
-                      <select (change)="onPackageChange($event, i)">
+                      <select [(ngModel)]="selectedPackage[i]" (change)="onPackageChange($event, i)">
                         <option value="select">Select Package</option>
                         @for(package of dynamicPackages;track package){
                           <option [value]="package.value">
@@ -644,11 +650,19 @@
                   </td>
                 }@else {
                   <td>
-                    {{
+                   @if(!ifPackageAditLite){
+                      {{
                       isAnnually
                         ? "Today $" + (subscriptionPriceAnnually || 0) * 12
                         : "Today $" + 0
                     }}
+                   }@else{
+                    {{
+                      isAnnually
+                        ? "Today $" + (((subscriptionPriceAnnually || 0) * 12) +(convertStringToNumber(activation_fee)))
+                        : "Today $" + (convertStringToNumber(activation_fee)|| 0)
+                    }}
+                   }
                   </td>
                 }
              
@@ -675,7 +689,7 @@
         }
       
         <div class="btnClass">
-          <button mat-raised-button class="nextbtn" type="button" (click)="onNextClick(true)">
+          <button mat-raised-button class="nextbtn" type="button" (click)="onNextClick()">
             Next
           </button>
         </div>
@@ -813,7 +827,7 @@
             <td>{{ location.get("location_name")?.value }}</td>
             <td>
               @if(!disablePhones){
-                @if(iconStates[i].phoneActive){
+                @if(iconStates[i]?.phoneActive){
                   <input
                   type="checkbox"
                   [checked]="purchasePhones[i]"
@@ -822,7 +836,6 @@
                 <div
                   [class.checked]="purchasePhones[i]"
                   (click)="purchasePhones[i] = !purchasePhones[i]"
-                  (click)="activatePricingForharware()"
                   class="custom-checkbox">
                   {{ purchasePhones[i] ? "✓" : "" }}
                 </div>
@@ -849,7 +862,7 @@
             <td>
               <div class="counters-multiple-hardware-table">
                 <button (click)="decrement_forMultiple(i, j)">−</button>
-                <span>{{ hardware_counts[i][j].count }}</span>
+               <span>{{ hardware_counts?.[i]?.[j]?.count || 0 }}</span>
                 <button (click)="increment_forMultiple(i, j)">+</button>
               </div>
             </td>
@@ -870,7 +883,7 @@
             <td>
               <div class="counters-multiple-hardware-table">
                 <button (click)="decrement_forMultiple(i, j)">−</button>
-                <span>{{ hardware_counts[i][j].count }}</span>
+               <span>{{ hardware_counts?.[i]?.[j]?.count || 0 }}</span>
                 <button (click)="increment_forMultiple(i, j)">+</button>
               </div>
             </td>
@@ -890,13 +903,13 @@
                 }@else{
                   0
                 }
-                   / ${{getHardwareCreditDisplay(i)}}
+                   / ${{getHardwareCreditDisplayInTable()}}
             </td>
-            <td class="money">${{ extraharwarePrices[i] || 0 }}</td>
+            <td class="money">${{ getTotaInHardwareTable(i) || 0 }}</td>
           </tr>
           }
           <tr>
-            <td>Total</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -909,7 +922,7 @@
             <td></td>
             <td></td>
             <td style="text-align: right">
-              ${{ calculateTotalHardwarePrice() }}
+              ${{ totalHardwarePrice }}
             </td>
           </tr>
         </tbody>
@@ -943,7 +956,8 @@
             you receive the shipment.
           </p>
         </div>
-        <div class="shipping-address-container">
+      @if(hasAnyPurchasedHardware){
+          <div class="shipping-address-container">
           <h3>Where would you like your hardware shipped?</h3>
           
             <form [formGroup]="shippingAddressForm">
@@ -1022,6 +1036,7 @@
             </form>
           
         </div>
+      }
         
         <div class="btnClass">
           <button mat-raised-button class="nextbtn" >
@@ -1046,7 +1061,8 @@
           }
         </div>
          
-    
+      @if(!hideAllcards){
+      
               <div class="toggles">
                 <div class="toggle-container">
                   <button
@@ -1071,9 +1087,9 @@
               <thead>
                 <tr>
                   <th>Location</th>
-                  @if(!ifPackageAditLite){
+                  <!-- @if(!ifPackageAditLite){ -->
                     <th>Package</th>
-                  }
+                  <!-- } -->
                   <th>Activation</th>
                   <th>Subscription</th>
                   <th>Hardware</th>
@@ -1091,7 +1107,7 @@
                     <!-- Package name from the form -->
                     @if(ifPackageAditLite){
                       <td>
-                        {{makeFirstLetterCapital(selectedPackage[i])}}
+                        Adit Lite
                       </td>
                     }@else if(ifPackageisAditCore){
                       <td class="aditCoreInOrderSummary">
@@ -1100,14 +1116,14 @@
                           @if(addOnPhone){
                               <button
                             mat-icon-button
-                            [class.phone_active_icon]="iconStates[i].phoneActive">
+                            [class.phone_active_icon]="iconStates[i]?.phoneActive">
                             <mat-icon>settings_phone</mat-icon>
                           </button>
                         }
                         @if(addOnAnalytic){
                           <button
                             mat-icon-button
-                            [class.analytic_active_icon]="iconStates[i].analyticActive">
+                            [class.analytic_active_icon]="iconStates[i]?.analyticActive">
                             <mat-icon>analytics</mat-icon>
                           </button>
                         }
@@ -1128,37 +1144,32 @@
                     }
                   <!-- Activation fee -->
                   <td> ${{ activation_fee }}</td>
+                  <!-- subscription price -->
                   <td> 
-                   <!-- Subscription -->
-                    @if(ifPackageisAditCore){
-                    
-                      <td>
+                    @if(ifPackageAditLite){
+                      ${{ isAnnually ? (subscriptionPriceAnnually || 0) * 12: subscriptionPriceMonthly }}
+                    }@else if(ifPackageisAditCore){
+                      
                         {{
                           isAnnually
-                            ? "Today $" + (calculateLocationTotal(i))
-                            : "Today $" + activation_fee || 0
+                            ? " $" + (calculateLocationTotal(i))
+                            : " $" +  0
                         }}
-                      </td>
-                     
-                  
+                      
                     }@else{
-                     ${{ isAnnually ? (subscriptionPlans[i]?.annually || 0) * 12: subscriptionPlans[i].monthly }}
-                   
+                     ${{ isAnnually ? (subscriptionPlans[i]?.annually || 0) * 12: subscriptionPlans[i]?.monthly }}
                     }
                    </td>
                    <!-- Hardware -->
                    <td>
                  
-                      ${{ getHardwarePriceInTable(i) }}
+                      ${{ hasAnyPurchasedHardware?hardwarepurchasePrices[i]:0 }}
                       
                    </td>
                   <!-- Hardware credit -->
                   <td>
                   @if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
-                    -${{ 
-                    getMinValue(isAnnually ? hardwareCreditAnnually : hardwareCreditMonthly,
-                      calculateTotalHardwarePriceTotal()
-                    ) }}
+                    ${{hasAnyPurchasedHardware? calculateHardwareDiscount(i):0 }}
                     }
                   </td>
                   <!-- Today's payment -->
@@ -1186,10 +1197,8 @@
                     </td>
                   }@else {
                     <td>
-                      {{
-                        isAnnually
-                          ? "Today $" +  ((subscriptionPlans[i]?.annually || 0) * 12 + convertStringToNumber(activation_fee))
-                          : "Today $" + 0
+                      ${{
+                        getTotalDueToday(i)
                       }}
                     </td>
                   }
@@ -1237,54 +1246,61 @@
               average customer pays ~$18 per month.
             </div>
             <div class="signature">
+            @if(signatureExists){
+            <div class="signExists">
+            <strong>Signature</strong>
+            <img src="{{signature_url}}" alt="">
+            </div>
+           }@else{
               <strong>Signature</strong>
-              <mat-tab-group>
-                <mat-tab label="Draw">
-                  <div style="border: 2px solid var(--primary-color)">
-                    <canvas width="800" height="300" #signatureCanvas></canvas>
-                  </div>
-    
-                  <!-- <button (click)="saveSignature()">Save</button> -->
-                </mat-tab>
-                <mat-tab label="Upload">
-                  <div style="border: 2px dotted var(--primary-color)">
-                    <div
-                      class="upload-container"
-                      (dragover)="onDragOver($event)"
-                      (dragleave)="onDragLeave($event)"
-                      (drop)="onDrop($event)"
-                    >
-                      @if(!previewImage){
-                      <p>Drag & drop a signature image</p>
-                      <p>or</p>
-    
-                      <label class="upload-button">
-                        <input
-                          type="file"
-                          (change)="onFileSelected($event)"
-                          accept="image/*"
-                          hidden
-                        />
-                        Select Image
-                      </label>
-                      } @if(previewImage){
-                      <div class="preview">
-                        <img [src]="previewImage" alt="Signature Preview" />
-                      </div>
-                      }
-                    </div>
-                  </div>
-                </mat-tab>
-              </mat-tab-group>
-              <div class="belowSignature">
-                <div class="nameOfSignatory">
-                  <p>Name of signatory:</p>
-                  <input type="text" [(ngModel)]="signature_name" />
+             <mat-tab-group>
+              <mat-tab label="Draw">
+                <div style="border: 2px solid var(--primary-color)">
+                  <canvas width="800" height="300" #signatureCanvas></canvas>
                 </div>
-                <button mat-flat-button (click)="clearPad()">
-                  <mat-icon class="deleteIcon">delete</mat-icon> Clear
-                </button>
+  
+                <!-- <button (click)="saveSignature()">Save</button> -->
+              </mat-tab>
+              <mat-tab label="Upload">
+                <div style="border: 2px dotted var(--primary-color)">
+                  <div
+                    class="upload-container"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)"
+                    (drop)="onDrop($event)"
+                  >
+                    @if(!previewImage){
+                    <p>Drag & drop a signature image</p>
+                    <p>or</p>
+  
+                    <label class="upload-button">
+                      <input
+                        type="file"
+                        (change)="onFileSelected($event)"
+                        accept="image/*"
+                        hidden
+                      />
+                      Select Image
+                    </label>
+                    } @if(previewImage){
+                    <div class="preview">
+                      <img [src]="previewImage" alt="Signature Preview" />
+                    </div>
+                    }
+                  </div>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+           }
+                <div class="belowSignature">
+              <div class="nameOfSignatory">
+                <p>Name of signatory:</p>
+                <input type="text" [(ngModel)]="signature_name" />
               </div>
+              <button mat-flat-button (click)="clearPad()">
+                <mat-icon class="deleteIcon">delete</mat-icon> Clear
+              </button>
+            </div>
               <div class="terms">
                 <input
                   class="checkBox"
@@ -1316,6 +1332,7 @@
                 >
               </div>
             </div>
+      }
           
         </div>
       </div>
@@ -1346,18 +1363,22 @@
       
               <p class="context">
                 <span class="title">Activation Fee <mat-icon matTooltip="The activation fee is non-refundable once the server installation has taken place.">info</mat-icon></span>
-                <span class="value"> ${{ activation_fee }} </span>
+                <span class="value"> ${{ totalActivationFee() }} </span>
               </p>
               <p class="context">
                 <span class="title">Subscription Fee</span>
+               @if(ifPackageAditLite){
+                      <span class="value"
+                  >    ${{isAnnually? getSubscriptionsTotalForAditLite(): 0}}
+                </span>
               
-                @if(ifPackageisAditCore){ 
+               }@else if(ifPackageisAditCore){ 
                   <span class="value"
                   >${{ getSubscriptionTotalForMultipleLocations() }}
                 </span>
                 }@else{
                   <span class="value"
-                  >${{ isAnnually ? getSubscriptionsTotal()  * 12: getSubscriptionsTotalMonthly() }}
+                  >${{ isAnnually ? getSubscriptionsTotal(): getSubscriptionsTotalMonthly() }}
                 </span>
                 }
       
@@ -1367,7 +1388,7 @@
                 <span class="title">Hardware Selected</span>
                 <span class="value">
                   @if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
-                  ${{ calculateTotalHardwarePriceTotal() }}
+                  ${{ calculateTotalHardwarePriceTotal()}}
                   }@else{
                     $0
                   }
@@ -1377,8 +1398,8 @@
                 <span class="title">Hardware Credit Applied <mat-icon matTooltip="With the annual upfront package, Adit will be paying for the first $250 towards your phones and payment terminals.">info</mat-icon></span>
                 <span class="hardwareValue">
                   @if(purchasePhones.length>0 ||purchaseTerminals.length>0) {
-                    <!-- ${{getMinValue(getHarwareCreditTotal(),calculateTotalHardwarePriceTotal())}} -->
-                     ${{calculateTotalHardwareCredit()}}
+                    ${{getHarwareCreditTotal()}}
+                     <!-- ${{calculateTotalHardwareCredit()}} -->
                   }
                 </span>
               </p>
@@ -1400,9 +1421,13 @@
               <h3 class="context">
                 <span class="title">Next {{ isAnnually ? "Annually " : "Monthly" }} Payment</span>
                 @if(multiple_location=='yes'){
-                  @if(ifPackageisAditCore){
+                  @if(ifPackageAditLite){
                     <span class="value"
-                    >${{ isAnnually ?subscriptionPriceAnnually*12:subscriptionPriceMonthly }}
+                    >${{ getSubscriptionsTotalForAditLite()}}
+                  </span>
+                  }@else if(ifPackageisAditCore){
+                    <span class="value"
+                    >${{ isAnnually ?getSubscriptionTotalForMultipleLocations():subscriptionPriceMonthly * locations.length }}
                   </span>
                   }@else{
                     <span class="value"

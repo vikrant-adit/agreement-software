@@ -20,8 +20,8 @@
           <mat-form-field appearance="fill">
             <mat-label>New or Existing Client?</mat-label>
             <mat-select formControlName="newOrExistingClient">
-              <mat-option value="new">New</mat-option>
-              <mat-option value="existing">Existing</mat-option>
+              <mat-option value="New">New</mat-option>
+              <mat-option value="Existing">Existing</mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="fill">
@@ -122,7 +122,7 @@
    
           <mat-form-field appearance="fill">
             <mat-label>Select Currency</mat-label>
-            <mat-select formControlName="currency">
+            <mat-select formControlName="currency" (selectionChange)="updatePricingForCurrency($event.value)">
               <mat-option value="USD">USD</mat-option>
               <mat-option value="CAD">CAD</mat-option>
             </mat-select>
@@ -131,7 +131,7 @@
         <div class="form-row">
           <mat-form-field appearance="fill">
             <mat-label>Select PMS</mat-label>
-            <mat-select formControlName="pms">
+            <mat-select formControlName="practice_ehr">
              @if(dental_or_optometry!=''){
               @if(dental_or_optometry=='optometry'){
                 <mat-option value="CrystalPM">CrystalPM</mat-option>
@@ -212,8 +212,10 @@
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
                     <mat-option value="Inbound Free Phones">Inbound Free Phones</mat-option>
                     <mat-option value="Outbound Free Phones">Outbound Free Phones</mat-option>
-                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
-                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    @if(preAgreementForm.get('currency')?.value=='USD'){
+                      <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
+                      <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    }
                     <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
                    }@else if(preAgreementForm.get('practiceIndustry')?.value=='optometry'){
                     <mat-option value="Custom">Custom</mat-option>
@@ -228,8 +230,10 @@
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
                     <mat-option value="Inbound Free Phones">Inbound Free Phones</mat-option>
                     <mat-option value="Outbound Free Phones">Outbound Free Phones</mat-option>
-                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
-                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                     @if(preAgreementForm.get('currency')?.value=='USD'){
+                      <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
+                      <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    }
                     <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
                   }@else if(preAgreementForm.get('practiceIndustry')?.value=='orthodontic'){
                     <mat-option value="Custom">Custom</mat-option>
@@ -243,8 +247,10 @@
                     <mat-option value="Admin">Admin</mat-option>
                     <mat-option value="Inbound Core">Inbound Core</mat-option>
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
-                     <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
-                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                     @if(preAgreementForm.get('currency')?.value=='USD'){
+                      <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
+                      <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    }
                   }
                   </mat-select>
                 </mat-form-field>
@@ -285,6 +291,8 @@
                   @for( control of getPricingControls();track control; let i = $index){
                     <ng-container>
                       <!-- Show Section Title When a New Bundle Starts -->
+                       @if(!(preAgreementForm.get('currency')?.value === 'CAD' && control.toLowerCase().includes('verification'))) {
+
                        @if(shouldShowTitle(control, i)){
                         <ng-container>
                           <h3 class="bundle-title">{{ getBundleTitle(control) }}
@@ -301,28 +309,23 @@
                           </h3>
                         </ng-container>
                        }
-             
+                      }
+                      @if(!(preAgreementForm.get('currency')?.value === 'CAD' && control.toLowerCase().includes('verification'))) {
                       <div [class]="getBundleClass(control)" class="bundle">
                         <mat-form-field appearance="fill" class="form-field">
                           <mat-label>{{ getLabel(control) }}</mat-label>
                           <span matPrefix>$&nbsp;</span>
                           <input matInput type="number" [formControlName]="control" [min]="getMinValue(control)" [max]="getMaxValue(control)"  />
-                    
-                            <input type="checkbox" (change)="toggleAddOn(control)" [checked]="isAddOnEnabled(control)" class="hidden-checkbox" />
 
-                            <!-- Custom checkbox for add_on controls -->
-                            @if (isAddOnControl(control)) {
-                              <!-- @if(gotId){
-                                  <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  true: false" class="custom-checkbox">
-                                {{isAddOnEnabled(control) ?  '✓': ''}}
-                              </div>
-                              }@else { -->
-                                     <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  false: true" class="custom-checkbox">
-                                {{isAddOnEnabled(control) ?  '': '✓' }}
-                              </div>
-                              <!-- } -->
-                            }
-                      
+                          <input type="checkbox" (change)="toggleAddOn(control)" [checked]="isAddOnEnabled(control)" class="hidden-checkbox" />
+
+                          <!-- Custom checkbox for add_on controls -->
+                          @if (isAddOnControl(control)) {
+                            <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  false: true" class="custom-checkbox">
+                              {{isAddOnEnabled(control) ?  '': '✓' }}
+                            </div>
+                          }
+
                           <!-- Error Messages -->
                           @if (getFormControl(control)?.hasError('required')) {
                             <mat-error>
@@ -339,22 +342,13 @@
                           }
                         </mat-form-field>
                       </div>
+                      }
                     </ng-container>
                   }
                  
                 </div>
                 
                }
-              
-              
-              <!-- Activation Fee -->
-              <!-- <div class="activation-fee">
-                <h3 class="section-title"></h3>
-                <mat-form-field appearance="fill">
-                  <mat-label>Activation Fee</mat-label>
-                  <input matInput type="number" formControlName="activation_fee"  />
-                </mat-form-field>
-              </div> -->
             </div>
             }
           

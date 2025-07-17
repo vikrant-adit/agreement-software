@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   SimpleChanges,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +12,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormsModule } from '@angular/forms';
 import { promotionPricing } from '../../pre-agreement-form/pricingArr';
+import { MatDialogRef } from '@angular/material/dialog';
+
 @Component({
   selector: 'app-pacakge-selection',
   standalone: true,
@@ -32,6 +32,7 @@ import { promotionPricing } from '../../pre-agreement-form/pricingArr';
 })
 export class PacakgeSelectionComponent implements OnInit {
   packageControl = new FormControl('Event');
+  @Input() currency: 'USD' | 'CAD' = 'USD'; // default to USD
 
   packagesArray :any
 
@@ -50,6 +51,12 @@ export class PacakgeSelectionComponent implements OnInit {
   aditLiteSelected: boolean = false;
   newPackageTotalAnnualy: number = 0;
   newPackageTotalMonthly: number = 0;
+    constructor(
+    // ...other injections...
+    private dialogRef: MatDialogRef<PacakgeSelectionComponent>
+  ) {
+    // dialogRef.close({result:'dfsgg'})
+  } 
   toggleView(view: 'annually' | 'monthly') {
     this.isAnnually = view === 'annually';
   }
@@ -59,27 +66,50 @@ export class PacakgeSelectionComponent implements OnInit {
     if (changes['annulaOrMonth']) {
       this.isAnnually = this.annulaOrMonth;
     }
+     if (changes['currency'] && !changes['currency'].firstChange) {
+    // Remap all packages to the new currency
+    this.packagesArray = {
+      'Smile Source': this.mapPricingToCurrency(promotionPricing['Smile Source'], this.currency),
+      'TruBlu': this.mapPricingToCurrency(promotionPricing['TruBlu'], this.currency),
+      'DDSOM': this.mapPricingToCurrency(promotionPricing['DDSOM'], this.currency),
+      'AIDA Member': this.mapPricingToCurrency(promotionPricing['AIDA Member'], this.currency),
+      'Event': this.mapPricingToCurrency(promotionPricing['Event'], this.currency),
+      'Outbound AE': this.mapPricingToCurrency(promotionPricing['Outbound AE'], this.currency)
+    };
+    // Update current pricingArray as well
+    if (this.packagesArray.hasOwnProperty(this.item)) {
+      this.pricingArray = this.packagesArray[this.item];
+      this.newPackageTotalAnnualy = this.pricingArray.aditCore_annually || 0;
+      this.newPackageTotalMonthly = this.pricingArray.aditCore_monthly || 0;
+    }
+  }
   }
   phoneSelected_update: any;
   analyticsSelected_update: any;
-
+ updatePricesForCurrency() {
+    // Example: update the displayed prices based on this.currency
+    if (this.pricingArray) {
+      // Update your price variables here
+      this.newPackageTotalAnnualy = this.pricingArray.aditCore_annually?.[this.currency] || 0;
+      this.newPackageTotalMonthly = this.pricingArray.aditCore_monthly?.[this.currency] || 0;
+      console.log('this.newPackageTotalAnnualy asfdddddddddddddddd', this.newPackageTotalAnnualy, this.newPackageTotalMonthly);
+      // Repeat for other price fields as needed
+    }
+  }
   ngOnInit(): void {
     this.packagesArray = {
-    'Smile Source': promotionPricing['Smile Source'],
-    'TruBlu': promotionPricing['TruBlu'],
-    'DDSOM': promotionPricing['DDSOM'],
-    'AIDA Member': promotionPricing['AIDA Member'],
-    'Event': promotionPricing['Event'],
-    'Outbound AE': promotionPricing['Outbound AE']
+    'Smile Source': this.mapPricingToCurrency(promotionPricing['Smile Source'], this.currency),
+    'TruBlu': this.mapPricingToCurrency(promotionPricing['TruBlu'], this.currency),
+    'DDSOM': this.mapPricingToCurrency(promotionPricing['DDSOM'], this.currency),
+    'AIDA Member': this.mapPricingToCurrency(promotionPricing['AIDA Member'], this.currency),
+    'Event': this.mapPricingToCurrency(promotionPricing['Event'], this.currency),
+    'Outbound AE': this.mapPricingToCurrency(promotionPricing['Outbound AE'], this.currency)
   };
 
-    if(this.packagesArray.hasOwnProperty(this.item)){
-      this.pricingArray = this.packagesArray[this.item];
-      console.log('this.pricingArray', this.pricingArray);
-      this.newPackageTotalAnnualy=this.pricingArray.aditCore_annually;
-      this.newPackageTotalMonthly=this.pricingArray.aditCore_monthly;
-    }
+
     this.packageControl.valueChanges.subscribe((value) => {
+             this.pricingArray=[]
+
       // console.log('Selected package:', value);      
       if (value && this.packagesArray.hasOwnProperty(value)) {
               this.pricingArray = this.packagesArray[value];
@@ -88,9 +118,17 @@ export class PacakgeSelectionComponent implements OnInit {
         // console.log('Selected package:', value,this.packagesArray.hasOwnProperty(value));
       }
     });
-
+    if(this.packagesArray.hasOwnProperty(this.item)){
+      this.pricingArray = this.packagesArray[this.item];
+      
+      this.newPackageTotalAnnualy=this.pricingArray.aditCore_annually;
+      this.newPackageTotalMonthly=this.pricingArray.aditCore_monthly;
+      console.log('this.pricingArray', this.pricingArray,this.newPackageTotalAnnualy,this.newPackageTotalMonthly);
+    }
     this.isAnnually = this.annulaOrMonth;
     this.aditCoreSelected = false;
+        // this.updatePricesForCurrency();
+
   }
 
   oldPacakSelection(packageSelected: any) {
@@ -194,7 +232,7 @@ export class PacakgeSelectionComponent implements OnInit {
       this.newPackageTotalMonthly = parseInt(price) + this.newPackageTotalMonthly;
     }
 
-  }
+  } 
   analyticAddOnPriceAdd(price: any) {
     this.selectAddonAnalytics = !this.selectAddonAnalytics;
     if (!this.selectAddonAnalytics) {
@@ -204,5 +242,26 @@ export class PacakgeSelectionComponent implements OnInit {
       this.newPackageTotalAnnualy = parseInt(price) + this.newPackageTotalAnnualy;
       this.newPackageTotalMonthly = parseInt(price) + this.newPackageTotalMonthly;
     }
+  }
+  private mapPricingToCurrency(pricing: any, currency: 'USD' | 'CAD') {
+  const mapped: any = {};
+  for (const key in pricing) {
+    if (
+      pricing[key] &&
+      typeof pricing[key] === 'object' &&
+      (pricing[key].USD !== undefined || pricing[key].CAD !== undefined)
+    ) {
+      mapped[key] = pricing[key][currency] ?? 0;
+    } else {
+      mapped[key] = pricing[key];
+    }
+  }
+  return mapped;
+}
+  confirmSelection() {
+    this.dialogRef.close({
+      selectedPackage: this.whichOneToShow,
+      pricingArray: this.pricingArray
+    });
   }
 }

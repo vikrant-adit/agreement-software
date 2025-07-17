@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject,OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators,FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
+import { OnlineFormAgreementService } from '../../../../../../services/online form/online-form-agreement.service';
+import {  MAT_DIALOG_DATA,  MatDialogModule,  MatDialogRef} from '@angular/material/dialog';
 @Component({
   selector: 'app-card-details',
   standalone: true,
@@ -9,9 +11,10 @@ import { CommonModule } from '@angular/common';
   templateUrl: './card-details.component.html',
   styleUrl: './card-details.component.scss'
 })
-export class CardDetailsComponent {
+export class CardDetailsComponent implements OnInit{
   paymentForm!: FormGroup;
-
+  readonly data = inject(MAT_DIALOG_DATA);
+  agreementService = inject(OnlineFormAgreementService);
   constructor(private fb: FormBuilder) {
     this.paymentForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -25,10 +28,15 @@ export class CardDetailsComponent {
       country: ['United States', Validators.required]
     });
   }
-
+ngOnInit(): void {
+  console.log(this.data);
+}
   onSubmit() {
     if (this.paymentForm.valid) {
       console.log(this.paymentForm.value);
+      this.agreementService.addBillingData(this.paymentForm.value, this.data).subscribe((response) => {
+        console.log('Payment details added successfully.');
+      })
     } else {
       console.log('Form is invalid');
     }

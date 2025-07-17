@@ -1,0 +1,33 @@
+<!-- crm-update.component.html -->
+<div class="crm-update-container">
+  <!-- Loading Indicator -->
+  <div id="step-loader" [style.display]="isLoading ? 'block' : 'none'">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <p>Updating CRM data...</p>
+    </div>
+  </div>
+
+  <!-- Failure Message -->
+  <div id="failure-message" [style.display]="showFailureMessage ? 'block' : 'none'">
+    <div class="failure-content">
+      <h3>Update Failed</h3>
+      <p>There was an error updating your data. Redirecting...</p>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+   @if(progressPercentage > 0){
+  <div class="progress-container" >
+    <div class="progress-bar">
+      <div 
+        id="progressbar" 
+        class="progress-fill" 
+        [style.width.%]="progressPercentage">
+        {{ progressPercentage }}%
+      </div>
+    </div>
+  </div>
+   }
+
+</div>

@@ -66,7 +66,7 @@ export class PreAgreementFormComponent implements OnInit {
       currency: ['', Validators.required],
       deal: [''], 
       deal_id: [''],
-      pms: ['', Validators.required],
+      practice_ehr: ['', Validators.required],
       displayPricing: [false],
       displayTechStackComparison: [false],
       sales_person_promotion_type: [''],
@@ -201,7 +201,7 @@ export class PreAgreementFormComponent implements OnInit {
           multipleLocations: res.data.multipleLocations,
           accountId: res.data.accountId,
           currency: res.data.currency,
-          pms: res.data.pms,
+          practice_ehr: res.data.practice_ehr,
           displayPricing: res.data.displayPricing || false,
           displayTechStackComparison: res.data.displayTechStackComparison || false,
           event_type: res.data.event_type,
@@ -274,88 +274,6 @@ export class PreAgreementFormComponent implements OnInit {
     }
   }
 
-  // initializeAddOnsAndBundleStates(data: any) {
-  //   // Wait a short time for form controls to be created after promotion change
-  //   setTimeout(() => {
-  //     // Check if we have pricing data directly in the data object
-  //     if (data) {
-  //       const pricingKeys = [
-  //         'activation_fee', 'aditLiteMontly', 'aditLiteMontly_Disc',
-  //         'aditLiteAnnual', 'aditLiteAnnual_Disc', 'aditCore_monthly',
-  //         'aditCore_annually', 'add_on_phones', 'add_on_analytic',
-  //         'add_on_verification', 'pozative_Only_Monthly', 'pozative_Only_Annually',
-  //         'verifications_Only_Monthly', 'verifications_Only_Annually'
-  //       ];
-        
-  //       const pricingFormGroup = this.preAgreementForm.get('pricingDetails') as FormGroup;
-  //       // Process pricing data from the data object
-  //       pricingKeys.forEach(key => {
-  //         // Skip null values and _Min/_Max fields
-  //         if (data[key] !== null && data[key] !== undefined && !key.endsWith('_Min') && !key.endsWith('_Max')) {
-  //           // Make sure the form control exists before setting the value
-  //           if (pricingFormGroup.get(key)) {
-  //             pricingFormGroup.get(key)?.setValue(data[key]);
-  //             console.log(`Setting ${key} to ${data[key]}`);
-  //           } else {
-  //             // If the control doesn't exist yet, create it
-  //             const minValue = data[`${key}_Min`] ?? null;
-  //             const maxValue = data[`${key}_Max`] ?? null;
-  //             const isEditable = minValue !== null && maxValue !== null;
-              
-  //             pricingFormGroup.addControl(
-  //               key,
-  //               new FormControl(
-  //                 data[key],
-  //                 isEditable ? [Validators.min(minValue), Validators.max(maxValue)] : []
-  //               )
-  //             );
-  //           }
-            
-  //           // Handle add-ons checkboxes state
-  //           if (key === 'add_on_phones' && data[key] !== null) {
-  //             this.phoneState = false;
-  //             this.addOnStates['add_on_phones'] = true;
-  //           } else if (key === 'add_on_analytic' && data[key] !== null) {
-  //             this.analyticsState = false;
-  //             this.addOnStates['add_on_analytic'] = true;
-  //           } else if (key === 'add_on_verification' && data[key] !== null) {
-  //             this.verificationState = false;
-  //             this.addOnStates['add_on_verification'] = true;
-  //           }
-            
-  //           // Handle bundle states based on monthly/annually pairs
-  //           if ((key === 'pozative_Only_Monthly' || key === 'pozative_Only_Annually') && 
-  //               (data['pozative_Only_Monthly'] !== null || data['pozative_Only_Annually'] !== null)) {
-  //             this.pozativeState = false;
-  //             this.bundleStates['pozative_Only_Monthly'] = true;
-  //             this.bundleStates['pozative_Only_Annually'] = true;
-  //           } else if ((key === 'verifications_Only_Monthly' || key === 'verifications_Only_Annually') && 
-  //                     (data['verifications_Only_Monthly'] !== null || data['verifications_Only_Annually'] !== null)) {
-  //             this.verificationOnlyState = false;
-  //             this.bundleStates['verifications_Only_Monthly'] = true;
-  //             this.bundleStates['verifications_Only_Annually'] = true;
-  //           } else if ((key === 'aditCore_monthly' || key === 'aditCore_annually') && 
-  //                     (data['aditCore_monthly'] !== null || data['aditCore_annually'] !== null)) {
-  //             this.aditCoreState = false;
-  //             this.bundleStates['aditCore_monthly'] = true;
-  //             this.bundleStates['aditCore_annually'] = true;
-  //           }
-  //         }
-  //       });
-        
-  //       // Update the selected promotion type if it's not already set
-  //       if (data.sales_person_promotion_type && 
-  //           !this.preAgreementForm.get('sales_person_promotion_type')?.value) {
-  //         this.preAgreementForm.get('sales_person_promotion_type')?.setValue(data.sales_person_promotion_type);
-  //         this.selectedPromotion = data.sales_person_promotion_type;
-  //       }
-        
-  //       // Ensure form validity is updated
-  //       this.preAgreementForm.updateValueAndValidity();
-  //     }
-  //   }, 300); // Wait for form controls to be created
-  // }
-
   addVaildate(){
     if (this.preAgreementForm.get('displayPricing')?.value == true) {
       this.preAgreementForm.get('sales_person_promotion_type')?.setValidators([Validators.required]);
@@ -370,7 +288,7 @@ export class PreAgreementFormComponent implements OnInit {
     'multipleLocations',
     'accountId',
     'currency',
-    'pms'
+    'practice_ehr'
   ];
   
   return basicFields.every(field => {
@@ -428,6 +346,22 @@ export class PreAgreementFormComponent implements OnInit {
     
     console.log('Pricing', this.preAgreementForm.value);
     
+    // Set verifications = 0 if currency is CAD
+    if (this.preAgreementForm.get('currency')?.value === 'CAD') {
+      const verificationsControlAnnually = this.preAgreementForm.get('pricingDetails.verifications_Only_Annually');
+      if (verificationsControlAnnually) {
+        verificationsControlAnnually.setValue(0);
+      }
+       const verificationsControlMonthly = this.preAgreementForm.get('pricingDetails.verifications_Only_Monthly');
+      if (verificationsControlMonthly) {
+        verificationsControlMonthly.setValue(0);
+      }
+      const verificationsControl = this.preAgreementForm.get('pricingDetails.add_on_verification');
+      if (verificationsControl) {
+        verificationsControl.setValue(0);
+      }
+    }
+
     // Handle tech stack comparison
     if(this.preAgreementForm.get('displayTechStackComparison')?.value == true) {
       this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
@@ -436,11 +370,6 @@ export class PreAgreementFormComponent implements OnInit {
     // First check if displayPricing is true
     const displayPricing = this.preAgreementForm.get('displayPricing')?.value === true;
     
-    // Handle tech stack comparison
-    if (this.preAgreementForm.get('displayTechStackComparison')?.value == true) {
-      this.preAgreementForm.get('techStack')?.setValue(this.receivedForm.value);
-    }
-
     // Only validate pricing details if displayPricing is true
     if (displayPricing) {
       const pricingDetails = this.preAgreementForm.get('pricingDetails')?.value;
@@ -538,6 +467,7 @@ export class PreAgreementFormComponent implements OnInit {
       if (this.selectedFile) {
         formData.append('fileUpload', this.selectedFile, this.selectedFile.name); // Include file name
       }
+      formData.append('medium','Online')
     
       // Log the FormData for debugging
       // console.log("Data that is submitted:", formData);
@@ -713,6 +643,7 @@ private ensureAllPricingKeys() {
           // Use existing value if available and patching form
           const initialValue = existingValues && existingValues[control] !== undefined ? 
                               existingValues[control] : newPricing[control];
+                  console.log('Adding activation_fee control with value:', initialValue);
 
           pricingDetails.addControl(
             control,
@@ -728,18 +659,22 @@ private ensureAllPricingKeys() {
           );
         }
       });
+      const currency = this.preAgreementForm.get('currency')?.value || 'USD';
+      this.updatePricingForCurrency(currency);
 
       // Ensure `activation_fee` is always added
-      if (!pricingDetails.get('activation_fee')) {
-        const activationFeeValue = existingValues && existingValues['activation_fee'] !== undefined ?
-                                existingValues['activation_fee'] : (newPricing.activation_fee ?? 0);
+      // if (!pricingDetails.get('activation_fee')) {
+      //   const activationFeeValue = existingValues && existingValues['activation_fee'] !== undefined ?
+      //                           existingValues['activation_fee'] : (newPricing.activation_fee ?? 0);
         
-        pricingDetails.addControl(
-          'activation_fee',
-          new FormControl(activationFeeValue)
-        );
-      }
-
+      //   pricingDetails.addControl(
+      //     'activation_fee',
+      //     new FormControl(activationFeeValue)
+      //   );
+      //   pricingDetails.get('activation_fee')?.setValue(0);
+      //   // console.log('Adding activation_fee control with value:', activationFeeValue, pricingDetails.get('activation_fee')?.value);
+      // }
+        // console.log('Adding activation_fee control with value:',  pricingDetails.get('activation_fee')?.value);
       // Update form validity to trigger change detection
       this.preAgreementForm.updateValueAndValidity();
       this.loading = false;
@@ -749,6 +684,8 @@ private ensureAllPricingKeys() {
         this.updateStatesFromPatchedValues(existingValues);
       }
     }, 100);
+   
+
   }
 
   // Add a new helper method for updating states from patched values
@@ -817,10 +754,30 @@ private ensureAllPricingKeys() {
     return this.preAgreementForm.get('pricingDetails')?.get(control);
   }
   getPricingControls(): string[] {
+    // Ensure pricing is updated for the current currency before getting controls
+  
+    const selectedPromotion = this.preAgreementForm.get('sales_person_promotion_type')?.value;
+    const pricingDetails = this.preAgreementForm.get('pricingDetails')?.value || {};
+    
+    // Get all controls from pricingDetails
+    const allControls = Object.keys(pricingDetails).filter(key => !key.toLowerCase().includes('hardware'));
+    
+    // If no promotion is selected, return empty array
+    if (!selectedPromotion) {
+      return [];
+    }
 
-    return Object.keys(
-      this.preAgreementForm.get('pricingDetails')?.value || {}
-    ).filter((key) => !key.toLowerCase().includes('hardware'));
+    // Get the pricing structure for the selected promotion
+    const promotionPricing = this.promotionPricing[selectedPromotion];
+    if (!promotionPricing) {
+      return [];
+    }
+
+    // Filter controls based on the selected promotion's pricing structure
+    return allControls.filter(control => {
+      // Check if the control exists in the promotion's pricing structure
+      return control in promotionPricing;
+    });
   }
 
   bundleStates: { [key: string]: boolean } = {};
@@ -903,6 +860,8 @@ private ensureAllPricingKeys() {
       return ' Monthly';
     } else if (control.includes('verifications_Only_Annually')) {
       return 'Annually';
+    }else if(control.includes('no_of_days')){
+      return 'No of days';
     } else {
       return 'Activation Fee'; // Default label if none match
     }
@@ -925,7 +884,9 @@ private ensureAllPricingKeys() {
       return 'Verification Only';
     } else if (lowerControl.includes('add')) {
       return 'Add-Ons';
-    } else {
+    } else if(lowerControl.includes('no_of_days')){
+      return 'No of days';
+    }else{
       return 'Activation Fee'; // Default title if none match
     }
   }
@@ -945,6 +906,8 @@ private ensureAllPricingKeys() {
       return 'verficationBundle';
     } else if (control.toLowerCase().includes('add')) {
       return 'addonBundle';
+    }else if(control.includes('no_of_days')){
+      return 'No of days';
     } else {
       return 'Activation Fee'; // Default title if none match
     }
@@ -1029,7 +992,7 @@ private ensureAllPricingKeys() {
     if (file) {
       this.selectedFile = file;
       this.preAgreementForm.patchValue({ fileUpload: file });
-      // console.log('Selected file:', file.name);
+      console.log('Selected file:', file.name);
     }
   }
   
@@ -1078,5 +1041,35 @@ disablePastDates = (date: Date | null): boolean => {
     // Close the datepicker
     picker.close();
   }
+}
+
+// Add or update this method in your component
+updatePricingForCurrency(currency: string) {
+  const selectedPromo = this.preAgreementForm.get('sales_person_promotion_type')?.value;
+  if (!selectedPromo) return;
+
+  const basePricing = this.promotionPricing[selectedPromo];
+  if (!basePricing){
+    return;
+  } 
+
+  const pricingDetails = this.preAgreementForm.get('pricingDetails') as FormGroup;
+   if (!pricingDetails.get('activation_fee')) {
+        
+        pricingDetails.addControl(
+          'activation_fee',
+          new FormControl()
+        );
+        pricingDetails.get('activation_fee')?.setValue(0);
+        // console.log('Adding activation_fee control with value:', activationFeeValue, pricingDetails.get('activation_fee')?.value);
+      }
+  Object.keys(pricingDetails.controls).forEach((key) => {
+    const value = basePricing[key];
+    console.log('Key:', key, 'Value:', value);
+    if (value && typeof value === 'object' ) {
+      pricingDetails.get(key)?.setValue(value[currency], { emitEvent: false });
+      console.log(`Updated ${key} for ${currency}:`, value[currency]);
+    }
+  });
 }
 }

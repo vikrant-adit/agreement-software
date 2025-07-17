@@ -9,8 +9,6 @@
           <mat-icon matTooltip="Completed">check_circle_outline</mat-icon>
         }
       }
-     
-     
     </div>
     <div class="title-head">
       <h4>How would you like to pay?</h4>
@@ -108,7 +106,7 @@
         <!-- <h2>Please add-on at least one of the following packages:</h2> -->
         <div class="package">
           @if(pricingArray.add_on_phones!=null){
-            <div class="phone-package" [class.selected]="!selectAddonPhone"  (click)="handlePhoneAddOnClick(pricingArray.add_on_phones)">
+            <div class="phone-package" [class.selected]="!phoneSelected"  (click)="handlePhoneAddOnClick(pricingArray.add_on_phones)">
               <div class="heading">
                 <h2>
                   <mat-icon> settings_phone </mat-icon>
@@ -137,13 +135,13 @@
             </div>
           }
           @if(pricingArray.add_on_analytic){
-            <div class="analytic-pacakge" [class.selected]="!selectAddonAnalytics" (click)="handleAnalyticsAddOnClick(pricingArray.add_on_analytic)">
+            <div class="analytic-pacakge" [class.selected]="!analyticsSelected" (click)="handleAnalyticsAddOnClick(pricingArray.add_on_analytic)">
               <div class="heading">
                 <h2>
                   <mat-icon> analytics </mat-icon>
                   Analytics
                 </h2>
-                <span class="price"> +${{pricingArray.add_on_analytic}} </span>
+                <span class="price"> +${{pricingArray.add_on_analytic}}</span>
               </div>
               <div class="stack">
                <div class="col">
@@ -169,7 +167,7 @@
             </div>
           }
           @if(pricingArray.add_on_verification){
-            <div class="verification-package" [class.selected]="!selectAddonVerification" (click)="handleVerificationAddOnClick(pricingArray.add_on_verification)">
+            <div class="verification-package" [class.selected]="!verificationSelected" (click)="handleVerificationAddOnClick(pricingArray.add_on_verification)">
               <div class="heading">
                 <h2>
                   <mat-icon> price_check </mat-icon>
@@ -454,7 +452,7 @@
           </div>
         </div>
        }
-         @if(pricingArray.verifications_Only_Annually && pricingArray.verifications_Only_Monthly){
+         @if(pricingArray.verifications_Only_Annually!=0 && pricingArray.verifications_Only_Monthly!=0){
           <div class="verification-package" [class.selected]="!verificationsSelected" (click)="selectpackage('verification')">
             <div class="heading">
               <h2>
@@ -488,7 +486,7 @@
               <mat-icon> settings_phone </mat-icon>
               Phones
             </h2>
-            <span class="price"> +$100 </span>
+            <span class="price"> +${{pricingArray.add_on_phones}} </span>
           </div>
           <span class="credits">
             <span>+$300 Hardware Credit</span>
@@ -512,7 +510,7 @@
             <mat-icon> analytics </mat-icon>
             Analytics
           </h2>
-          <span class="price"> +$100 </span>
+          <span class="price"> +${{pricingArray.add_on_analytic}} </span>
         </div>
         <div class="stack">
          <div class="col">
@@ -538,14 +536,14 @@
       </div>
      }
      
-      @if(pricingArray.add_on_verification){
+      @if(pricingArray.add_on_verification!=0){
         <div class="verification-package" [class.selected]="!verificationSelected" (click)="verificationAddOnPriceAddNoVendor(pricingArray.add_on_verification)">
           <div class="heading">
             <h2>
               <mat-icon> price_check </mat-icon>
               Verifications
             </h2>
-            <span class="price"> +$100 </span>
+            <span class="price"> +${{pricingArray.add_on_verification}} </span>
           </div>
           <span class="credits">
             <span>+$300 Hardware Credit</span>
@@ -619,7 +617,7 @@
         @if(isAnnually){
           <p style="margin:0;"> 
             <!-- <span style="font-size:16px"> -->
-            <span style="font-size: 32px; color: rgb(255, 128, 0); font-weight: 700;">${{newPackageTotalAnnualy}}</span>
+            <span style="font-size: 32px; color: rgb(255, 128, 0); font-weight: 700;">${{pricingArray.aditLiteAnnual_Disc}}</span>
              <!-- /mo 1st year</span> -->
             </p>
             <!-- <p style="font-size: 16px;">
@@ -628,7 +626,7 @@
             </p> -->
             <span class="subtext"> $600 Saved By Going Annular</span>
         }@else {
-          <h2 style="margin:5px;font-size: 36px;"> ${{newPackageTotalMonthly}} </h2>
+          <h2 style="margin:5px;font-size: 36px; color: rgb(255, 128, 0);"> ${{pricingArray.aditLiteMontly_Disc}} </h2>
         }
           
         

@@ -46,8 +46,20 @@ export class OnlineFormAgreementService {
     );
   }
 
+   addBillingData(formData: any,locationId:any): Observable<any> {
+    return this.http.post<any>(this.baseUrl+'/location-shipping-billing/'+locationId, formData).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   deletePracticeLocation(agreementId: string, locationId: string): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/practices-data/agreements/${agreementId}/practice-data/${locationId}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+    addInPersonFormData(formData: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl+'/leads/store-lead-data', formData).pipe(
       catchError(this.handleError)
     );
   }

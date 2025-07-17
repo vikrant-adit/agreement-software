@@ -118,17 +118,25 @@
               (totalMonthly)="onTotalMonthly($event)"
               (isAnnualOrMonthly)="onAnnuallyorMonthlly($event)"
               (selectedPhone)="onSelectedPhone($event)"
+              (selectedPhone_nvp)="onSelectedPhone_nvp($event)"
               (selectedAnalytics)="onSelectedAnalytics($event)"
               (selectedVerification)="onSelectedVerification($event)"
               (packageSelectedChange)="onPackageSelectedChange($event)"
-              [promotionDate]="promotionDate">
+              [phoneSelect]="phoneActive"
+              [verificationSelect]="verificationActive"
+              [analyticSelect]="analyticActive"
+              [promotionDate]="promotionDate"
+              [phoneSelected]="addOnPhone"
+              [verificationSelected]="addOnVerification"
+              [analyticsSelected]="addOnAnalytic"
+              >
             </app-choose-packages>
             <div class="btnClass">
-              @if(totalAnnually>0){
-                <button mat-raised-button class="nextbtn" (click)="onNextClick(true)">
-                  Next
-                </button>
-              }
+           @if(totalAnnually > 0 || whichPackageToShow === 'Only Lite - 1st Yr Promo') {
+              <button mat-raised-button class="nextbtn" (click)="onNextClick(true)">
+                Next
+              </button>
+            }
             </div>
           </div>
           } 
@@ -177,10 +185,8 @@
                         />
                         <p class="phone-name">Grandstream <strong> GRP 2616</strong></p>
                         <span class="price">$150</span>
-                        <span class="description"
-                          >Best for workstations handling more than 10 calls per day.
-                          (Recommended for front desk, call centers, etc.)</span
-                        >
+                        <span class="description">Best for workstations handling more than 10 calls per day.
+                          (Recommended for front desk, call centers, etc.)</span>
                         <div class="counter-container">
                           <button (click)="decrement(0,true)">−</button>
                           <span>{{ counts_for_phone[0] }}</span>
@@ -834,13 +840,13 @@
               <span class="values">
                 @if(ifPackageisAditCore){
                   <span>{{ makeFirstLetterCapital('core')  }} 
-                    @if(addOnPhone==true){
+                    @if(addOnPhone){
                      + Phones 
                     }
-                    @if(addOnAnalytic==true){
+                    @if(addOnAnalytic){
                      + Analytics 
                     }
-                    @if(addOnVerification==true){
+                    @if(addOnVerification){
                      + Verifications 
                     }
                   </span>
@@ -868,8 +874,15 @@
             average customer pays ~$18 per month.
           </div>
           <div class="signature">
+          
+           @if(signatureExists){
+            <div class="signExists">
             <strong>Signature</strong>
-            <mat-tab-group>
+            <img src="{{signature_url}}" alt="">
+            </div>
+           }@else{
+              <strong>Signature</strong>
+             <mat-tab-group>
               <mat-tab label="Draw">
                 <div style="border: 2px solid var(--primary-color)">
                   <canvas width="800" height="300" #signatureCanvas></canvas>
@@ -907,6 +920,7 @@
                 </div>
               </mat-tab>
             </mat-tab-group>
+           }
             <div class="belowSignature">
               <div class="nameOfSignatory">
                 <p>Name of signatory:</p>
@@ -950,7 +964,7 @@
       </div>
     </div>
     <!-- single location -->
-    @if(totalAnnually>0 && multiple_location=='no'){
+    @if(totalAnnually>0 && multiple_location=='no' || whichPackageToShow === 'Only Lite - 1st Yr Promo'){
       <div class="right-card">
         <div class="toggle-container">
           <button
@@ -1037,7 +1051,6 @@
         </button>
       </div>
     }
- 
   
   </div>
     }

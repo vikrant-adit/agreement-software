@@ -1,5 +1,6 @@
 <div class="main-container">
-  <mat-form-field appearance="fill" class="selecter">
+<div class="headers-content">
+    <mat-form-field appearance="fill" class="selecter">
   <mat-label>Select Package</mat-label>
   <mat-select [formControl]="packageControl">
     @for(item of packagesArray | keyvalue; track item.key) {
@@ -7,6 +8,8 @@
     }
   </mat-select>
 </mat-form-field>
+<mat-icon (click)="confirmSelection()">close</mat-icon>
+</div>
 @if(whichOneToShow=='Event'){
   <div class="container">
     <div class="title-head">
@@ -54,7 +57,7 @@
       <div class="adit-core">
         <div class="heading">
           <h2>Adit Core</h2>
-          <h2>${{ isAnnually ?  249 : 299 }} <span>/month</span></h2>
+          <h2>${{ isAnnually ?  pricingArray.aditCore_annually : pricingArray.aditCore_monthly }} <span>/month</span></h2>
          @if(isAnnually){
           <span class="subtext"> +$250 Hardware Credit </span>
          }
@@ -89,7 +92,7 @@
                   <mat-icon> settings_phone </mat-icon>
                   Phones
                 </h2>
-                <span class="price"> +${{100}} </span>
+                <span class="price"> +${{pricingArray.add_on_phones}} </span>
               </div>
               <span class="credits">
                 <span>+$300 Hardware Credit</span>
@@ -118,7 +121,7 @@
                   <mat-icon> analytics </mat-icon>
                   Analytics
                 </h2>
-                <span class="price"> +${{100}} </span>
+                <span class="price"> +${{pricingArray.add_on_analytics}} </span>
               </div>
               <div class="stack">
                <div class="col">
