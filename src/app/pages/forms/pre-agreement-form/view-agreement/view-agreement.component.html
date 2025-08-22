@@ -122,13 +122,10 @@
               (selectedAnalytics)="onSelectedAnalytics($event)"
               (selectedVerification)="onSelectedVerification($event)"
               (packageSelectedChange)="onPackageSelectedChange($event)"
-              [phoneSelect]="phoneActive"
-              [verificationSelect]="verificationActive"
-              [analyticSelect]="analyticActive"
+              [phoneSelect]="addOnPhone"
+              [verificationSelect]="addOnVerification"
+              [analyticSelect]="addOnAnalytic"
               [promotionDate]="promotionDate"
-              [phoneSelected]="addOnPhone"
-              [verificationSelected]="addOnVerification"
-              [analyticsSelected]="addOnAnalytic"
               >
             </app-choose-packages>
             <div class="btnClass">
@@ -512,7 +509,7 @@
                 <div class="form-field">
                   <mat-form-field class="field" appearance="fill">
                     <mat-label>Practice Name</mat-label>
-                    <input type="text" formControlName="practice_name" matInput />
+                    <input type="text" formControlName="practice_name" matInput  #practiceNameInput  (focus)="initAutocompleteForLocation(i, practiceNameInput)"/>
                   </mat-form-field>
                 </div>
   
@@ -598,36 +595,44 @@
                       >
                     </mat-select>
                   </mat-form-field>
+                 
+                   <mat-form-field class="field" appearance="fill">
+                    <mat-label>Country</mat-label>
+                    <mat-select formControlName="practice_country" (selectionChange)="validatePostalCode(i)">
+                      <mat-option value="UnitedStates">United States</mat-option>
+                      <mat-option value="Canada">Canada</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="form-field">
                   <mat-form-field class="field" appearance="fill">
                     <mat-label>Postal/Zip Code</mat-label>
                     <input
                       type="text"
                       formControlName="practice_postal_zip_code"
                       matInput
+                       (input)="validatePostalCode(i)"
                     />
-                  </mat-form-field>
-                </div>
-                <div class="form-field">
-                  <mat-form-field class="field" appearance="fill">
-                    <mat-label>Country</mat-label>
-                    <mat-select formControlName="practice_country">
-                      <mat-option value="UnitedStates">United States</mat-option>
-                      <mat-option value="Canada">Canada</mat-option>
-                    </mat-select>
+                    @if(getLocation(i).get('practice_postal_zip_code')?.invalid && getLocation(i).get('practice_postal_zip_code')?.touched){
+                      <mat-error>
+                        Invalid Postal/Zip Code for selected country
+                      </mat-error>
+                    }
+                      
                   </mat-form-field>
                   <mat-form-field class="field" appearance="fill">
                     <mat-label>Timezone</mat-label>
                     <mat-select formControlName="practice_timezone">
-                      <mat-option value="(UTC-10:00) Hawaii">(UTC-10:00) Hawaii</mat-option>
-                       <mat-option value="(UTC-9:00) Alaska">(UTC-9:00) Alaska </mat-option>
-                       <mat-option value="(UTC-8:00) Pacific Time (US & Canada)">(UTC-8:00) Pacific Time (US & Canada)</mat-option>
-                       <mat-option value="(UTC-7:00) Arizona">(UTC-7:00) Arizona</mat-option>
-                       <mat-option value="(UTC-7:00) Mountain Time (US & Canada)">(UTC-7:00) Mountain Time (US & Canada)</mat-option>
-                        <mat-option value="(UTC-7:00) Yukon">(UTC-7:00) Yukon</mat-option>
-                       <mat-option value="(UTC-6:00) Central Time (US & Canada)">(UTC-6:00) Central Time (US & Canada)</mat-option>
-                      <mat-option value="(UTC-5:00) Eastern Time (US & Canada)">(UTC-5:00) Eastern Time (US & Canada)</mat-option>
-                      <mat-option value="(UTC-4:00) Atlantic Time (Canada)">(UTC-4:00) Atlantic Time (Canada)</mat-option>
-                      <mat-option value="(UTC-3:30) Newfoundland">(UTC-3:30) Newfoundland</mat-option>
+                      <mat-option value="(UTC -10:00) Hawaii">(UTC -10:00) Hawaii</mat-option>
+                       <mat-option value="(UTC -9:00) Alaska">(UTC -9:00) Alaska </mat-option>
+                       <mat-option value="(UTC -08:00) Pacific Time (US & Canada)">(UTC -08:00) Pacific Time (US & Canada)</mat-option>
+                       <mat-option value="(UTC -07:00) Arizona">(UTC -07:00) Arizona</mat-option>
+                       <mat-option value="(UTC -07:00) Mountain Time (US & Canada)">(UTC -07:00) Mountain Time (US & Canada)</mat-option>
+                        <mat-option value="(UTC -07:00) Yukon">(UTC -07:00) Yukon</mat-option>
+                       <mat-option value="(UTC -06:00) Central Time (US & Canada)">(UTC -06:00) Central Time (US & Canada)</mat-option>
+                      <mat-option value="(UTC -05:00) Eastern Time (US & Canada)">(UTC -05:00) Eastern Time (US & Canada)</mat-option>
+                      <mat-option value="(UTC -04:00) Atlantic Time (Canada)">(UTC -04:00) Atlantic Time (Canada)</mat-option>
+                      <mat-option value="(UTC -03:30) Newfoundland">(UTC -03:30) Newfoundland</mat-option>
                     </mat-select>
                   </mat-form-field>
                 </div>
@@ -777,7 +782,7 @@
                   <div class="form-row">
                     <mat-form-field appearance="fill" class="form-field">
                       <mat-label>Postal / Zip Code</mat-label>
-                      <input matInput formControlName="postalCode" placeholder="Enter a valid Zip Code" />
+                      <input matInput formControlName="postalCode" placeholder="Enter a valid Zip Code" (input)="validatePostalCodeInSipping()" />
                       @if(shippingAddressForm.get('postalCode')?.invalid && shippingAddressForm.get('postalCode')?.touched){
                         <mat-error>
                           Enter a valid Zip Code
@@ -787,7 +792,7 @@
               
                     <mat-form-field appearance="fill" class="form-field">
                       <mat-label>Country</mat-label>
-                      <mat-select formControlName="country" placeholder="Select a Country">
+                      <mat-select formControlName="country" placeholder="Select a Country" (selectionChange)="validatePostalCodeInSipping()">
                         <mat-option value="UnitedStates">United States</mat-option>
                         <mat-option value="Canada">Canada</mat-option>
                       </mat-select>
@@ -987,7 +992,7 @@
   
           <p class="context">
             <span class="title">Activation Fee <mat-icon matTooltip="The activation fee is non-refundable once the server installation has taken place.">info</mat-icon></span>
-            <span class="value"> ${{ activation_fee }} </span>
+            <span class="value"> ${{ convertStringToNumber(activation_fee) }} </span>
           </p>
           <p class="context">
             <span class="title">Subscription Fee</span>

@@ -19,7 +19,7 @@ export interface CRMUpdateResponse {
   providedIn: 'root'
 })
 export class CrmDataService {
-  private readonly UPDATE_CRM_URL = environment.baseUrl+ '/update-crm-data';
+  private readonly UPDATE_CRM_URL = environment.baseUrl+ 'zoho';
   
   constructor(private http: HttpClient) {}
 
@@ -48,6 +48,13 @@ export class CrmDataService {
       );
   }
 
+  getCRM_Deal_data(agreementId:any): Observable<any> {
+
+    return this.http.get<any>(this.UPDATE_CRM_URL+'/'+agreementId)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
   /**
    * Handle HTTP errors
    */

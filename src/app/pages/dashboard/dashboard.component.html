@@ -4,24 +4,35 @@
     <div class="head">
       <div class="group">
         <mat-form-field>
-          <mat-select [(value)]="selected" (selectionChange)="applyStatusFilter()">
+          <mat-select
+            [(value)]="selected"
+            (selectionChange)="applyStatusFilter()"
+          >
             <mat-option value="">Overview</mat-option>
             <mat-option value="freeTrial">Free Trial</mat-option>
             <mat-option value="pending">Pending Approval</mat-option>
             <mat-option value="open">Open Links</mat-option>
             <mat-option value="completed">Completed Links</mat-option>
             <mat-option value="expired">Archived/Expired Links</mat-option>
-            <mat-option value="upgradeVerification">Upgrade Verification</mat-option>
+            <mat-option value="upgradeVerification"
+              >Upgrade Verification</mat-option
+            >
           </mat-select>
         </mat-form-field>
-        <button mat-raised-button (click)="createAgreement()">+ Create Agreement</button>
+        <button mat-raised-button (click)="createAgreement()">
+          + Create Agreement
+        </button>
       </div>
       <div class="group">
         <button mat-raised-button (click)="openDialog()">Table Settings</button>
         <mat-form-field>
           <mat-label>Enter a date range</mat-label>
           <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-            <input matStartDate formControlName="start" placeholder="Start date"/>
+            <input
+              matStartDate
+              formControlName="start"
+              placeholder="Start date"
+            />
             <input matEndDate formControlName="end" placeholder="End date" />
           </mat-date-range-input>
           <!-- <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint> -->
@@ -44,8 +55,8 @@
       </div>
     </div>
     <!-- <div class="column-selection"> -->
-      
-      <mat-paginator
+
+    <mat-paginator
       [length]="totalRecords"
       [pageSize]="pageSize"
       [pageSizeOptions]="pageSizeOptions"
@@ -54,7 +65,7 @@
     >
     </mat-paginator>
     <!-- </div> -->
-   
+
     <div class="table-container">
       <!-- <table mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="other">
@@ -243,7 +254,7 @@
           <td mat-cell *matCellDef="let element"> {{element.updated_at}} </td>
         </ng-container> -->
 
-        <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr> 
         <tr
           mat-header-row
@@ -308,35 +319,91 @@
         ></tr>
       </table> -->
       <table mat-table [dataSource]="dataSource">
-        @for (column of availableColumns; track $index) {
-          @if (column.selected) {
-            <ng-container [matColumnDef]="column.id">
-              <th mat-header-cell *matHeaderCellDef>{{ column.name }}</th>
-              @if (column.id != 'created_at') {
-                <td mat-cell *matCellDef="let element">{{ element[column.id] }}</td>
-              } @else {
-                <td mat-cell *matCellDef="let element">{{ element[column.id] | date: 'MMMM d, y, h:mm a' }}</td>
-              }
-            </ng-container>
+        @for (column of availableColumns; track $index) { @if (column.selected)
+        {
+        <ng-container [matColumnDef]="column.id">
+          <th mat-header-cell *matHeaderCellDef>{{ column.name }}</th>
+          @if (column.id != 'created_at') { @if(column.id ==
+          'sales_person_account_name'){
+          <td mat-cell *matCellDef="let element">
+            <a
+              href="https://crm.zoho.com/crm/org56875003/tab/Accounts/{{
+                element.accountId
+              }}"
+              target="_blank"
+              class="linkToZoho"
+              >{{ element[column.id] || "--" }}</a
+            >
+          </td>
+
+          }@else {
+          <td mat-cell *matCellDef="let element">
+            {{ element[column.id] || "--" }}
+          </td>
+
+          } } @else {
+          <td mat-cell *matCellDef="let element" style="min-width: 150px">
+            {{ element[column.id] | date : "MMMM d, y, h:mm a" }}
+          </td>
           }
-        }
+        </ng-container>
+        } }
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef class="sticky-right-2-head">
             Action
           </th>
           <td mat-cell *matCellDef="let element" class="sticky-right-2-row">
             <span class="action-bar">
-              <mat-icon style="color: var(--secondary-color)" (click)="editAgreement(element.agreementId)">edit</mat-icon>
-              @if (element.status != 'Completed') {
-                <mat-icon style="color: var(--secondary-color)" (click)="viewAgreement(element.agreementId,element.multipleLocations)">remove_red_eye</mat-icon>
-                @if (element.status != 'Expired') {
-                  <mat-icon style="color: var(--secondary-color)" (click)="markExpireAgreement(element.agreementId)">cancel</mat-icon>
-                }
+              <!-- Show only remove_red_eye if status is Completed -->
+              @if (element.status == 'Completed') {
+              <mat-icon
+                style="color: var(--secondary-color)"
+                (click)="
+                  viewAgreement(
+                    element.agreementId,
+                    element.multipleLocations,
+                    element.status
+                  )
+                "
+                >remove_red_eye</mat-icon
+              >
+              }
+              <!-- Show only edit if status is Expired -->
+              @else if (element.status == 'Expired') {
+              <mat-icon
+                style="color: var(--secondary-color)"
+                (click)="editAgreement(element.agreementId)"
+                >edit</mat-icon
+              >
+              }
+              <!-- Otherwise, show all actions as before -->
+              @else {
+              <mat-icon
+                style="color: var(--secondary-color)"
+                (click)="editAgreement(element.agreementId)"
+                >edit</mat-icon
+              >
+              <mat-icon
+                style="color: var(--secondary-color)"
+                (click)="
+                  viewAgreement(
+                    element.agreementId,
+                    element.multipleLocations,
+                    element.status
+                  )
+                "
+                >remove_red_eye</mat-icon
+              >
+              <mat-icon
+                style="color: var(--secondary-color)"
+                (click)="markExpireAgreement(element.agreementId)"
+                >cancel</mat-icon
+              >
               }
             </span>
           </td>
         </ng-container>
-    
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>

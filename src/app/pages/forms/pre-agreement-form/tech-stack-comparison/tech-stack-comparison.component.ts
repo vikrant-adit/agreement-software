@@ -45,7 +45,7 @@ type Pricing = { [key: string]: string };
 export class TechStackComparisonComponent implements OnInit {
   techStackForm!: FormGroup;
   @Output() formChanged = new EventEmitter<FormGroup>();
- @Input() getForm:any[]=[]
+ @Input() getForm:any
   dialog = inject(MatDialog);
   onlineFormService = inject(OnlineFormAgreementService);
   expand:boolean=true
@@ -102,14 +102,14 @@ export class TechStackComparisonComponent implements OnInit {
   }
   ngOnInit(): void {
     console.log(this.getForm);
-    if(this.getForm.length>0){
-      this.techStackForm.patchValue(this.getForm[0])
+    if(this.getForm){
+      this.techStackForm.patchValue(this.getForm)
       
-      const keysWithValues = Object.keys(this.getForm[0]).filter((key:any) => this.getForm[0][key] !== null);
+      const keysWithValues = Object.keys(this.getForm).filter((key:any) => this.getForm[key] !== null);
       console.log(keysWithValues); // Print keys with non-null values
       keysWithValues.forEach((key:any)=>{
         if(key!=='features' && !key.includes('price')){
-          this.storeTheArray.push(this.getForm[0][key])
+          this.storeTheArray.push(this.getForm[key])
           this.manageGapsWhileUpdating()
         }
       })

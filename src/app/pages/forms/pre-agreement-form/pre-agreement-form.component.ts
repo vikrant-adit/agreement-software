@@ -63,6 +63,7 @@ export class PreAgreementFormComponent implements OnInit {
       newOrExistingClient: ['', Validators.required],
       multipleLocations: ['', Validators.required],
       accountId: ['', [Validators.required, Validators.pattern(/^\d{19}$/)]],
+      sales_person_account_name: [''],
       currency: ['', Validators.required],
       deal: [''], 
       deal_id: [''],
@@ -99,6 +100,9 @@ export class PreAgreementFormComponent implements OnInit {
             if(response.message!='No open deal present'){
               this.deals = response.data.deals;
               this.successMsg ='Account validated successfully'
+              this.preAgreementForm.patchValue({
+                sales_person_account_name: response.data.accountName,
+              });
             }else{
                this.successMsg = response.message ;
            accountIdControl.setErrors({...accountIdControl.errors, apiError: null});
@@ -147,7 +151,7 @@ export class PreAgreementFormComponent implements OnInit {
       });
     }
   }
- 
+  showAllowCoreOnly: boolean = false;
   createPricingFormGroup(): FormGroup {
     return this.fb.group({});
   }
@@ -233,6 +237,7 @@ export class PreAgreementFormComponent implements OnInit {
             deal_id: res.data.deal_id
           });
         }
+        this.allowCore= res.data.allow_core || false;
         
         // Set industry type
         this.dental_or_optometry = res.data.practiceIndustry;
@@ -245,7 +250,7 @@ export class PreAgreementFormComponent implements OnInit {
         
         // Handle tech stack comparison
         if (res.data.displayTechStackComparison) {
-          this.sendForm = res.data.techStack;
+          this.sendForm = res.data.techStackData;
         }
         
         // Update pricing controls
@@ -468,7 +473,7 @@ export class PreAgreementFormComponent implements OnInit {
         formData.append('fileUpload', this.selectedFile, this.selectedFile.name); // Include file name
       }
       formData.append('medium','Online')
-    
+      formData.append('allowCore',JSON.stringify(this.allowCore));
       // Log the FormData for debugging
       // console.log("Data that is submitted:", formData);
     
@@ -476,6 +481,7 @@ export class PreAgreementFormComponent implements OnInit {
       if(this.agreementId) {
         this.formService.updateForm(formData, this.agreementId).subscribe({
           next: (response) => {
+            this.isAccountIdLoading=true
             // console.log('Form updated successfully:', response);
             this.toastr.success('Form submitted successfully!');
             
@@ -489,6 +495,7 @@ export class PreAgreementFormComponent implements OnInit {
             // Reset the form AFTER navigation decision
             this.preAgreementForm.reset();
             this.selectedFile = null;
+            this.isAccountIdLoading=false
           },
           error: (error) => {
             console.error('Error submitting form:', error);
@@ -500,7 +507,7 @@ export class PreAgreementFormComponent implements OnInit {
           next: (response) => {
             // console.log('Form submitted successfully:', response);
             this.toastr.success('Form submitted successfully!');
-            
+            this.isAccountIdLoading=true
             // Navigate based on the stored multipleLocations value
             if (multipleLocations === 'yes') {
               this.router.navigate(['/view-agreements/' + response.data.agreementId]);
@@ -511,6 +518,7 @@ export class PreAgreementFormComponent implements OnInit {
             // Reset the form AFTER navigation decision
             this.preAgreementForm.reset();
             this.selectedFile = null;
+            this.isAccountIdLoading=false
           },
           error: (error) => {
             console.error('Error submitting form:', error);
@@ -609,6 +617,11 @@ private ensureAllPricingKeys() {
        this.eventOptions = res.data
       })
     }
+    if(this.selectedPromotion=='Inbound Core'){
+      this.showAllowCoreOnly=true;
+    }else{
+      this.showAllowCoreOnly=false;
+    }
     if (!this.promotionPricing[selectedPromo]) {
       return;
     }
@@ -643,7 +656,7 @@ private ensureAllPricingKeys() {
           // Use existing value if available and patching form
           const initialValue = existingValues && existingValues[control] !== undefined ? 
                               existingValues[control] : newPricing[control];
-                  console.log('Adding activation_fee control with value:', initialValue);
+                  // console.log('Adding activation_fee control with value:', initialValue);
 
           pricingDetails.addControl(
             control,
@@ -1065,11 +1078,16 @@ updatePricingForCurrency(currency: string) {
       }
   Object.keys(pricingDetails.controls).forEach((key) => {
     const value = basePricing[key];
-    console.log('Key:', key, 'Value:', value);
+
+    // console.log('Key:', key, 'Value:', value);
     if (value && typeof value === 'object' ) {
       pricingDetails.get(key)?.setValue(value[currency], { emitEvent: false });
-      console.log(`Updated ${key} for ${currency}:`, value[currency]);
+      // console.log(`Updated ${key} for ${currency}:`, value[currency]);
     }
   });
 }
+allowCore: boolean = false;
+  toggleAllowCore() {
+    this.allowCore = !this.allowCore;
+  }
 }

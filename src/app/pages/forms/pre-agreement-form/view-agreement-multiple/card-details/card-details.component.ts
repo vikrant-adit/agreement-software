@@ -4,6 +4,7 @@ import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { OnlineFormAgreementService } from '../../../../../../services/online form/online-form-agreement.service';
 import {  MAT_DIALOG_DATA,  MatDialogModule,  MatDialogRef} from '@angular/material/dialog';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-card-details',
   standalone: true,
@@ -14,6 +15,8 @@ import {  MAT_DIALOG_DATA,  MatDialogModule,  MatDialogRef} from '@angular/mater
 export class CardDetailsComponent implements OnInit{
   paymentForm!: FormGroup;
   readonly data = inject(MAT_DIALOG_DATA);
+  private readonly dialogRef = inject(MatDialogRef<CardDetailsComponent>);
+  router = inject(Router);
   agreementService = inject(OnlineFormAgreementService);
   constructor(private fb: FormBuilder) {
     this.paymentForm = this.fb.group({
@@ -34,11 +37,16 @@ ngOnInit(): void {
   onSubmit() {
     if (this.paymentForm.valid) {
       console.log(this.paymentForm.value);
-      this.agreementService.addBillingData(this.paymentForm.value, this.data).subscribe((response) => {
+      this.agreementService.addBillingData(this.paymentForm.value, this.data.locationId).subscribe((response) => {
         console.log('Payment details added successfully.');
+        this.dialogRef.close();
+        this.router.navigate(['/payment-thank-you/' + this.data.agreementId]);
       })
     } else {
       console.log('Form is invalid');
     }
+    // skip to the direct crm data
+
+    
   }
 }

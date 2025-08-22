@@ -185,51 +185,79 @@
           To sign up for Adit, please begin by filling out the below information.
         </p>
         
-        <div class="org-form">
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label> Organization Name</mat-label>
-              <input type="text" [(ngModel)]="organization_name" matInput />
-            </mat-form-field>
-            <span>
-              The Organization Name is the name your entire group of practices is
-              referred to as. Example: Heartland Dental
-            </span>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label> Org. POC Name (Point-of-Contact)</mat-label>
-              <input type="text" [(ngModel)]="organization_poc_name" matInput />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label> Org. POC Email</mat-label>
-              <input type="text" [(ngModel)]="organization_poc_email" matInput />
-            </mat-form-field>
-          </div>
-          <div class="form-field">
-            <mat-form-field class="field" appearance="fill">
-              <mat-label> Org. POC Work Number</mat-label>
-              <input
-                type="text"
-                [(ngModel)]="organization_poc_work_number"
-                appPhoneNumberFormatter
-                matInput
-              />
-            </mat-form-field>
-            <mat-form-field class="field" appearance="fill">
-              <mat-label> Org. POC Cell Number</mat-label>
-              <input
-                type="text"
-                [(ngModel)]="organization_poc_cell_number"
-                appPhoneNumberFormatter
-                matInput
-              />
-            </mat-form-field>
-          </div>
-        </div>
+      <div class="org-form" #ehrTermsSection>
+  <div class="form-field">
+    <mat-form-field class="field" appearance="fill">
+      <mat-label> Organization Name</mat-label>
+      <input type="text" [(ngModel)]="organization_name" name="organization_name" required matInput />
+      <mat-error *ngIf="acceptTermsAndConditions && !organization_name">
+        Organization Name is required
+      </mat-error>
+    </mat-form-field>
+    <span>
+      The Organization Name is the name your entire group of practices is
+      referred to as. Example: Heartland Dental
+    </span>
+  </div>
+  <div class="form-field">
+    <mat-form-field class="field" appearance="fill">
+      <mat-label> Org. POC Name (Point-of-Contact)</mat-label>
+      <input type="text" [(ngModel)]="organization_poc_name" name="organization_poc_name" required matInput />
+      @if(acceptTermsAndConditions && !organization_poc_name){
+        <mat-error>
+          Org. POC Name is required
+        </mat-error>
+      }
+      
+    </mat-form-field>
+    <mat-form-field class="field" appearance="fill">
+      <mat-label> Org. POC Email</mat-label>
+      <input type="text" [(ngModel)]="organization_poc_email" name="organization_poc_email" required matInput />
+      @if(acceptTermsAndConditions && !organization_poc_email){
+        <mat-error>
+          Org. POC Email is required
+        </mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div class="form-field">
+    <mat-form-field class="field" appearance="fill">
+      <mat-label> Org. POC Work Number</mat-label>
+      <input
+        type="text"
+        [(ngModel)]="organization_poc_work_number"
+        name="organization_poc_work_number"
+        required
+        appPhoneNumberFormatter
+        matInput
+      />
+      @if(acceptTermsAndConditions && !organization_poc_work_number){
+        <mat-error>
+          Org. POC Work Number is required
+        </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field class="field" appearance="fill">
+      <mat-label> Org. POC Cell Number</mat-label>
+      <input
+        type="text"
+        [(ngModel)]="organization_poc_cell_number"
+        name="organization_poc_cell_number"
+        required
+        appPhoneNumberFormatter
+        matInput
+      />
+      @if(acceptTermsAndConditions && !organization_poc_cell_number){
+        <mat-error>
+          Org. POC Cell Number is required
+        </mat-error>
+      }
+    </mat-form-field>
+  </div>
+</div>
         
     
-        <form [formGroup]="practiceData">
+        <form [formGroup]="practiceData"  #practiceSection>
           <div formArrayName="locations">
             @for(location of locations.controls; track location; let i = $index) {
               <div class="location-section">
@@ -708,10 +736,11 @@
       }
     </div>
       @if(!hideAllcards){
-        <div class="phone hardware">
+       @if(expandTheCardForHardware){
+         <div class="phone hardware">
           <div class="phone-context">
             <div class="phones-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr">
-              <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone"  [class.active-content]="counts[0] > 2">
+              <div class="phone-content" [class.disable]="disablePhones" [class.disable]="!ifAnyActivePhone"  [class.active-content]="setCountTo1ForChiro?counts[0] > 1:counts[0] > 2">
                 <img
                   src="https://demo.enfolytics.com/assets/images/grandstream-grp-2616.png"
                   alt=""
@@ -802,132 +831,132 @@
         </div>
     
         
-    @if(showTable){
-      <table>
-        <thead>
-          <tr>
-            <th>Location</th>
-            <th>Purchase Phones?</th>
-            <th>Payment Terminal?</th>
-            <th>GRP 2616</th>
-            <th>GRP 2613</th>
-            <th>DP 720</th>
-            <th>GRP 2616 Wall Mount</th>
-            <th>GRP 2613 Wall Mount</th>
-            <th>Headset + Adapter</th>
-            <th>BBPOS WisePOS E</th>
-            <th>Terminal Dock</th>
-            <th>Hardware Credit Used / Credit</th>
-            <th>Total Hardware Cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for(location of locations.controls;track location; let i = $index){
-          <tr>
-            <td>{{ location.get("location_name")?.value }}</td>
-            <td>
-              @if(!disablePhones){
-                @if(iconStates[i]?.phoneActive){
+        @if(showTable){
+          <table>
+            <thead>
+              <tr>
+                <th>Location</th>
+                <th>Purchase Phones?</th>
+                <th>Payment Terminal?</th>
+                <th>GRP 2616</th>
+                <th>GRP 2613</th>
+                <th>DP 720</th>
+                <th>GRP 2616 Wall Mount</th>
+                <th>GRP 2613 Wall Mount</th>
+                <th>Headset + Adapter</th>
+                <th>BBPOS WisePOS E</th>
+                <th>Terminal Dock</th>
+                <th>Hardware Credit Used / Credit</th>
+                <th>Total Hardware Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(location of locations.controls;track location; let i = $index){
+              <tr>
+                <td>{{ location.get("location_name")?.value }}</td>
+                <td>
+                  @if(!disablePhones){
+                    @if(iconStates[i]?.phoneActive){
+                      <input
+                      type="checkbox"
+                      [checked]="purchasePhones[i]"
+                      class="hidden-checkbox"
+                    />
+                    <div
+                      [class.checked]="purchasePhones[i]"
+                      (click)="purchasePhones[i] = !purchasePhones[i]"
+                      class="custom-checkbox">
+                      {{ purchasePhones[i] ? "✓" : "" }}
+                    </div>
+                    }
+                  
+                  }
+                </td>
+                <td>
                   <input
-                  type="checkbox"
-                  [checked]="purchasePhones[i]"
-                  class="hidden-checkbox"
-                />
-                <div
-                  [class.checked]="purchasePhones[i]"
-                  (click)="purchasePhones[i] = !purchasePhones[i]"
-                  class="custom-checkbox">
-                  {{ purchasePhones[i] ? "✓" : "" }}
-                </div>
-                }
-              
+                    type="checkbox"
+                    [checked]="purchaseTerminals[i]"
+                    class="hidden-checkbox"
+                  />
+                  <div
+                    [class.checked]="purchaseTerminals[i]"
+                    (click)="purchaseTerminals[i] = !purchaseTerminals[i]"
+                    class="custom-checkbox"
+                  >
+                    {{ purchaseTerminals[i] ? "✓" : "" }}
+                  </div>
+                </td>
+                @for(hardware of hardwarePrices; track $index; let j = $index) {
+                @if(j < 6) { @if(purchasePhones[i]){
+                <td>
+                  <div class="counters-multiple-hardware-table">
+                    <button (click)="decrement_forMultiple(i, j)">−</button>
+                  <span>{{ hardware_counts?.[i]?.[j]?.count || 0 }}</span>
+                    <button (click)="increment_forMultiple(i, j)">+</button>
+                  </div>
+                </td>
+        
+                }@else {
+        
+                <td
+                  style="
+                    background-color: rgb(227, 227, 227);
+                    padding: 10px;
+                    min-width: 4rem;
+                  "
+                >
+                  --
+                </td>
+        
+                } } @if(j >= 6) { @if(purchaseTerminals[i]){
+                <td>
+                  <div class="counters-multiple-hardware-table">
+                    <button (click)="decrement_forMultiple(i, j)">−</button>
+                  <span>{{ hardware_counts?.[i]?.[j]?.count || 0 }}</span>
+                    <button (click)="increment_forMultiple(i, j)">+</button>
+                  </div>
+                </td>
+        
+                }@else {
+                <td
+                  style="
+                    background-color: rgb(227, 227, 227);
+                    padding: 10px;
+                    min-width: 4rem;">
+                  --
+                </td>
+                } } }
+                <td class="money">
+                  @if(purchasePhones[i] || purchaseTerminals[i]){
+                    ${{ getHardwarePriceInTable(i) || 0 }} 
+                    }@else{
+                      0
+                    }
+                      / ${{getHardwareCreditDisplayInTable()}}
+                </td>
+                <td class="money">${{ getTotaInHardwareTable(i) || 0 }}</td>
+              </tr>
               }
-            </td>
-            <td>
-              <input
-                type="checkbox"
-                [checked]="purchaseTerminals[i]"
-                class="hidden-checkbox"
-              />
-              <div
-                [class.checked]="purchaseTerminals[i]"
-                (click)="purchaseTerminals[i] = !purchaseTerminals[i]"
-                class="custom-checkbox"
-              >
-                {{ purchaseTerminals[i] ? "✓" : "" }}
-              </div>
-            </td>
-            @for(hardware of hardwarePrices; track $index; let j = $index) {
-            @if(j < 6) { @if(purchasePhones[i]){
-            <td>
-              <div class="counters-multiple-hardware-table">
-                <button (click)="decrement_forMultiple(i, j)">−</button>
-               <span>{{ hardware_counts?.[i]?.[j]?.count || 0 }}</span>
-                <button (click)="increment_forMultiple(i, j)">+</button>
-              </div>
-            </td>
-    
-            }@else {
-    
-            <td
-              style="
-                background-color: rgb(227, 227, 227);
-                padding: 10px;
-                min-width: 4rem;
-              "
-            >
-              --
-            </td>
-    
-            } } @if(j >= 6) { @if(purchaseTerminals[i]){
-            <td>
-              <div class="counters-multiple-hardware-table">
-                <button (click)="decrement_forMultiple(i, j)">−</button>
-               <span>{{ hardware_counts?.[i]?.[j]?.count || 0 }}</span>
-                <button (click)="increment_forMultiple(i, j)">+</button>
-              </div>
-            </td>
-    
-            }@else {
-            <td
-              style="
-                background-color: rgb(227, 227, 227);
-                padding: 10px;
-                min-width: 4rem;">
-              --
-            </td>
-            } } }
-            <td class="money">
-              @if(purchasePhones[i] || purchaseTerminals[i]){
-                 ${{ getHardwarePriceInTable(i) || 0 }} 
-                }@else{
-                  0
-                }
-                   / ${{getHardwareCreditDisplayInTable()}}
-            </td>
-            <td class="money">${{ getTotaInHardwareTable(i) || 0 }}</td>
-          </tr>
-          }
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td style="text-align: right">
-              ${{ totalHardwarePrice }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    }
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align: right">
+                  ${{ totalHardwarePrice }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        }
         
         <div class="terms">
           <input
@@ -956,93 +985,94 @@
             you receive the shipment.
           </p>
         </div>
-      @if(hasAnyPurchasedHardware){
-          <div class="shipping-address-container">
-          <h3>Where would you like your hardware shipped?</h3>
-          
-            <form [formGroup]="shippingAddressForm">
-              <div formArrayName="shippingAddress">
-                @for(shipping of shippingAddress.controls; track shipping; let i = $index){
-                  <div [formGroupName]="i">
-                    @if(multiple_location=='yes'){
-                      <h2> Shipping Address {{ i + 1 }}</h2>
-                      <div style="display: flex;">
-                        <input
-                          type="checkbox"
-                          [checked]="sameAddressForMultipleLocation[i]"
-                          (click)="showSameAddressPracticeForMultipleLocation(i)"
-                          style="accent-color: var(--primary-color);"/>
-                          Shipping address same as practice address
-                      </div>
-                    }
-                    @if (!sameAddressForMultipleLocation[i]) {
-                      <div class="form-row">
-                        <mat-form-field appearance="fill" class="form-field">
-                          <mat-label>Shipping Address Line 1</mat-label>
-                          <input matInput formControlName="address_line_1" placeholder="Enter a Shipping Address" />
-                          @if(shipping.get('address_line_1')?.invalid && shipping.get('address_line_1')?.touched){
-                            <mat-error>Enter a Shipping Address</mat-error>
-                          }
-                        </mat-form-field>
-                        
-                        <mat-form-field appearance="fill" class="form-field">
-                          <mat-label>Shipping Address Line 2</mat-label>
-                          <input matInput formControlName="address_line_2" placeholder="Enter a Shipping Address (Optional)" />
-                        </mat-form-field>
-                      </div>
-                      
-                      <div class="form-row">
-                        <mat-form-field appearance="fill" class="form-field">
-                          <mat-label>City</mat-label>
-                          <input matInput formControlName="city" placeholder="Enter a City" />
-                          @if(shipping.get('city')?.invalid && shipping.get('city')?.touched){
-                            <mat-error>Enter a City</mat-error>
-                          }
-                        </mat-form-field>
-                        
-                        <mat-form-field appearance="fill" class="form-field">
-                          <mat-label>State/Region/Province</mat-label>
-                          <input matInput formControlName="state" placeholder="Enter a State" />
-                          @if(shipping.get('state')?.invalid && shipping.get('state')?.touched){
-                            <mat-error>Enter a State</mat-error>
-                          }
-                        </mat-form-field>
-                      </div>
-                      
-                      <div class="form-row">
-                        <mat-form-field appearance="fill" class="form-field">
-                          <mat-label>Postal / Zip Code</mat-label>
-                          <input matInput formControlName="postalCode" placeholder="Enter a valid Zip Code" />
-                          @if(shipping.get('postalCode')?.invalid && shipping.get('postalCode')?.touched){
-                            <mat-error>Enter a valid Zip Code</mat-error>
-                          }
-                        </mat-form-field>
-                        
-                        <mat-form-field appearance="fill" class="form-field">
-                          <mat-label>Country</mat-label>
-                          <mat-select formControlName="country" placeholder="Select a Country">
-                            <mat-option value="UnitedStates">United States</mat-option>
-                            <mat-option value="Canada">Canada</mat-option>
-                          </mat-select>
-                          @if(shipping.get('country')?.invalid && shipping.get('country')?.touched){
-                            <mat-error>Select a Country</mat-error>
-                          }
-                        </mat-form-field>
+          @if(hasAnyPurchasedHardware){
+              <div class="shipping-address-container">
+              <h3>Where would you like your hardware shipped?</h3>
+              
+                <form [formGroup]="shippingAddressForm">
+                  <div formArrayName="shippingAddress">
+                    @for(shipping of shippingAddress.controls; track shipping; let i = $index){
+                      <div [formGroupName]="i">
+                        @if(multiple_location=='yes'){
+                          <h2> Shipping Address {{ i + 1 }}</h2>
+                          <div style="display: flex;">
+                            <input
+                              type="checkbox"
+                              [checked]="sameAddressForMultipleLocation[i]"
+                              (click)="showSameAddressPracticeForMultipleLocation(i)"
+                              style="accent-color: var(--primary-color);"/>
+                              Shipping address same as practice address
+                          </div>
+                        }
+                        @if (!sameAddressForMultipleLocation[i]) {
+                          <div class="form-row">
+                            <mat-form-field appearance="fill" class="form-field">
+                              <mat-label>Shipping Address Line 1</mat-label>
+                              <input matInput formControlName="address_line_1" placeholder="Enter a Shipping Address" />
+                              @if(shipping.get('address_line_1')?.invalid && shipping.get('address_line_1')?.touched){
+                                <mat-error>Enter a Shipping Address</mat-error>
+                              }
+                            </mat-form-field>
+                            
+                            <mat-form-field appearance="fill" class="form-field">
+                              <mat-label>Shipping Address Line 2</mat-label>
+                              <input matInput formControlName="address_line_2" placeholder="Enter a Shipping Address (Optional)" />
+                            </mat-form-field>
+                          </div>
+                          
+                          <div class="form-row">
+                            <mat-form-field appearance="fill" class="form-field">
+                              <mat-label>City</mat-label>
+                              <input matInput formControlName="city" placeholder="Enter a City" />
+                              @if(shipping.get('city')?.invalid && shipping.get('city')?.touched){
+                                <mat-error>Enter a City</mat-error>
+                              }
+                            </mat-form-field>
+                            
+                            <mat-form-field appearance="fill" class="form-field">
+                              <mat-label>State/Region/Province</mat-label>
+                              <input matInput formControlName="state" placeholder="Enter a State" />
+                              @if(shipping.get('state')?.invalid && shipping.get('state')?.touched){
+                                <mat-error>Enter a State</mat-error>
+                              }
+                            </mat-form-field>
+                          </div>
+                          
+                          <div class="form-row">
+                            <mat-form-field appearance="fill" class="form-field">
+                              <mat-label>Postal / Zip Code</mat-label>
+                              <input matInput formControlName="postalCode" placeholder="Enter a valid Zip Code" />
+                              @if(shipping.get('postalCode')?.invalid && shipping.get('postalCode')?.touched){
+                                <mat-error>Enter a valid Zip Code</mat-error>
+                              }
+                            </mat-form-field>
+                            
+                            <mat-form-field appearance="fill" class="form-field">
+                              <mat-label>Country</mat-label>
+                              <mat-select formControlName="country" placeholder="Select a Country">
+                                <mat-option value="UnitedStates">United States</mat-option>
+                                <mat-option value="Canada">Canada</mat-option>
+                              </mat-select>
+                              @if(shipping.get('country')?.invalid && shipping.get('country')?.touched){
+                                <mat-error>Select a Country</mat-error>
+                              }
+                            </mat-form-field>
+                          </div>
+                        }
                       </div>
                     }
                   </div>
-                }
-              </div>
-            </form>
-          
-        </div>
-      }
+                </form>
+              
+            </div>
+          }
         
         <div class="btnClass">
-          <button mat-raised-button class="nextbtn" >
+          <button mat-raised-button class="nextbtn" (click)="nextButtomToReviewOrder()">
             Next
           </button>
         </div>
+       }
       }
     </div>
     
@@ -1062,7 +1092,8 @@
         </div>
          
       @if(!hideAllcards){
-      
+       @if(expandTheCardForReviewOrder){
+        
               <div class="toggles">
                 <div class="toggle-container">
                   <button
@@ -1332,6 +1363,7 @@
                 >
               </div>
             </div>
+       }
       }
           
         </div>
@@ -1340,7 +1372,8 @@
       @if(!hideAllcards){
         @if(multiple_location=='yes'){
      
-          <div class="right-card">
+        @if(expandTheCardForReviewOrder){
+            <div class="right-card">
             <div class="toggle-container">
               <button
                 [class]="{ active: isAnnually }"
@@ -1443,6 +1476,7 @@
               Accept & Pay
             </button>
           </div>
+        }
       }
       }
     </div>

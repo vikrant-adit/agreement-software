@@ -93,4 +93,14 @@ fetchDeal(accountId:any){
       agreement_id: agreementId
     });
   }
+
+  //  getPdf(agreementId:any) {
+  //   return this.http.get(`${this.baseUrl}/agreements/pdf/${agreementId}`, { responseType: 'blob' });
+  // }
+  getPdf(agreementId:any) {
+    return this.http.get(`${this.baseUrl}/agreements/generate-agreement-pdf/${agreementId}`, { responseType: 'blob' });
+  }
+  // generatePdf(agreementId:any): Observable<Blob> {
+  //   return this.http.get(`${this.baseUrl}/agreements/generate-agreement-pdf/${agreementId}`, { responseType: 'blob' });
+  // }
 }

@@ -5,15 +5,19 @@
     </div>
     <div class="content">
         <div class=" card left_content">
-          <h2>Your Order</h2>
+          <div style="display: flex;justify-content: space-between;">
+            <h2>Your Order</h2>
+                  <p (click)="showAgreement()" style="cursor: pointer;color: rgb(29, 154, 207);"><b>View BBA agreement</b></p>
+          </div>
+
           <div class="summary-topinfo">
             <div class="practice-name">
               <span class="practice">Practice</span>
               <span class="p-values">
                 @if(multiple_location=='no'){
                   @for(location of locations ;track location; let i = $index) {
-                    <span class="p-name"><strong>{{ location.get("practice_name")?.value }}</strong></span>
-                    <span class="p-loc">{{ location.get("location_name")?.value }}</span>
+                    <span class="p-name"><strong>{{ location.practiceName }}</strong></span>
+                    <span class="p-loc">{{ location.locationName }}</span>
                   }
                 }
               </span>
@@ -43,7 +47,50 @@
               </span>
             </div>
           </div>
-        
+          <div>
+            <table class="hardware-table">
+  <thead>
+    <tr>
+      <th>Hardware Details</th>
+      <th>Quantity</th>
+      <th>Unit Cost</th>
+      <th>Total Cost</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for( item of hardware_counts[0];track item;let i=$index){
+      @if(item.count>0){
+    <tr>
+      <td>
+        @switch (i) {
+          @case (0) { <span>Grandstream GRP 2616 📞</span> }
+          @case (1) { <span>Grandstream GRP 2613 📞</span> }
+          @case (2) { <span>Grandstream DP 720 📱</span> }
+          @case (3) { <span>GRP 2616 Wall Mount 🛠</span> }
+          @case (4) { <span>GRP 2613 Wall Mount 🛠</span> }
+          @case (5) { <span>Headset Adapter 🎧</span> }
+          @case (6) { <span>BBPOS Wisepos 💳</span> }
+          @case (7) { <span>BBPOS Edock 🔌</span> }
+        }
+      
+      </td>
+      <td>{{ item.count }}</td>
+      <td>{{ item.price }}</td>
+      <td>{{ item.count * item.price }}</td>
+    </tr>
+      }
+    }
+   
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3" style="text-align:right"><strong>Total:</strong></td>
+      <td><strong>{{ totalHardwarePrice }}</strong></td>
+    </tr>
+  </tfoot>
+</table>
+
+          </div>
           <div class="bllling-start">
             <strong> Billing Start: </strong>For all annual billing, the total
             yearly fee will be charged within one business day of sign date.
@@ -58,17 +105,30 @@
             on top of the subscription fees to the payment method on file. The
             average customer pays ~$18 per month.
           </div>
+          <div class="signature">
+              <div class="signExists">
+               <img src="{{signature_url}}" alt="">
+            </div>
+               <div class="belowSignature">
+              <div class="nameOfSignatory">
+                <p>Name of signatory:</p>
+                <label>{{signatory_name}}</label>
+              </div>
+          <label>{{ dateSigned | date:'MMMM dd, yyyy hh:mm:ss a':'America/New_York' }}</label>
+            </div>
+          </div>
         </div>
         <div class="right_content">
-   <div class="short-card">
+        <div class="short-card">
           <h3>One time payment Due Today <mat-icon>shopping_cart</mat-icon></h3>
           <!-- add line -->
           <mat-divider></mat-divider>
   
           <p class="context">
-            <span class="title">Activation Fee <mat-icon matTooltip="The activation fee is non-refundable once the server installation has taken place.">info</mat-icon></span>
+            <span class="title">Activation Fee </span>
             <span class="value"> ${{ activation_fee }} </span>
           </p>
+          
           <p class="context">
             <span class="title">Subscription Fee</span>
             <span class="value"
@@ -79,15 +139,13 @@
           <p class="context">
             <span class="title">Hardware Selected</span>
             <span class="value">
-
-                ${{ hardware_Total }}
-
+                ${{ totalHardwarePrice }}
             </span>
           </p>
           <p class="context">
-            <span class="title">Hardware Credit Applied <mat-icon matTooltip="With the annual upfront package, Adit will be paying for the first $250 towards your phones and payment terminals.">info</mat-icon></span>
+            <span class="title">Hardware Credit Applied </span>
             <span class="hardwareValue">
-                {{hardwareCreditApplied}}
+                ${{hardwareCreditApplied}}
             </span>
           </p>
           <!-- add line -->
@@ -108,7 +166,7 @@
               </span>
   
           </h3>
-          <span class="subDate">On {{ nextPaymentDate }}</span>
+          <span class="subDate">On {{ getNextPaymentDate() }}</span>
          </div>
 
         </div>

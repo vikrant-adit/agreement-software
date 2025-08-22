@@ -81,7 +81,6 @@ font-weight: 600;
   border-left: 1px solid rgba(0, 0, 0, 0.1);
 }
 .sticky-right-1-head, .sticky-right-2-head {
-
   position: sticky;
   right: 0;
   z-index: 3; /* Optional: Adjust as needed */
@@ -119,7 +118,6 @@ font-weight: 600;
 .sticky-left-1-row, .sticky-left-2-row {
   position: sticky;
   min-width: 8rem;
-
   left: 0;
   z-index: 1; /* Optional: Adjust as needed */
 }
@@ -153,4 +151,12 @@ font-weight: 600;
     }
 .action-bar{
   display: inline-flex;
+}
+.linkToZoho{
+  text-decoration: none;
+  color:black;
+  cursor: pointer;
+  &:hover{
+    color: var(--primary-color);
+  }
 }

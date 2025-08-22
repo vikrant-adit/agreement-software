@@ -1,5 +1,5 @@
 //view agreement comppoet
-import {  AfterViewInit,  Component,  ElementRef,  inject,  OnInit,  ViewChild,} from '@angular/core';
+import {  AfterViewInit,  Component,  ElementRef,  inject,  OnDestroy,  OnInit,  QueryList,  ViewChild,} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HeaderComponent } from '../../../../header/header.component';
@@ -23,6 +23,7 @@ import { HardwareService } from '../../../../services/hardware.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CardDetailsComponent } from '../view-agreement-multiple/card-details/card-details.component';
 
+declare var google: any;
 @Component({
   selector: 'app-view-agreement',
   standalone: true,
@@ -31,7 +32,7 @@ import { CardDetailsComponent } from '../view-agreement-multiple/card-details/ca
   templateUrl: './view-agreement.component.html',
   styleUrl: './view-agreement.component.scss',
 })
-export class ViewAgreementComponent implements OnInit, AfterViewInit {
+export class ViewAgreementComponent implements OnInit, AfterViewInit, OnDestroy {
   signatureNeeded!: boolean;
   communicationsList = communicationsList;
   operations = operations;
@@ -141,7 +142,13 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
   onTotalMonthly(total: any) {
     this.subscriptionPriceMonthly = this.totalMonthly = total;
   }
-
+  convertStringToNumber(value: string | null): number {
+    if (value === null) {
+      return 0; // Return 0 if the value is null
+    }
+    const numberValue = Number(value);
+    return isNaN(numberValue) ? 0 : numberValue; // Return 0 if conversion fails
+  }
   formatKeyToLabel(key: string): string {
     // Convert camelCase or snake_case keys into readable labels
     return key
@@ -179,13 +186,38 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
     phoneSelectionActive: boolean;
     purchasePhone: boolean;
   }[] = [];
-
+ practice_EHR:any
   checkConditionForHardware: boolean = false;
   no_of_days=45;
   ngOnInit(): void {
     // Initialize hardware_counts as a 2D array
     this.hardware_counts = [];
+  const locationsArray = this.practiceData.get('locations') as FormArray;
+  locationsArray.controls.forEach((locationGroup: any) => {
+    locationGroup.get('practice_country')?.valueChanges.subscribe((country: string) => {
+      const zipControl = locationGroup.get('practice_postal_zip_code');
+      if (!zipControl) return;
 
+      zipControl.clearValidators();
+
+      if (country === 'UnitedStates') {
+        zipControl.setValidators([
+          Validators.required,
+          Validators.pattern(/^\d{5}(-\d{4})?$/)
+        ]);
+      } else if (country === 'Canada') {
+        zipControl.setValidators([
+          Validators.required,
+          Validators.pattern(/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/)
+        ]);
+      } else {
+        zipControl.setValidators(Validators.required);
+      }
+      console.log(zipControl);
+      zipControl.updateValueAndValidity();
+    });
+  });
+    // console.log(this.checkGoogleMapsReady(),"Getsss the  maooooopp")
     // Load data from API
     this.loadAgreementData();
     
@@ -198,6 +230,9 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
     this.agreementId = this.activeRoute.snapshot.params['agreementId'];
 
     this.agreementService.getAgreement(this.agreementId).subscribe((res) => {
+      if(res.data.status=='Completed'){
+        this.router.navigate(['/agreement/' + this.agreementId]);
+      }
       const includedKeys = [
         'analyticAnnual',
         'techMonthly_Disc',
@@ -263,6 +298,12 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       }else{
         this.isAnnually = true;
       }
+
+      if(responseData.practice_ehr){
+        const group = this.getLocation(0);
+        group.get('practice_management_software')?.setValue(responseData.practice_ehr);
+        this.practice_EHR = responseData.practice_ehr;
+      }
       // if(responseData.tech)
       // Convert grouped keys to an array
       this.dynamicPackages = Object.values(groupedKeys);
@@ -280,6 +321,16 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
                 this.ifPackageAditLite = false;
               }
         }
+         if(responseData.practiceIndustry=='Chiropractic'){
+        this.setCountTo1ForChiro=true
+        this.counts_for_phone=[1,0,0,0,0,0]
+        console.log(this.setCountTo1ForChiro,"SETINNGGG")
+      }else{
+                this.counts_for_phone=[2,0,0,0,0,0]
+
+        this.setCountTo1ForChiro=false
+         console.log(this.setCountTo1ForChiro,"SETINNGGG")
+      }
       // console.log('Dynamic Packages:', this.dynamicPackages);
       this.iconStates = this.locations.controls.map(() => ({
         phoneActive: true,
@@ -397,7 +448,8 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
               Validators.required,
             ],
             practice_poc: [data['POC Name'] || '', Validators.required],
-            practice_poc_email: [data['POC Email'] || '', Validators.required],
+            practice_poc_email: [data['POC Email'] || '',
+             Validators.required],
             practice_poc_work_number: [
               data['POC Work Number'] || '',
               Validators.required,
@@ -575,10 +627,10 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
       } else {
         this.showtechStackGap = true;
          let featuresArray:any[]=[]
-        if(responseData.techStack.length>0){
-        featuresArray = responseData.techStack[0].features;
-         this.totalCost= responseData.techStack[0].tech_stack_total_prices;
-        }
+        // if(responseData.techStackData.length>0){
+        featuresArray = responseData.techStackData.features;
+         this.totalCost= responseData.techStackData.tech_stack_total_prices;
+        // }
       
        
         console.log(featuresArray, 'featuresArray', communicationsList);
@@ -655,10 +707,9 @@ export class ViewAgreementComponent implements OnInit, AfterViewInit {
         // const addons = priceAddons[locationName] || {};
 
         // Set addon actives based on "Yes"/"No" values
-        this.phoneActive = priceAddons.phone_show === 'Yes';
-        this.analyticActive = priceAddons.analytics_show === 'Yes';
-        this.verificationActive = priceAddons.verification_show === 'Yes';
-        
+        this.phoneActive = this.addOnPhone = priceAddons.phone_show === 'Yes';
+        this.analyticActive = this.addOnAnalytic = priceAddons.analytics_show === 'Yes';
+        this.verificationActive = this.addOnVerification = priceAddons.verification_show === 'Yes';
     }
     // Replace the old hardwareOrders logic with locationOrders
 
@@ -867,7 +918,7 @@ originaHardwarePriceMonthly: number = 0;
 
   // Method to create a location form group
   createLocationGroup(): FormGroup {
-    return this.fb.group({
+     const group =  this.fb.group({
       practice_name: ['', Validators.required],
       location_name: ['', Validators.required],
       practiceAdressLine_1: ['', Validators.required],
@@ -878,14 +929,37 @@ originaHardwarePriceMonthly: number = 0;
       practice_country: ['', Validators.required],
       practice_timezone: ['', Validators.required],
       practice_office_phone: ['', Validators.required],
-      practice_email: ['', Validators.required],
-      practice_website_url: [''],
+      practice_email: ['', [Validators.required]],
       practice_management_software: ['', Validators.required],
       practice_poc: ['', Validators.required],
       practice_poc_email: ['', Validators.required],
       practice_poc_work_number: ['', Validators.required],
       practice_poc_cell_number: ['', Validators.required],
     });
+     group.get('practice_country')?.valueChanges.subscribe((country) => {
+    const zipControl = group.get('practice_postal_zip_code');
+    if (!zipControl) return;
+
+    zipControl.clearValidators();
+
+    if (country === 'UnitedStates') {
+      zipControl.setValidators([
+        Validators.required,
+        Validators.pattern(/^\d{5}(-\d{4})?$/)
+      ]);
+    } else if (country === 'Canada') {
+      zipControl.setValidators([
+        Validators.required,
+        Validators.pattern(/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/)
+      ]);
+    } else {
+      zipControl.setValidators(Validators.required);
+    }
+
+    zipControl.updateValueAndValidity();
+  });
+
+  return group;
   }
 
   onSubmit() {
@@ -1040,6 +1114,9 @@ originaHardwarePriceMonthly: number = 0;
     this.agreementService.add_practice_data(formData, this.agreementId).subscribe({
       next: (res) => {
         console.log(res);
+        if(res.locationId!=''){
+          this.locationId=res.locationId
+        }
       },
       error: (err) => {
         console.log(err);
@@ -1073,12 +1150,203 @@ originaHardwarePriceMonthly: number = 0;
         );
       }
     });
-    setTimeout(() => {
-      this.showTable = true;
-      this.activatePricingForharware();
-    }, 1000);
+    // setTimeout(() => {
+    //   this.showTable = true;
+    //   this.activatePricingForharware();
+    // }, 1000);
+    //     setTimeout(() => {
+    //   this.initializeAllAutocomplete();
+     
+    // }, 100);
   }
+  //google map address setup
+    // @ViewChild('practiceNameInput') practiceNameInput!: ElementRef;
+    //   @ViewChild('practiceNameInput') practiceNameInputs!: QueryList<ElementRef>;
+  private autocompleteInstances: any[] = [];
+  // private autocomplete: any;
+  // private currentPlaceId: string = '';
+  // private gmbName: string = '';
+  // private gmbAddress: string = '';
+  // private gmbRating: number = 0;
+  // private gmbReviews: number = 0;
+  // private gmbWebsite: string = '';
+//   private checkGoogleMapsReady(): boolean {
+//   return typeof google !== 'undefined' && google.maps && google.maps.places;
+// }
+  //   private initializeAllAutocomplete() {
+  //   // Initialize autocomplete for all existing practice name inputs
+  //   this.practiceNameInputs.forEach((inputRef, index) => {
+  //     this.initAutocompleteForInput(inputRef, index);
+  //   });
+  // }
+  // private initAutocompleteForInput(inputRef: ElementRef, index: number) {
+  //   if (!inputRef || !inputRef.nativeElement) {
+  //     console.error('Input element not found for index:', index);
+  //     return;
+  //   }
 
+  //   const input = inputRef.nativeElement;
+    
+  //   // Check if input is actually an HTMLInputElement
+  //   if (!(input instanceof HTMLInputElement)) {
+  //     console.error('Element is not an HTMLInputElement:', input);
+  //     return;
+  //   }
+
+  //   try {
+  //     const autocomplete = new google.maps.places.Autocomplete(input);
+      
+  //     // Set component restrictions to US and Canada
+  //     autocomplete.setComponentRestrictions({'country': ['us', 'ca']});
+      
+  //     // Store the autocomplete instance
+  //     this.autocompleteInstances[index] = autocomplete;
+      
+  //     // Add listener for place changed event
+  //     autocomplete.addListener('place_changed', () => {
+  //       this.handlePlaceChanged(index, autocomplete);
+  //     });
+  //   } catch (error) {
+  //     console.error('Error initializing autocomplete:', error);
+  //   }
+  // }
+// private handlePlaceChanged(index: number, autocomplete: any) {
+//     const place = autocomplete.getPlace();
+    
+//     if (!place || !place.place_id) {
+//       return;
+//     }
+
+//     // Get the specific location form group
+//     const locationFormGroup = this.locations.at(index) as FormGroup;
+//     this.updateLocationFormGroup(locationFormGroup, place);
+//   }
+  // Method to initialize autocomplete for a specific location index
+  initAutocompleteForLocation(index: number, inputElement:any) {
+    console.log(inputElement);
+    const input = inputElement.nativeElement;
+    
+    const autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.setComponentRestrictions({'country': ['us', 'ca']});
+    
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      
+      if (!place || !place.place_id) {
+        return;
+      }
+      
+      const locationFormGroup = this.locations.at(index) as FormGroup;
+      this.updateLocationFormGroup(locationFormGroup, place);
+    });
+  }
+  private updateLocationFormGroup(locationFormGroup: FormGroup, place: any) {
+    // Extract place information
+    const placeId = place.place_id;
+    const name = place.name || '';
+    const address = place.formatted_address || '';
+    const rating = place.rating || 0;
+    const reviews = place.user_ratings_total || 0;
+    let website = place.website || '';
+    
+    // Clean website URL
+    if (website !== '') {
+      const queryIndex = website.indexOf('?');
+      if (queryIndex !== -1) {
+        website = website.substring(0, queryIndex);
+      }
+    }
+    
+    // Update basic fields
+    locationFormGroup.patchValue({
+      practice_name: name,
+      website_url: website,
+      practice_phone: place.formatted_phone_number || ''
+    });
+    
+    // Parse address components
+    let address1 = '';
+    
+    if (place.address_components) {
+      for (const component of place.address_components) {
+        const addressType = component.types[0];
+        
+        switch (addressType) {
+          case 'locality':
+            const city = component.long_name;
+            locationFormGroup.patchValue({
+              practice_city: city,
+              location_name: city
+            });
+            break;
+            
+          case 'administrative_area_level_1':
+            locationFormGroup.patchValue({
+              practice_state: component.long_name
+            });
+            break;
+            
+          case 'street_number':
+            address1 += component.long_name;
+            break;
+            
+          case 'route':
+            address1 = address1 + ' ' + component.long_name;
+            break;
+            
+          case 'subpremise':
+            locationFormGroup.patchValue({
+              practice_address2: component.long_name
+            });
+            break;
+            
+          case 'postal_code':
+            locationFormGroup.patchValue({
+              practice_zip: component.short_name
+            });
+            break;
+            
+          case 'country':
+            locationFormGroup.patchValue({
+              practice_country: component.short_name
+            });
+            break;
+        }
+      }
+    }
+    
+    // Set the constructed address
+    locationFormGroup.patchValue({
+      practice_address1: address1.trim()
+    });
+    
+    // Get coordinates
+    if (place.geometry && place.geometry.location) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      
+      locationFormGroup.patchValue({
+        searchLocation_lat: lat,
+        searchLocation_lng: lng
+      });
+    }
+    
+    // Set Google My Business data
+    locationFormGroup.patchValue({
+      current_place_id: placeId,
+      gmb_name: name,
+      gmb_rating: rating,
+      gmb_reviews: reviews,
+      gmb_address: address
+    });
+  }
+ngOnDestroy() {
+  this.autocompleteInstances.forEach(instance => {
+    if (instance) {
+      google.maps.event.clearInstanceListeners(instance);
+    }
+  });
+}
   private resizeCanvas() {
     const canvas = this.signatureCanvas?.nativeElement;
     if (!canvas) return; // Guard clause to prevent errors
@@ -1108,7 +1376,11 @@ originaHardwarePriceMonthly: number = 0;
   ];
   counts_for_phone: number[] = [2, 0, 0, 0, 0, 0]; // Default count for GRP 2616 is set to 2
   counts_for_terminal: number[] = [0, 0]; // Default count for terminals
-
+  // counts: number[] = [2, 0, 0, 0, 0, 0]; // Default count for GRP 2616 is set to 2
+  setCountTo1ForChiro:boolean=false 
+  // get counts(): number[] {
+  // return this.setCountTo1ForChiro ? [1, 0, 0, 0, 0, 0] : [2, 0, 0, 0, 0, 0];
+// }
   prices_for_phone: number[] = [150, 100, 100, 10, 10, 275]; // Prices for each hardware item
   prices_for_terminal: number[] = [250, 49]; // Prices for each hardware item
   totalPrice_for_phone: number = 0;
@@ -1125,9 +1397,16 @@ originaHardwarePriceMonthly: number = 0;
 
   decrement(index: number, isPhone: boolean): void {
     if (isPhone) {
-      if (index === 0 && this.counts_for_phone[index] <= 2) {
+      if(this.setCountTo1ForChiro){
+          if (index === 0 && this.counts_for_phone[index] <= 1) {
+          return; // Prevent decrementing below 1 for index 0
+        }
+      }else{
+         if (index === 0 && this.counts_for_phone[index] <= 2) {
         return; // Prevent decrementing below 2 for index 0
       }
+      }
+     
       if (this.counts_for_phone[index] > 0) {
         this.counts_for_phone[index]--;
         this.calculateTotalPrice();
@@ -1293,7 +1572,7 @@ originaHardwarePriceMonthly: number = 0;
   hardwarePrices: number[] = [150, 100, 100, 10, 10, 275, 250, 49];
   // Initialize an array to store extra hardware prices for each row
   extraharwarePrices: number[] = [];
-  counts: number[] = [2, 0, 0, 0, 0, 0]; // Default count for GRP 2616 is set to 2
+  // counts: number[] = [2, 0, 0, 0, 0, 0]; // Default count for GRP 2616 is set to 2
 
   // Get the price of a specific hardware item
   getHardwarePrice(hardwareIndex: number): number {
@@ -1479,7 +1758,7 @@ originaHardwarePriceMonthly: number = 0;
     }
         // Special case for "Only Lite - 1st Yr Promo"
  
-    else    if (this.whichPackageToShow === 'Only Lite - 1st Yr Promo') {
+    else if (this.whichPackageToShow === 'Only Lite - 1st Yr Promo') {
       // Only check terminal condition, not phone condition
       if (this.selectTerminal === false || this.selectPhone === false||null) {
         this.expandForm = true;
@@ -1662,15 +1941,193 @@ expandPayment: boolean = false;
 readonly dialog = inject(MatDialog);
 
 openDialog(){
-  let dialog =  this.dialog.open(CardDetailsComponent, {
-    data:this.locationId[0],
-    maxWidth:'80vw',
-    minWidth:'400px',
-  });
+   console.log(this.practiceData.value, 'Form Data');
+    let formData: {
+      locationId?: any[];
+      signature_url?: string;
+      signatory_name?: any;
+      practice_data?: any;
+      shipping_address_is_same_or_not?: any;
+      shipping_addresses?: any[];
+      organization_name?: any;
+      organization_poc_name?: any;
+      organization_poc_email?: any;
+      organization_poc_work_number?: any;
+      organization_poc_cell_number?: any;
+      hardware_inventory?: any;
+      selectedPackageName?: any;
+      selectPhone?: any;
+      selectTerminal?: any;
+      isAnnually?: string;
+      aditCore?: any;
+      uploaded_image?: string; // Add this field for the uploaded image
+      activation_fee?: number;
+      subscription_fee?: number;
+      hardware_total?: number;
+      multiple_location ?: boolean;
+      priceAddons?: {
+        [locationName: string]: {
+          phone_show?: string;
+          phone_orginal_price?: string;
+          phone_discnt_price?: string;
+          analytics_show?: string;
+          analytics_orginal_price?: string;
+          analytics_discnt_price?: string;
+          verification_show?: string;
+          verification_orginal_price?: string;
+          verification_discnt_price?: string;
+          allow_adit_core_only?: number;
+        };
+      };
+      finalSubmission?:boolean;
+    } = {
+      isAnnually: this.isAnnually ? 'Annually' : 'Monthly',
+      priceAddons: {},
+      locationId: this.locationId,
+      multiple_location:false
+    };
 
-  dialog.afterClosed().subscribe(result => {
-    console.log(result)
-  });
+    // Include the uploaded image if available
+    if (this.previewImage) {
+      // If it's already a string (base64), use it directly
+      if (typeof this.previewImage === 'string') {
+        formData.uploaded_image = this.previewImage;
+      } 
+      // If it's an ArrayBuffer, convert it to base64
+      else if (this.previewImage instanceof ArrayBuffer) {
+        const binary = Array.from(new Uint8Array(this.previewImage))
+          .map(b => String.fromCharCode(b))
+          .join('');
+        formData.uploaded_image = 'data:image/jpeg;base64,' + btoa(binary);
+      }
+    }
+
+    // Add activation fee
+    if (this.activation_fee) {
+      formData.activation_fee = Number(this.activation_fee);
+    }
+
+    // Add subscription fee based on annual/monthly selection
+    if (this.isAnnually) {
+      formData.subscription_fee = this.subscriptionPriceAnnually*12 || 0;
+    } else {
+      formData.subscription_fee = this.subscriptionPriceMonthly || 0;
+    }
+
+    // Add hardware total
+    if (this.selectPhone || this.selectTerminal) {
+      formData.hardware_total = this.hardware_TotalFor_Singlecoation || 0;
+    } else {
+      formData.hardware_total = 0;
+    }
+
+    if(this.whichPackageToShow=='No Vendor Promo'){
+      console.log('No Vendor Promo selected');
+      console.log(this.selectedPackageName, 'selectedPackageName');
+      console.log(this.pozativeSelectedChange, 'ifPackageisAditCore');
+      console.log(this.ifPackageAditLite, 'ifPackageAditLite');
+    }
+  
+      // For single location, create a simpler hardware inventory object
+      if (this.selectPhone || this.selectTerminal) {
+        formData.hardware_inventory = this.getLocationHardwarePayload(0);
+        console.log(formData.hardware_inventory.package_type, 'hardware_inventory');
+      }
+    
+  // For single location, create a simple priceAddons entry
+  if (this.multiple_location === 'no') {
+    const locationName = this.locations.at(0)?.get('location_name')?.value || 'Location 1';
+    
+    formData.priceAddons = formData.priceAddons || {};
+    formData.priceAddons[locationName] = {
+      phone_show: this.addOnPhone ? 'Yes' : 'No',
+      phone_orginal_price: this.add_on_phones || '',
+      phone_discnt_price: this.add_on_phones || '',
+      analytics_show: this.addOnAnalytic ? 'Yes' : 'No',
+      analytics_orginal_price: this.add_on_analytic || '',
+      analytics_discnt_price: this.add_on_analytic || '',
+      verification_show: this.addOnVerification ? 'Yes' : 'No',
+      verification_orginal_price: this.add_on_verification || '',
+      verification_discnt_price: this.add_on_verification || '',
+      allow_adit_core_only: this.ifPackageisAditCore ? 1 : 0
+    };
+  }
+
+
+    // Add shipping address data based on multiple location setting
+      if(this.selectedPackageName){
+        formData.selectedPackageName = this.selectedPackageName;
+      } 
+      formData.shipping_address_is_same_or_not = this.sameAsPracticeAddress;
+      if(this.shippingAddressForm.valid){
+        formData.shipping_addresses = this.shippingAddressForm.value;
+      }
+      if(this.selectTerminal!=null){
+        formData.selectTerminal = this.selectTerminal;
+      }
+      if(this.selectPhone!=null){
+        formData.selectPhone = this.selectPhone;
+      }
+      if(this.practiceData.valid){
+        formData.practice_data = this.practiceData.value;
+      }else{
+        if(this.practiceDataArray.length>0){
+           formData.practice_data = {'locations': this.practiceDataArray};
+        }else{
+          formData.practice_data = {'locations':[{}]}
+        }
+      }
+
+    if(this.signature_url){
+      formData.signature_url = this.signature_url;
+    }else if(this.signaturePad){
+      if(!this.signaturePad.isEmpty()) {
+      formData.signature_url = this.signaturePad.toDataURL(); // Get base64 image
+      }
+      } else {
+        console.warn('No signature to save!');
+      }
+    
+    if(this.signature_name){
+      formData.signatory_name = this.signature_name;
+    }
+    formData.finalSubmission=true
+    console.log(formData);
+    this.agreementService.add_practice_data(formData, this.agreementId).subscribe({
+      next: (res) => {
+        console.log(res);
+    
+      if (res.missingFields && Array.isArray(res.missingFields)) {
+        alert('Missing required fields:\n' + res.missingFields.join('\n'));
+      } else if (res.message =="Practice data and hardware orders added successfully") {
+        alert(res.message);
+         let dialog =  this.dialog.open(CardDetailsComponent, {
+          data:{locationId:this.locationId[0],agreementId:this.agreementId},
+          maxWidth:'80vw',
+          minWidth:'400px',
+        });
+
+        dialog.afterClosed().subscribe(result => {
+          console.log(result)
+        });
+      } else {
+         let dialog =  this.dialog.open(CardDetailsComponent, {
+          data:{locationId:this.locationId[0],agreementId:this.agreementId},
+          maxWidth:'80vw',
+          minWidth:'400px',
+        });
+
+        dialog.afterClosed().subscribe(result => {
+          console.log(result)
+        });
+      }
+      },
+      error: (err) => {
+      console.log(err);
+   
+    }
+    });
+
 }
 
 getLocationHardwarePayload(locationIndex: number): any {
@@ -1711,7 +2168,20 @@ getLocationHardwarePayload(locationIndex: number): any {
 
 returnPackageName(packageName:string) {
  if(packageName === 'Adit Core') {
-      return 'Adit Core';
+ let packageNames = 'Core';
+
+const addOns: string[] = [];
+
+if (this.addOnPhone) addOns.push('Phones');
+if (this.addOnVerification) addOns.push('Verifications');
+if (this.addOnAnalytic) addOns.push('Analytics');
+
+if (addOns.length > 0) {
+  packageNames += ' + ' + addOns.join(' + ');
+}
+
+return packageNames;
+
     }else if(packageName === 'tech') {
       return 'Tech Bundle';
     }else if(packageName === 'analytic') {
@@ -1726,4 +2196,52 @@ returnPackageName(packageName:string) {
       return packageName;
     }
 }
+
+getLocation(index: number): FormGroup {
+  return this.locations.at(index) as FormGroup;
+}
+
+validatePostalCode(index: number): void {
+  const group = this.getLocation(index);
+  const country = group.get('practice_country')?.value;
+  const zipControl = group.get('practice_postal_zip_code');
+  const zip = zipControl?.value;
+
+  let valid = true;
+
+  if (country === 'UnitedStates') {
+    valid = /^\d{5}(-\d{4})?$/.test(zip);
+  } else if (country === 'Canada') {
+    valid = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/.test(zip);
+  }
+
+  if (!valid) {
+    zipControl?.setErrors({ invalidZip: true });
+  } else {
+    zipControl?.setErrors(null);
+  }
+}
+validatePostalCodeInSipping() {
+  const zipControl = this.shippingAddressForm.get('postalCode');
+  const country = this.shippingAddressForm.get('country')?.value;
+  const zip = zipControl?.value;
+
+  let valid = true;
+
+  if (country === 'UnitedStates') {
+    const usZipRegex = /^\d{5}(-\d{4})?$/;
+    valid = usZipRegex.test(zip);
+  } else if (country === 'Canada') {
+    const caZipRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
+    valid = caZipRegex.test(zip);
+  }
+
+  if (!valid) {
+    zipControl?.setErrors({ invalidZip: true });
+  } else {
+    zipControl?.setErrors(null);
+  }
+}
+
+
 }

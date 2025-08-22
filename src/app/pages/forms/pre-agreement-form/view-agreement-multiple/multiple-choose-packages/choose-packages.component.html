@@ -106,7 +106,7 @@
         <!-- <h2>Please add-on at least one of the following packages:</h2> -->
         <div class="package">
           @if(pricingArray.add_on_phones!=null){
-            <div class="phone-package" [class.selected]="!selectAddonPhone"  (click)="handlePhoneAddOnClick(pricingArray.add_on_phones)">
+            <div class="phone-package" [class.selected]="!phoneSelected"  (click)="handlePhoneAddOnClick(pricingArray.add_on_phones)">
               <div class="heading">
                 <h2>
                   <mat-icon> settings_phone </mat-icon>
@@ -135,7 +135,7 @@
             </div>
           }
           @if(pricingArray.add_on_analytic){
-            <div class="analytic-pacakge" [class.selected]="!selectAddonAnalytics" (click)="handleAnalyticsAddOnClick(pricingArray.add_on_analytic)">
+            <div class="analytic-pacakge" [class.selected]="!analyticsSelected" (click)="handleAnalyticsAddOnClick(pricingArray.add_on_analytic)">
               <div class="heading">
                 <h2>
                   <mat-icon> analytics </mat-icon>
@@ -167,7 +167,7 @@
             </div>
           }
           @if(pricingArray.add_on_verification){
-            <div class="verification-package" [class.selected]="!selectAddonVerification" (click)="handleVerificationAddOnClick(pricingArray.add_on_verification)">
+            <div class="verification-package" [class.selected]="!verificationSelected" (click)="handleVerificationAddOnClick(pricingArray.add_on_verification)">
               <div class="heading">
                 <h2>
                   <mat-icon> price_check </mat-icon>
@@ -480,7 +480,7 @@
     <h2>Please add-on at least one of the following packages:</h2>
     <div class="package">
       @if(pricingArray.add_on_phones){
-        <div class="phone-package" [class.selected]="!phoneSelect" (click)="phoneAddOnPriceAddNoVendor(pricingArray.add_on_phones)">
+        <div class="phone-package" [class.selected]="!phoneSelected" (click)="phoneAddOnPriceAddNoVendor(pricingArray.add_on_phones)">
           <div class="heading">
             <h2>
               <mat-icon> settings_phone </mat-icon>
@@ -504,7 +504,7 @@
         </div>
       }
      @if(pricingArray.add_on_analytic){
-      <div class="analytic-pacakge" [class.selected]="!analyticSelect" (click)="analyticAddOnPriceAddNoVendor(pricingArray.add_on_analytic)">
+      <div class="analytic-pacakge" [class.selected]="!analyticsSelected" (click)="analyticAddOnPriceAddNoVendor(pricingArray.add_on_analytic)">
         <div class="heading">
           <h2>
             <mat-icon> analytics </mat-icon>
@@ -537,7 +537,7 @@
      }
      
       @if(pricingArray.add_on_verification!=0){
-        <div class="verification-package" [class.selected]="!verificationSelect" (click)="verificationAddOnPriceAddNoVendor(pricingArray.add_on_verification)">
+        <div class="verification-package" [class.selected]="!verificationSelected" (click)="verificationAddOnPriceAddNoVendor(pricingArray.add_on_verification)">
           <div class="heading">
             <h2>
               <mat-icon> price_check </mat-icon>

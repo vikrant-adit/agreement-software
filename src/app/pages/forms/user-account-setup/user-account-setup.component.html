@@ -1,0 +1,102 @@
+<div class="user-account-setup-container">
+  <div class="header">
+    <img src="https://demo.enfolytics.com/assets/images/adit-logo.png" alt="Company Logo" class="logo">
+  </div>
+  <div class="content">
+    <div class="status-section">
+      <div class="checkmark">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="55" fill="none" stroke="#2DE1A6" stroke-width="8"/>
+          <polyline points="40,65 55,80 85,45" fill="none" stroke="#2DE1A6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1>Your Account is Ready!</h1>
+      <p class="subtitle">Let’s Get Your User Account Set Up</p>
+    </div>
+    <div class="form-card">
+      <h2>Create Your First User</h2>
+      <!-- Add this above your form -->
+       @if(loading){
+    <div class="loading-spinner">
+        <!-- You can add a spinner or any loading indicator here -->
+        <mat-spinner></mat-spinner>
+      </div>
+       }
+    
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name*</label>
+            <input type="text" formControlName="firstName" />
+            @if(f['firstName'].touched && f['firstName'].invalid) {
+              <div class="error">First Name is required</div>
+            }
+          </div>
+          <div class="form-group">
+            <label>Last Name*</label>
+            <input type="text" formControlName="lastName" />
+            @if(f['lastName'].touched && f['lastName'].invalid) {
+              <div class="error">Last Name is required</div>
+            }
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Username*</label>
+            <input type="text" formControlName="username" />
+            @if(f['username'].touched && f['username'].invalid) {
+              <div class="error">Username is required</div>
+            }
+          </div>
+          <div class="form-group">
+            <label>Email*</label>
+            <input type="email" formControlName="email" />
+            @if(f['email'].touched && f['email'].errors?.['required']) {
+              <div class="error">Email is required</div>
+            }
+            @if(f['email'].touched && f['email'].errors?.['email']) {
+              <div class="error">Invalid email</div>
+            }
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group password-group">
+            <label>Password*</label>
+            <div class="password-input">
+              <input [type]="hidePassword ? 'password' : 'text'" formControlName="password" />
+              <mat-icon class="eye-icon" (click)="hidePassword = !hidePassword">
+                {{ hidePassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </div>
+            @if(f['password'].touched && f['password'].errors?.['required']) {
+              <div class="error">Password is required</div>
+            }
+            @if(f['password'].touched && f['password'].errors?.['minlength']) {
+              <div class="error">Min 6 characters</div>
+            }
+          </div>
+          <div class="form-group password-group">
+            <label>Confirm Password*</label>
+            <div class="password-input">
+              <input [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" />
+              <mat-icon class="eye-icon" (click)="hideConfirmPassword = !hideConfirmPassword">
+                {{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </div>
+            @if(f['confirmPassword'].touched && f['confirmPassword'].errors?.['required']) {
+              <div class="error">Confirm Password is required</div>
+            }
+            @if(userForm.errors?.['passwordMismatch'] && f['confirmPassword'].touched) {
+              <div class="error">Passwords do not match</div>
+            }
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="login-btn" >Login to Adit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+

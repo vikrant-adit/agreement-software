@@ -103,12 +103,12 @@ export class DashboardComponent {
     { id: 'created_at', name: 'Date Requested', selected: true },
     { id: 'sales_person_account_name', name: 'Sales Person Account Name', selected: true },
     { id: 'sales_person_name', name: 'Sales Person Name', selected: true },
-    {id:'newOrExistingClient',name:'Customer Type',selected:true},
+    {id:'newOrExistingClient',name:'Sales Person Client',selected:true},
     { id: 'multipleLocations', name: 'Multi Location', selected: true },
     { id: 'display_pricing', name: 'Display Pricing', selected: true },
     { id: 'display_techstack', name: 'Display Tech Stack', selected: true },
     { id: 'sales_person_promotion_type', name: 'Sales Person Promotion Type', selected: true },
-    { id: 'sales_person_client', name: 'Sales Person Client', selected: true },
+    { id: 'sales_person_client', name: 'Sales Person Client', selected: false },
     { id: 'sales_person_email', name: 'Sales Person Email', selected: true },
     { id: 'user_type', name: 'User Type', selected: true },
     { id: 'activation_fee', name: 'Activation Fee', selected: true },
@@ -336,11 +336,21 @@ export class DashboardComponent {
   editAgreement(agreementId:any){
       this.route.navigate(['/pre-agreement-form',agreementId]);
   }
-  viewAgreement(agreementId:any,multipleOrNot:any){
+  viewAgreement(agreementId:any,multipleOrNot:any,status:any){
     if(multipleOrNot=='yes'){
-      this.route.navigate(['/view-agreements',agreementId]);
+       if(status=='Completed'){
+          this.route.navigate(['/agreement/',agreementId]);
+      }else{
+      this.route.navigate(['/view-agreements/',agreementId]);
+
+      }
     }else{
-      this.route.navigate(['/view-agreement',agreementId]);
+      if(status=='Completed'){
+          this.route.navigate(['/agreement/',agreementId]);
+      }else{
+      this.route.navigate(['/view-agreement/',agreementId]);
+
+      }
     }
 
   }

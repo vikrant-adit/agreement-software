@@ -20,6 +20,11 @@ import { ViewAgreementComponent } from './pages/forms/pre-agreement-form/view-ag
 import { ViewAgreementMultipleComponent } from './pages/forms/pre-agreement-form/view-agreement-multiple/view-agreement-multiple.component';
 import { PreAgreementTestComponent } from './pages/forms/pre-agreement-test/pre-agreement-test.component';
 import { YourOrderComponent } from './pages/forms/your-order/your-order.component';
+import { PracticeFormComponent } from './pages/forms/pre-agreement-form/view-agreement-multiple/view-agreement';
+import { ExpiredPageComponent } from './pages/forms/pre-agreement-form/expired-page/expired-page.component';
+import { PaymentThankYouComponent } from './pages/forms/payment-thank-you/payment-thank-you.component';
+import { UserAccountSetupComponent } from './pages/forms/user-account-setup/user-account-setup.component';
+import { PdfViewerComponent } from './pages/forms/your-order/pdf-viewer.component';
 export const routes: Routes = [
   {
     path: '',
@@ -82,18 +87,43 @@ export const routes: Routes = [
      canActivate:[AuthGuard],
      data: { permission: 'add_agreements' }
   },
-  //  {
-  //   path:'pre-agreement-form',
-  //   component:PreAgreementTestComponent,
-  //    canActivate:[AuthGuard],
-  //    data: { permission: 'add_agreements' }
-  // },
+   {
+    path:'pdf/:agreementId',
+    component:PdfViewerComponent,
+     canActivate:[AuthGuard],
+     data: { permission: 'add_agreements' }
+
+  },
   // {
   //   path:'pre-agreement-form/:id',
   //   component:PreAgreementTestComponent,
   //    canActivate:[AuthGuard],
   //    data: { permission: 'add_agreements' }
   // },
+   {
+    path:'viewTest',
+    component:PracticeFormComponent,
+    //  canActivate:[AuthGuard],
+    //  data: { permission: 'add_agreements' }
+  },
+   {
+    path:'user-account-setup/:agreementId',
+    component:UserAccountSetupComponent,
+    //  canActivate:[AuthGuard],
+    //  data: { permission: 'add_agreements' }
+  },
+    {
+    path:'payment-thank-you/:agreementId',
+    component:PaymentThankYouComponent,
+    //  canActivate:[AuthGuard],
+    //  data: { permission: 'add_agreements' }
+  },
+  {
+    path:'expired/:agreementId',
+    component:ExpiredPageComponent,
+    //  canActivate:[AuthGuard],
+    //  data: { permission: 'add_agreements' }
+  },
   {
     path:'view-agreement/:agreementId',
     component:ViewAgreementComponent,

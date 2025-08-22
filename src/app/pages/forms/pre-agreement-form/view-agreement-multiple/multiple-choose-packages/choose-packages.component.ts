@@ -56,16 +56,16 @@ export class ChoosePackagesComponent implements OnInit {
   @Output() selectedVerification_nvp = new EventEmitter<any>();
 
   toggleanalyticsSelection(): void {
-    this.analyticSelect = !this.analyticSelect;
-    this.analyticsSelectedChange.emit(this.analyticSelect); // Emit the updated value
+    this.analyticsSelected = !this.analyticsSelected;
+    this.analyticsSelectedChange.emit(this.analyticsSelected); // Emit the updated value
   }
   toggleverificationSelection(): void {
-    this.verificationSelect = !this.verificationSelect;
-    this.verificationSelectedChange.emit(this.verificationSelect); // Emit the updated value
+    this.verificationSelected = !this.verificationSelected;
+    this.verificationSelectedChange.emit(this.verificationSelected); // Emit the updated value
   }
   togglePhoneSelection(): void {
-    this.phoneSelect = !this.phoneSelect;
-    this.phoneSelectedChange.emit(this.phoneSelect); // Emit the updated value
+    this.phoneSelected = !this.phoneSelected;
+    this.phoneSelectedChange.emit(this.phoneSelected); // Emit the updated value
   }
 
   packagesArray: any = {
@@ -102,9 +102,9 @@ export class ChoosePackagesComponent implements OnInit {
   @Input() multiple_location = '';
   @Input() pricingArray: any;
   @Input() annulaOrMonth!: boolean;
-  // @Input() phoneSelect: boolean = false;
-  // @Input() verificationSelect: boolean = false;
-  // @Input() analyticSelect: boolean = false;
+  @Input() phoneSelected: boolean = false;
+  @Input() verificationSelected: boolean = false;
+  @Input() analyticsSelected: boolean = false;
 
   @Input() phoneSelect: boolean = false;
   @Input() verificationSelect: boolean = false;
@@ -150,24 +150,7 @@ export class ChoosePackagesComponent implements OnInit {
 
     // For debugging
     // console.log('prizing on init:', this.pricingArray);
-  if (this.multiple_location == 'yes') {
-      this.techSelected = true;
-      this.analyticSelected = true;
-      this.aditLiteSelected = true;
-      this.phoneSelect = true;
-      // this.verificationSelect = true;
-      this.analyticSelect = true;
-      // this.pozativeSelected=true
-      //  console.log('Yess multiple location')
-    } else {
-      this.pozativeSelected = false;
-      this.aditCoreSelected = false;
-      this.verificationsSelected = false;
-      this.selectAddonPhone=this.phoneSelect;
-      this.selectAddonAnalytics=this.analyticSelect;
-      this.selectAddonVerification=this.verificationSelect;
 
-    }
     setTimeout(() => {
       this.promotionDateSelected = true;
     }, 100);
@@ -211,18 +194,34 @@ export class ChoosePackagesComponent implements OnInit {
       } else if(this.item == 'Pozative'){
         console.log('Pozative selected')
       this.aditCoreSelected = false;
-      this.phoneSelect = false;
-      this.verificationSelect = false;
-      this.analyticSelect = false;
+      this.phoneSelected = false;
+      this.verificationSelected = false;
+      this.analyticsSelected = false;
       this.pozativeSelected = true;
       this.verificationsSelected = false;
+
       }
     } else {
       alert('Package not found');
     }
     
-  
-    
+    if (this.multiple_location == 'yes') {
+      this.techSelected = true;
+      this.analyticSelected = true;
+      this.aditLiteSelected = true;
+      this.phoneSelected = true;
+      // this.verificationSelected = true;
+      this.analyticsSelected = true;
+      // this.pozativeSelected=true
+      //  console.log('Yess multiple location')
+    } else {
+      this.pozativeSelected = false;
+      this.aditCoreSelected = false;
+      this.verificationsSelected = false;
+    }
+    this.selectAddonPhone=this.phoneSelect
+    this.selectAddonAnalytics=this.analyticSelect;
+    this.selectAddonVerification=this.verificationSelect
   }
   @Output() packageSelectedChange = new EventEmitter<string>();
 
@@ -332,7 +331,6 @@ export class ChoosePackagesComponent implements OnInit {
     } else {
       if (this.techSelected) {
         this.newPackageTotalAnnualy = totaltechAnnually;
-         
         this.totalAnnually.emit(this.newPackageTotalAnnualy);
         this.newPackageTotalMonthly = totaltechMonthly;
         this.totalMonthly.emit(this.newPackageTotalMonthly);
@@ -355,89 +353,69 @@ export class ChoosePackagesComponent implements OnInit {
         this.totalAnnually.emit(0);
         this.newPackageTotalMonthly = 0;
         this.totalMonthly.emit(0);
-         
       }
     }
   }
 
   getPricingOverallForOtherPacakge() {
     const keysWithValues = Object.keys(this.pricingArray)
-    .filter((key) => this.pricingArray[key] !== null)
-    .map((key) => ({ key, value: this.pricingArray[key] }));
+      .filter((key) => this.pricingArray[key] !== null) // Filter keys with non-null values
+      .map((key) => ({ key, value: this.pricingArray[key] })); // Map to an array of objects with key and value
+    let totalAnnually = 0;
+    let totalMonthly = 0;
 
-  let totalAnnually = 0;
-  let totalMonthly = 0;
-
-  keysWithValues.forEach((item) => {
-    const numericValue = parseFloat(item.value);
-    if (isNaN(numericValue)) return;
-
-    // Skip these keys
-    if (
-      item.key == 'hardwareCreditAnnually' ||
-      item.key == 'hardwareCreditMonthly' ||
-      item.key == 'aditLiteMontly' ||
-      item.key == 'aditLiteAnnual'
-    ) {
-      return;
-    }
-
-    // Conditionally add add-on prices
-    if (item.key === 'add_on_phones') {
-      if (this.selectAddonPhone) {
-        totalAnnually += numericValue;
-        totalMonthly += numericValue;
+    // Calculate totals
+    keysWithValues.forEach((item) => {
+      const numericValue = parseFloat(item.value); // Convert value to a number
+      // console.log('item',item)
+      if (isNaN(numericValue)) return; // Skip invalid values
+      if (
+        item.key == 'hardwareCreditAnnually' ||
+        item.key == 'hardwareCreditMonthly' ||
+        item.key == 'aditLiteMontly' ||
+        item.key == 'aditLiteAnnual'
+      ) {
+        return;
       }
-      return;
-    }
-    if (item.key === 'add_on_analytic') {
-      if (this.selectAddonAnalytics) {
+      if (item.key.includes('annually') || item.key.includes('Annual_Disc')) {
+        // Add to totalAnnually if the key contains "annually"
         totalAnnually += numericValue;
+        // console.log('totalAnnually',totalAnnually,item)
+      } else if (
+        item.key.includes('monthly') ||
+        item.key.includes('Montly_Disc')
+      ) {
+        // Add to totalMonthly if the key contains "monthly"
         totalMonthly += numericValue;
+        // console.log('totalMonthly',totalMonthly,item)
+      } else {
+        // Add to both totals for keys that don't contain "monthly" or "annually"
+        // if (this.multiple_location != 'no') {
+        //   totalAnnually += numericValue;
+        //   totalMonthly += numericValue;
+        // }
       }
-      return;
-    }
-    if (item.key === 'add_on_verification') {
-      if (this.selectAddonVerification) {
-        totalAnnually += numericValue;
-        totalMonthly += numericValue;
-      }
-      return;
-    }
-
-    // Regular keys
-    if (item.key.includes('annually') || item.key.includes('Annual_Disc')) {
-      totalAnnually += numericValue;
-    } else if (item.key.includes('monthly') || item.key.includes('Montly_Disc')) {
-      totalMonthly += numericValue;
-    } else {
-      totalAnnually += numericValue;
-      totalMonthly += numericValue;
-    }
-  });
-
-  this.newPackageTotalAnnualy = totalAnnually;
-  this.totalAnnually.emit(this.newPackageTotalAnnualy);
-  this.newPackageTotalMonthly = totalMonthly;
-  this.totalMonthly.emit(this.newPackageTotalMonthly);
+    });
+    this.newPackageTotalAnnualy = totalAnnually;
+    this.totalAnnually.emit(this.newPackageTotalAnnualy);
+    console.log('totalAnnually', this.newPackageTotalAnnualy);
+    this.newPackageTotalMonthly = totalMonthly;
+    this.totalMonthly.emit(this.newPackageTotalMonthly);
   }
 
   phoneAddOnPriceAdd(price: any) {
     this.selectAddonPhone = !this.selectAddonPhone;
-     
-    this.phoneSelect = !this.phoneSelect;
+    this.phoneSelected = !this.phoneSelected;
     if (!this.selectAddonPhone) {
       this.newPackageTotalAnnualy =
         this.newPackageTotalAnnualy - parseInt(price);
       this.newPackageTotalMonthly =
         this.newPackageTotalMonthly - parseInt(price);
-         
     } else {
       this.newPackageTotalAnnualy =
         parseInt(price) + this.newPackageTotalAnnualy;
       this.newPackageTotalMonthly =
         parseInt(price) + this.newPackageTotalMonthly;
-         
     }
     // this.getPricingOverallForOtherPacakge()
 
@@ -447,7 +425,7 @@ export class ChoosePackagesComponent implements OnInit {
   }
   analyticAddOnPriceAdd(price: any) {
     this.selectAddonAnalytics = !this.selectAddonAnalytics;
-    this.analyticSelect = !this.analyticSelect;
+    this.analyticsSelected = !this.analyticsSelected;
     if (!this.selectAddonAnalytics) {
       this.newPackageTotalAnnualy =
         this.newPackageTotalAnnualy - parseInt(price);
@@ -464,7 +442,7 @@ export class ChoosePackagesComponent implements OnInit {
     console.log(
       'totalAnnually add on anayltic',
       this.newPackageTotalAnnualy,
-      this.selectAddonAnalytics
+      this.selectAddonPhone
     );
 
     this.totalMonthly.emit(this.newPackageTotalMonthly);
@@ -472,7 +450,7 @@ export class ChoosePackagesComponent implements OnInit {
   }
   verificationAddOnPriceAdd(price: any) {
     this.selectAddonVerification = !this.selectAddonVerification;
-    this.verificationSelect = !this.verificationSelect;
+    this.verificationSelected = !this.verificationSelected;
     if (!this.selectAddonVerification) {
       this.newPackageTotalAnnualy =
         this.newPackageTotalAnnualy - parseInt(price);
@@ -501,9 +479,9 @@ export class ChoosePackagesComponent implements OnInit {
     if (pacakgeName == 'aditCore') {
           this.packageSelectedChange.emit(pacakgeName); // <-- Emit to parent
 
-      this.phoneSelect = true;
-      this.verificationSelect = true;
-      this.analyticSelect = true;
+      this.phoneSelected = true;
+      this.verificationSelected = true;
+      this.analyticsSelected = true;
       this.aditCoreSelected = true;
       this.pozativeSelected = false;
       this.verificationsSelected = false;
@@ -527,9 +505,9 @@ export class ChoosePackagesComponent implements OnInit {
         this.packageSelectedChange.emit(pacakgeName); // <-- Emit to parent
 
       this.aditCoreSelected = false;
-      this.phoneSelect = false;
-      this.verificationSelect = false;
-      this.analyticSelect = false;
+      this.phoneSelected = false;
+      this.verificationSelected = false;
+      this.analyticsSelected = false;
       this.pozativeSelected = true;
       this.verificationsSelected = false;
       this.verificationsNVPSelectedChange.emit(false);
@@ -549,10 +527,10 @@ export class ChoosePackagesComponent implements OnInit {
       this.aditCoreSelected = false;
      this.pozativeSelected = false;
       this.verificationsSelected = true;
-      this.phoneSelect = false;
+      this.phoneSelected = false;
 
-      this.verificationSelect = false;
-      this.analyticSelect = false;
+      this.verificationSelected = false;
+      this.analyticsSelected = false;
       this.verificationsNVPSelectedChange.emit(true);
       this.pozativeSelectedChange.emit(false);
       this.newPackageTotalMonthlyForNoVendorPromo = parseInt(
@@ -569,8 +547,8 @@ export class ChoosePackagesComponent implements OnInit {
   }
 
   phoneAddOnPriceAddNoVendor(price: any) {
-    this.phoneSelect = !this.phoneSelect;
-    if (!this.phoneSelect) {
+    this.phoneSelected = !this.phoneSelected;
+    if (!this.phoneSelected) {
       this.newPackageTotalAnnuallyForNoVendorPromo =
         this.newPackageTotalAnnuallyForNoVendorPromo - parseInt(price);
       this.newPackageTotalMonthlyForNoVendorPromo =
@@ -584,15 +562,15 @@ export class ChoosePackagesComponent implements OnInit {
     this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
     this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
     let valueNeedTobeSend = {
-      selected: this.phoneSelect,
+      selected: this.phoneSelected,
       price: price,
     };
     this.selectedPhone_nvp.emit(valueNeedTobeSend);
     // console.log('totalAnnually',this.newPackageTotalAnnuallyForNoVendorPromo,this.selectAddonPhone)
   }
   analyticAddOnPriceAddNoVendor(price: any) {
-    this.analyticSelect = !this.analyticSelect;
-    if (!this.analyticSelect) {
+    this.analyticsSelected = !this.analyticsSelected;
+    if (!this.analyticsSelected) {
       this.newPackageTotalAnnuallyForNoVendorPromo =
         this.newPackageTotalAnnuallyForNoVendorPromo - parseInt(price);
       this.newPackageTotalMonthlyForNoVendorPromo =
@@ -606,14 +584,14 @@ export class ChoosePackagesComponent implements OnInit {
      this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
     this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
     let valueNeedTobeSend = {
-      selected: this.analyticSelect,
+      selected: this.analyticsSelected,
       price: price,
     };
     this.selectedAnalytics_nvp.emit(valueNeedTobeSend);
   }
   verificationAddOnPriceAddNoVendor(price: any) {
-    this.verificationSelect = !this.verificationSelect;
-    if (!this.verificationSelect) {
+    this.verificationSelected = !this.verificationSelected;
+    if (!this.verificationSelected) {
       this.newPackageTotalAnnuallyForNoVendorPromo =
         this.newPackageTotalAnnuallyForNoVendorPromo - parseInt(price);
       this.newPackageTotalMonthlyForNoVendorPromo =
@@ -628,7 +606,7 @@ export class ChoosePackagesComponent implements OnInit {
     this.totalAnnually.emit(this.newPackageTotalAnnuallyForNoVendorPromo)
     this.totalMonthly.emit(this.newPackageTotalMonthlyForNoVendorPromo)
     let valueNeedTobeSend = {
-      selected: this.verificationSelect,
+      selected: this.verificationSelected,
       price: price,
     };
     console.log(

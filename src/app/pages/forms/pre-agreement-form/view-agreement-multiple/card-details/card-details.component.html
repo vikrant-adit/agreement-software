@@ -111,7 +111,7 @@
     <select formControlName="country">
       <option value="United States">United States</option>
       <option value="Canada">Canada</option>
-      <option value="UK">UK</option>
+      <!-- <option value="UK">UK</option> -->
     </select>
     @if (paymentForm.get('country')?.invalid && (paymentForm.get('country')?.dirty || paymentForm.get('country')?.touched)) {
       <div class="error-message">

@@ -10,10 +10,10 @@
             <mat-label>Practice Industry</mat-label>
             <mat-select formControlName="practiceIndustry">
               
-              <mat-option value="dental" (click)="dental_or_optometry='dental'">Dental</mat-option>
-              <mat-option value="optometry" (click)="dental_or_optometry='optometry'">Optometry</mat-option>
-              <mat-option value="orthodontic" (click)="dental_or_optometry='orthodontic'">Orthodontic</mat-option>
-              <mat-option value="chiropractic" (click)="dental_or_optometry='chiropractic'">Chiropractic</mat-option>
+              <mat-option value="Dental" (click)="dental_or_optometry='Dental'">Dental</mat-option>
+              <mat-option value="Optometry" (click)="dental_or_optometry='Optometry'">Optometry</mat-option>
+              <mat-option value="Orthodontic" (click)="dental_or_optometry='Orthodontic'">Orthodontic</mat-option>
+              <mat-option value="Chiropractic" (click)="dental_or_optometry='Chiropractic'">Chiropractic</mat-option>
            
             </mat-select>
           </mat-form-field>
@@ -133,11 +133,11 @@
             <mat-label>Select PMS</mat-label>
             <mat-select formControlName="practice_ehr">
              @if(dental_or_optometry!=''){
-              @if(dental_or_optometry=='optometry'){
+              @if(dental_or_optometry=='Optometry'){
                 <mat-option value="CrystalPM">CrystalPM</mat-option>
                 <mat-option value="OfficeMate">OfficeMate</mat-option>
                 <mat-option value="RevolutionEHR">RevolutionEHR</mat-option>
-              }@else if(dental_or_optometry=='dental') {
+              }@else if(dental_or_optometry=='Dental') {
                 <mat-option value="AbelDent">AbelDent</mat-option>
                 <mat-option value="ClearDent">ClearDent</mat-option>
                 <mat-option value="Curve">Curve</mat-option>
@@ -150,9 +150,9 @@
                 <mat-option value="PracticeWorks">PracticeWorks</mat-option>
                 <mat-option value="Practice Web">Practice Web</mat-option>
                 <mat-option value="Tracker">Tracker</mat-option>
-              }@else if(dental_or_optometry=='chiropractic') {
+              }@else if(dental_or_optometry=='Chiropractic') {
                 <mat-option value="chiroTouch">ChiroTouch</mat-option>
-              }@else if(dental_or_optometry=='orthodontic') {
+              }@else if(dental_or_optometry=='Orthodontic') {
                 <mat-option value="cloud9">Cloud9</mat-option>
                 <mat-option value="dolphin">Dolphin</mat-option>
                 <mat-option value="ortho2Edge">Ortho2Edge</mat-option>
@@ -195,7 +195,7 @@
                   <mat-label>Promotion Type</mat-label>
                   <mat-select formControlName="sales_person_promotion_type" (selectionChange)="onPromotionChange()">
             
-                   @if(preAgreementForm.get('practiceIndustry')?.value=='dental' || preAgreementForm.get('practiceIndustry')?.value==''){
+                   @if(preAgreementForm.get('practiceIndustry')?.value=='Dental' || preAgreementForm.get('practiceIndustry')?.value==''){
                     <mat-option value="Smile Source">Smile Source</mat-option>
                     <mat-option value="TruBlu">TruBlu</mat-option>
                     <mat-option value="DDSOM">DDSOM</mat-option>
@@ -217,7 +217,7 @@
                       <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
                     }
                     <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
-                   }@else if(preAgreementForm.get('practiceIndustry')?.value=='optometry'){
+                   }@else if(preAgreementForm.get('practiceIndustry')?.value=='Optometry'){
                     <mat-option value="Custom">Custom</mat-option>
                     <mat-option value="Event">Event</mat-option>
                     <mat-option value="Outbound AE">Outbound AE</mat-option>
@@ -235,13 +235,13 @@
                       <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
                     }
                     <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
-                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='orthodontic'){
+                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='Orthodontic'){
                     <mat-option value="Custom">Custom</mat-option>
                     <mat-option value="Event">Event</mat-option>
                     <mat-option value="Admin">Admin</mat-option>
                     <mat-option value="Inbound Core">Inbound Core</mat-option>
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
-                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='chiropractic'){
+                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='Chiropractic'){
                        <mat-option value="Custom">Custom</mat-option>
                     <mat-option value="Event">Event</mat-option>
                     <mat-option value="Admin">Admin</mat-option>
@@ -250,7 +250,7 @@
                      @if(preAgreementForm.get('currency')?.value=='USD'){
                       <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
                       <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
-                    }
+                    } 
                   }
                   </mat-select>
                 </mat-form-field>
@@ -281,7 +281,11 @@
                 }
                 
               </div>
-         
+             @if(showAllowCoreOnly){
+               <div class="allow-core">
+                <mat-checkbox (change)="toggleAllowCore()" [checked]="allowCore">Allow Core Only</mat-checkbox>
+              </div>
+             }
                @if(loading){
                 <div class="loader-overlay">
                   <div class="loader"></div>
