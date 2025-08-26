@@ -5,6 +5,19 @@
   background-color: var(--light-grey-color);
   padding: 16px 20px;
 
+  .white-formfield {
+    ::ng-deep {
+      .mdc-text-field {
+        padding: 0 8px;
+      }
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    padding: 12px 8px;
+    flex-direction: column;
+  }
+
   h2 {
     color: var(--secondary-color);
     margin: 0;
@@ -21,12 +34,30 @@
       margin-left: 12px;
       cursor: pointer;
     }
+
+    @media (max-width: 767.98px) {
+      margin-top: 12px;
+      width: 100%;
+
+      .rolename-field {
+        width: calc(100% - 100px);
+      }
+
+      .addrole-btn {
+        width: 100px;
+        margin-right: 0;
+      }
+    }
   }
 }
 
 
 .roletable-block {
   padding: 20px;
+
+  @media (max-width: 767.98px) {
+    padding: 16px 8px;
+  }
 }
 
 .table-container {
@@ -36,6 +67,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
+    white-space: nowrap;
   }
 
   th {
@@ -72,6 +104,12 @@
       button:last-child {
         margin-right: 0;
       }
+    }
+
+    input {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #afadad;
     }
   }
 }

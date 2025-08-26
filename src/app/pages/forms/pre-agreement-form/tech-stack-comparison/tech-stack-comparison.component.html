@@ -1,525 +1,484 @@
-<div class="container">
-  <h1>Tell Us About Your Tech Stack</h1>
+<div class="tscomparison-block">
+  <h2>Tell Us About Your Tech Stack</h2>
 
   <mat-tab-group class="tab-group">
     <mat-tab label="Tech Stack" class="tabs">
-      <form
-        [formGroup]="techStackForm"
-        style="padding-top: 10px; padding-inline: 10px">
+      <form [formGroup]="techStackForm" class="techselecter-list">
         <div class="tech_selecter">
-          <label for="current_phone_provider" class="provider-label">
-            Current Phone Provider?</label>
-          <input
-            class="select-provider"
-            placeholder="Select"
-            type="text"
-            id="current_phone_provider"
-            formControlName="current_phone_provider"
-            (click)="
-              openSelectProvider(
-                'Current Phone Provider?',
-                'current_phone_provider'
-              )
-            "
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="current_phone_provider_price"
-            formControlName="current_phone_provider_price"
-          />
-          <span>/mo</span>
-        </div>
-
-        <div class="tech_selecter">
-          <label for="patient_texting" class="provider-label"
-            >Patient Texting?</label
-          >
-          <input
-            class="select-provider"
-            (click)="openSelectProvider('Patient Texting?', 'patient_texting')"
-            placeholder="Select"
-            type="text"
-            id="patient_texting"
-            formControlName="patient_texting"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="patient_texting_price"
-            formControlName="patient_texting_price"
-          />
-          <span>/mo</span>
-        </div>
-
-        <div class="tech_selecter">
-          <label class="provider-label" for="reminder_recall">
-            Reminder/Recall?
+          <div class="provider-label">Current Phone Provider?</div>
+          <div class="techselecterfield-right">
+            <label for="current_phone_provider" class="techstackfield-selct">
+              <input placeholder="Select" type="text" id="current_phone_provider"
+                formControlName="current_phone_provider" (click)="
+                openSelectProvider(
+                  'Current Phone Provider?',
+                  'current_phone_provider'
+                )
+              " readonly />
             </label>
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'reminder_recall')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="openSelectProvider('Reminders & Recall?', 'reminder_recall')"
-            placeholder="Select"
-            type="text"
-            id="reminder_recall"
-            formControlName="reminder_recall"
-          />
-          <span>$</span>
-          <input class="select-price" type="number" id="reminder_recall_price" formControlName="reminder_recall_price"/>
-          <span>/mo</span>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="current_phone_provider_price"
+                formControlName="current_phone_provider_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="digital_forms">Digital Forms?</label>
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'digital_forms')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="openSelectProvider('Digital Forms?', 'digital_forms')"
-            placeholder="Select"
-            type="text"
-            id="digital_forms"
-            formControlName="digital_forms"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="digital_forms_price"
-            formControlName="digital_forms_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Patient Texting?</div>
+          <div class="techselecterfield-right">
+            <label for="patient_texting" class="techstackfield-selct">
+              <input class="select-provider" (click)="openSelectProvider('Patient Texting?', 'patient_texting')"
+                placeholder="Select" type="text" id="patient_texting" formControlName="patient_texting" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="patient_texting_price"
+                formControlName="patient_texting_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label
-            class="provider-label"
-            for="treatment_presentation_payment_plans"
-            >Treatment Presentations & Payment Plans?</label
-          >
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'treatment_presentation_payment_plans')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="
-              openSelectProvider(
-                'Treatment Presentations & Payment Plans?',
-                'treatment_presentation_payment_plans'
-              )
-            "
-            placeholder="Select"
-            type="text"
-            id="treatment_presentation_payment_plans"
-            formControlName="treatment_presentation_payment_plans"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="treatment_presentation_payment_plans_price"
-            formControlName="treatment_presentation_payment_plans_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Reminder/Recall?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'reminder_recall')">Copy</button>
+            <label for="reminder_recall" class="techstackfield-selct">
+              <input class="select-provider" (click)="openSelectProvider('Reminders & Recall?', 'reminder_recall')"
+                placeholder="Select" type="text" id="reminder_recall" formControlName="reminder_recall" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="reminder_recall_price"
+                formControlName="reminder_recall_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="current_payment_provider"
-            >Current Payments Provider?</label
-          >
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'current_payment_provider')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="
-              openSelectProvider(
-                'Current Payments Provider?',
-                'current_payment_provider'
-              )
-            "
-            placeholder="Select"
-            type="text"
-            id="current_payment_provider"
-            formControlName="current_payment_provider"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="current_payment_provider_price"
-            formControlName="current_payment_provider_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Digital Forms?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'digital_forms')">Copy</button>
+            <label for="digital_forms" class="techstackfield-selct">
+              <input class="select-provider" (click)="openSelectProvider('Digital Forms?', 'digital_forms')"
+                placeholder="Select" type="text" id="digital_forms" formControlName="digital_forms" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="digital_forms_price"
+                formControlName="digital_forms_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="review">Reviews?</label>
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'review')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="openSelectProvider('Reviews?', 'review')"
-            placeholder="Select"
-            type="text"
-            id="review"
-            formControlName="review"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="review_price"
-            formControlName="review_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Treatment Presentations & Payment Plans?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'treatment_presentation_payment_plans')">Copy</button>
+            <label for="treatment_presentation_payment_plans" class="techstackfield-selct">
+              <input class="select-provider"
+                (click)="openSelectProvider('Treatment Presentations & Payment Plans?','treatment_presentation_payment_plans')"
+                placeholder="Select" type="text" id="treatment_presentation_payment_plans"
+                formControlName="treatment_presentation_payment_plans" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="treatment_presentation_payment_plans_price"
+                formControlName="treatment_presentation_payment_plans_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="online_scheduling"
-            >Online Scheduling?</label>
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'online_scheduling')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="
-              openSelectProvider('Online Scheduling?', 'online_scheduling')
-            "
-            placeholder="Select"
-            type="text"
-            id="online_scheduling"
-            formControlName="online_scheduling"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="online_scheduling_price"
-            formControlName="online_scheduling_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Current Payments Provider?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'current_payment_provider')">Copy</button>
+            <label for="current_payment_provider" class="techstackfield-selct">
+              <input class="select-provider"
+                (click)="openSelectProvider('Current Payments Provider?','current_payment_provider')"
+                placeholder="Select" type="text" id="current_payment_provider"
+                formControlName="current_payment_provider" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="current_payment_provider_price"
+                formControlName="current_payment_provider_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="mass_texting">Mass Texting?</label>
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'mass_texting')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="openSelectProvider('Mass Texting?', 'mass_texting')"
-            placeholder="Select"
-            type="text"
-            id="mass_texting"
-            formControlName="mass_texting"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="mass_texting_price"
-            formControlName="mass_texting_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Reviews?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'review')">Copy</button>
+            <label for="review" class="techstackfield-selct">
+              <input class="select-provider" (click)="openSelectProvider('Reviews?', 'review')" placeholder="Select"
+                type="text" id="review" formControlName="review" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="review_price" formControlName="review_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="mass_emailing"
-            >Mass Emailing?</label
-          >
-          <button mat-raised-button color="primary" class="copyBtn" (click)="copyValue('patient_texting', 'mass_emailing')">
-            Copy 
-          </button>
-          <input
-            class="select-provider"
-            (click)="openSelectProvider('Mass Emailing?', 'mass_emailing')"
-            placeholder="Select"
-            type="text"
-            id="mass_emailing"
-            formControlName="mass_emailing"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="mass_emailing_price"
-            formControlName="mass_emailing_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Online Scheduling?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'online_scheduling')">Copy</button>
+            <label for="online_scheduling" class="techstackfield-selct">
+              <input class="select-provider" (click)="openSelectProvider('Online Scheduling?', 'online_scheduling')"
+                placeholder="Select" type="text" id="online_scheduling" formControlName="online_scheduling" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="online_scheduling_price"
+                formControlName="online_scheduling_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="analytics_morning_huddle"
-            >Analytics & Morning Huddle?</label
-          >
-          <input
-            class="select-provider"
-            (click)="
-              openSelectProvider(
-                'Analytics & Morning Huddle?',
-                'analytics_morning_huddle'
-              )
-            "
-            placeholder="Select"
-            type="text"
-            id="analytics_morning_huddle"
-            formControlName="analytics_morning_huddle"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="analytics_morning_huddle_price"
-            formControlName="analytics_morning_huddle_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Mass Texting?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'mass_texting')">Copy</button>
+            <label for="mass_texting" class="techstackfield-selct">
+              <input class="select-provider" (click)="openSelectProvider('Mass Texting?', 'mass_texting')"
+                placeholder="Select" type="text" id="mass_texting" formControlName="mass_texting" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="mass_texting_price" formControlName="mass_texting_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
 
         <div class="tech_selecter">
-          <label class="provider-label" for="verification_provider"
-            >Verification Provider</label
-          >
-          <input
-            class="select-provider"
-            (click)="
-              openSelectProvider(
-                'Verification Provider',
-                'verification_provider'
-              )
-            "
-            placeholder="Select"
-            type="text"
-            id="verification_provider"
-            formControlName="verification_provider"
-          />
-          <span>$</span>
-          <input
-            class="select-price"
-            type="number"
-            id="verification_provider_price"
-            formControlName="verification_provider_price"
-          />
-          <span>/mo</span>
+          <div class="provider-label">Mass Emailing?</div>
+          <div class="techselecterfield-right">
+            <button mat-raised-button color="primary" class="tscopyBtn"
+              (click)="copyValue('patient_texting', 'mass_emailing')">Copy</button>
+            <label for="mass_emailing" class="techstackfield-selct">
+              <input class="select-provider" (click)="openSelectProvider('Mass Emailing?', 'mass_emailing')"
+                placeholder="Select" type="text" id="mass_emailing" formControlName="mass_emailing" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="mass_emailing_price"
+                formControlName="mass_emailing_price" />
+              <span>/mo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech_selecter">
+          <div class="provider-label">Analytics & Morning Huddle?</div>
+          <div class="techselecterfield-right">
+            <label for="analytics_morning_huddle" class="techstackfield-selct">
+              <input class="select-provider"
+                (click)="openSelectProvider('Analytics & Morning Huddle?','analytics_morning_huddle')"
+                placeholder="Select" type="text" id="analytics_morning_huddle"
+                formControlName="analytics_morning_huddle" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="analytics_morning_huddle_price"
+                formControlName="analytics_morning_huddle_price" />
+              <span>/mo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech_selecter">
+          <div class="provider-label">Verification Provider</div>
+          <div class="techselecterfield-right">
+            <label for="verification_provider" class="techstackfield-selct">
+              <input class="select-provider"
+                (click)="openSelectProvider('Verification Provider','verification_provider')" placeholder="Select"
+                type="text" id="verification_provider" formControlName="verification_provider" readonly />
+            </label>
+            <div class="techstackfield-input">
+              <span>$</span>
+              <input class="select-price" type="number" id="verification_provider_price"
+                formControlName="verification_provider_price" />
+              <span>/mo</span>
+            </div>
+          </div>
         </div>
       </form>
-      <div class="total">
-        <div>
+      <div class="tstotal-bar">
+        <div class="tstotalbar-inner">
           <button mat-raised-button (click)="reset()" type="button">Reset</button>
-        </div>
-        <div>
-          <span>Total Tech Stack Spend&nbsp;&nbsp;:&nbsp;&nbsp;</span>
-          <span>
-            <b>${{ totalCost }}</b
-            >&nbsp; /mo
-          </span>
+          <div class="tstotalbar-right">
+            <strong>Total Tech Stack Spend:</strong>
+            <div class="tstotalbarfield-input">
+              <span>$</span><input type="text" id="totalCost" value="{{ totalCost }}" /><span>/mo</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="gap-in-tech-div">
-        <h3 class="heading">Communications</h3>
-        <div class="communication">
-          @for (column of communicationsList; track column) {
-          <mat-checkbox [checked]="column.value" class="checkBox">
-            {{ column.text }}
-          </mat-checkbox>
-          }
+      <div class="teckstackgap-block">
+        <h3 class="teckstackgap-title"><span>Current Gaps in Tech Stack</span></h3>
+        <div class="teckstackgap-info">
+          <h4 class="heading">Communications</h4>
+          <div class="teckstack-gapservices communication">
+            @for (column of communicationsList; track column) {
+            <mat-checkbox [checked]="column.value" class="checkBox">
+              {{ column.text }}
+            </mat-checkbox>
+            }
+          </div>
         </div>
-        <h3 class="heading">Operations</h3>
-        <div class="operations">
-          @for (column of operations; track column) {
-          <mat-checkbox [checked]="column.value" class="checkBox">
-            {{ column.text }}
-          </mat-checkbox>
-          }
+        <div class="teckstackgap-info">
+          <h3 class="heading">Operations</h3>
+          <div class="teckstack-gapservices operations">
+            @for (column of operations; track column) {
+            <mat-checkbox [checked]="column.value" class="checkBox">
+              {{ column.text }}
+            </mat-checkbox>
+            }
+          </div>
         </div>
-        <h3 class="heading">Analytics</h3>
-        <div class="analytics">
-          @for (column of analytics; track column) {
-          <mat-checkbox [checked]="column.value" class="checkBox">
-            {{ column.text }}
-          </mat-checkbox>
-          }
+        <div class="teckstackgap-info">
+          <h3 class="heading">Analytics</h3>
+          <div class="teckstack-gapservices analytics">
+            @for (column of analytics; track column) {
+            <mat-checkbox [checked]="column.value" class="checkBox">
+              {{ column.text }}
+            </mat-checkbox>
+            }
+          </div>
         </div>
-        <h3 class="heading">Mobile</h3>
-        <div class="mobile">
-          @for (column of mobile; track column) {
-          <mat-checkbox [checked]="column.value" class="checkBox">
-            {{ column.text }}
-          </mat-checkbox>
-          }
+        <div class="teckstackgap-info">
+          <h3 class="heading">Mobile</h3>
+          <div class="teckstack-gapservices mobile">
+            @for (column of mobile; track column) {
+            <mat-checkbox [checked]="column.value" class="checkBox">
+              {{ column.text }}
+            </mat-checkbox>
+            }
+          </div>
         </div>
-        <h3 class="heading">Verifications</h3>
-        <div class="verification">
-          @for (column of verifications; track column) {
-          <mat-checkbox [checked]="column.value" class="checkBox">
-            {{ column.text }}
-          </mat-checkbox>
-          }
+        <div class="teckstackgap-info">
+          <h3 class="heading">Verifications</h3>
+          <div class="teckstack-gapservices verification">
+            @for (column of verifications; track column) {
+            <mat-checkbox [checked]="column.value" class="checkBox">
+              {{ column.text }}
+            </mat-checkbox>
+            }
+          </div>
         </div>
       </div>
     </mat-tab>
     <mat-tab label="Summary">
       @if(totalCost>0){
-      <div class="spending">
-        <div class="spend-title">
-          <h2>
-            So You're Spending <span>${{ totalCost }}</span> Per Month On
-          </h2>
-        </div>
-        
-        <!-- Provider logos section -->
-        <div class="provider-logos">
-          @for(provider of getUniqueProvidersWithImages(); track provider.name) {
-            <div class="provider-logo-item">
-              @if(provider.name=='AT&T'){
-                <p>{{ provider.name }}</p>
-              }@else {
-                <img [src]="'https://demo.enfolytics.com/'+provider.imageUrl" [alt]="provider.name" width="70px" />
+      <div class="teckstacksummary-info spending">
+        <div class="teckstacksummaryinfo-main">
+          <div class="techsummary-top">
+            <div class="techsummarytop-price">
+              <strong>So You’re Spending <span>${{ totalCost }}</span> Per Month On</strong>
+            </div>
+
+            <!-- Provider logos section -->
+            <div class="techsummarytop-logos">
+              @for(provider of getUniqueProvidersWithImages(); track provider.name) {
+              <div class="techsummarylogo-item">
+                @if(provider.name=='AT&T'){
+                <div class="techsummarylogobox">{{ provider.name }}</div>
+                }@else {
+                <div class="techsummarylogobox">
+                  <img [src]="'https://demo.enfolytics.com/'+provider.imageUrl" [alt]="provider.name" width="200"
+                    height="36" />
+                </div>
+                }
+                <!-- <p>{{ provider.name }}</p> -->
+              </div>
               }
-              <!-- <p>{{ provider.name }}</p> -->
             </div>
-          }
-        </div>
-        
-        <!-- If no provider images found, show default logo -->
-        <!-- @if(getUniqueProvidersWithImages().length === 0) {
-          <div class="logo-img">
-            <img
-              src="https://demo.enfolytics.com/assets/images/default-tech-logo.png"
-              alt="Default Tech Stack Logo" 
-              width="100px" 
-            />
           </div>
-        } -->
-        
-        <!-- Rest of your existing code... -->
-        <div class="gaps-in-your-tech">
-          <div class="head">
-            <img
-              src="https://demo.enfolytics.com/assets/images/tech-stack-summary-icon.svg"
-              alt=""
-            />
-            <h2>Current Gaps in Your Tech Stack</h2>
-            <button mat-raised-button type="button" (click)="expand=!expand">
-              <mat-icon>{{expand?'add_circle':'remove_circle'}}</mat-icon>
-               {{expand?'Expand':'Collapse'}}
-            </button>
-          </div>
-          <div class="techs">
-            <div class="batch">
-              <h3 class="heading">Communications</h3>
-              <div class="communication">
-                @for (column of communicationsList; track column) {
+          <!-- If no provider images found, show default logo -->
+          <!-- @if(getUniqueProvidersWithImages().length === 0) {
+            <div class="logo-img">
+              <img
+                src="https://demo.enfolytics.com/assets/images/default-tech-logo.png"
+                alt="Default Tech Stack Logo" 
+                width="100px" 
+              />
+            </div>
+          } -->
+
+          <!-- Rest of your existing code... -->
+          <div class="techsummary-box">
+            <div class="techsummarybox-top">
+              <div class="techsummarybox-topinnr">
+                <div class="techsummryhead-left">
+                  <img src="https://demo.enfolytics.com/assets/images/tech-stack-summary-icon.svg"
+                    alt="Current Gaps in Your Tech Stack:" width="52" height="52" />
+                  <strong>Current Gaps in Your Tech Stack:</strong>
+                </div>
+                <div class="techsummryhead-right">
+                  <button mat-raised-button type="button" (click)="expand=!expand">
+                    <mat-icon>{{expand?'add_circle':'remove_circle'}}</mat-icon>
+                    {{expand?'Expand':'Collapse'}}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="techsummarybox-innr">
+              <div class="techsummarybox-batch">
+                <h4>Communications</h4>
+                <div class="techsummary-services">
+                  @for (column of communicationsList; track column) {
                   @if(column.value){
-                    <p class="gapNames">
-                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
-                    </p>
+                  <div class="item">
+                    <div class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }@else {
-                    @if(!expand){
-                      <p class="gapNames" style="opacity: 0.5;">
-                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
-                      </p>
-                    }
+                  @if(!expand){
+                  <div class="item">
+                    <div class="gapNames" style="opacity: 0.5;">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }
-                }
+                  }
+                  }
+                </div>
               </div>
-            </div>
-            <div class="batch">
-              <h3 class="heading">Operations</h3>
-              <div class="operations">
-                @for (column of operations; track column) {
-               @if(column.value){
-                    <p class="gapNames">
-                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
-                    </p>
+              <div class="techsummarybox-batch">
+                <h4>Operations</h4>
+                <div class="techsummary-services">
+                  @for (column of operations; track column) {
+                  @if(column.value){
+                  <div class="item">
+                    <div class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }@else {
-                    @if(!expand){
-                      <p class="gapNames" style="opacity: 0.5;">
-                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
-                      </p>
-                    }
-                    
+                  @if(!expand){
+                  <div class="item">
+                    <div class="gapNames" style="opacity: 0.5;">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }
-                }
+
+                  }
+                  }
+                </div>
               </div>
-            </div>
-            <div class="batch">
-              <h3 class="heading">Analytics</h3>
-              <div class="analytics">
-                @for (column of analytics; track column) {
-               @if(column.value){
-                    <p class="gapNames">
-                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
-                    </p>
+              <div class="techsummarybox-batch">
+                <h4>Analytics</h4>
+                <div class="techsummary-services">
+                  @for (column of analytics; track column) {
+                  @if(column.value){
+                  <div class="item">
+                    <div class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }@else {
-                    @if(!expand){
-                      <p class="gapNames" style="opacity: 0.5;">
-                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
-                      </p>
-                    }
-                    
+                  @if(!expand){
+                  <div class="item">
+                    <div class="gapNames" style="opacity: 0.5;">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }
-                }
+
+                  }
+                  }
+                </div>
               </div>
-            </div>
-            <div class="batch">
-              <h3 class="heading">Mobile</h3>
-              <div class="mobile">
-                @for (column of mobile; track column) {
-               @if(column.value){
-                    <p class="gapNames">
-                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
-                    </p>
+              <div class="techsummarybox-batch">
+                <h4>Mobile</h4>
+                <div class="techsummary-services">
+                  @for (column of mobile; track column) {
+                  @if(column.value){
+                  <div class="item">
+                    <div class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }@else {
-                    @if(!expand){
-                      <p class="gapNames" style="opacity: 0.5;">
-                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
-                      </p>
-                    }
-                    
+                  @if(!expand){
+                  <div class="item">
+                    <div class="gapNames" style="opacity: 0.5;">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }
-                }
+
+                  }
+                  }
+                </div>
               </div>
-            </div>
-            <div class="batch">
-              <h3 class="heading">Verification</h3>
-              <div class="verifications">
-                @for (column of verifications; track column) {
-               @if(column.value){
-                    <p class="gapNames">
-                      <mat-icon>check_circle_outline</mat-icon> {{ column.text }}
-                    </p>
+              <div class="techsummarybox-batch">
+                <h4>Verification</h4>
+                <div class="techsummary-services">
+                  @for (column of verifications; track column) {
+                  @if(column.value){
+                  <div class="item">
+                    <div class="gapNames">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }@else {
-                    @if(!expand){
-                      <p class="gapNames" style="opacity: 0.5;">
-                        <mat-icon style="color: var(--secondary-color);">check_circle_outline</mat-icon> {{ column.text }}
-                      </p>
-                    }
-                    
+                  @if(!expand){
+                  <div class="item">
+                    <div class="gapNames" style="opacity: 0.5;">
+                      <mat-icon>check_circle_outline</mat-icon>
+                      <span>{{ column.text }}</span>
+                    </div>
+                  </div>
                   }
-                }
+
+                  }
+                  }
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       }@else {
-      <div class="no-spending">
-        <img
-          src="https://demo.enfolytics.com/assets/images/tech-stack-summary-blank-icon.svg"
-          alt=""
-        />
-        <p>
-          Your Current Spending and Current Gaps in Your Tech Stack will be
-          shown here once you answer the Tech Stack Questions
-        </p>
+      <div class="techstack-nosummry">
+        <div class="tsnosummry-inner">
+          <img src="https://demo.enfolytics.com/assets/images/tech-stack-summary-blank-icon.svg"
+            alt="Tech Stack Summary" width="216" height="149" />
+          <p>Your Current Spending and Current Gaps in Your Tech Stack will be shown here once you answer the Tech Stack
+            Questions</p>
+        </div>
       </div>
 
       }

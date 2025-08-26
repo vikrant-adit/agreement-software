@@ -1,19 +1,32 @@
-.progileinfo-block {
-  padding: 30px 0;
+#mainContainer {
   background-color: var(--background-color);
-  height: calc(100vh - 53px);
+  height: 100vh;
+}
+
+.progileinfo-block {
+  padding: 30px 0;  
+  background-color: var(--background-color);
 
   .container {
     padding: 0 30px;
-    gap: 15px;
+    max-width: 640px;
     margin: 0 auto;
+
+    @media (max-width: 1199.98px) {
+      padding: 0 20px;
+    }
+
+    @media (max-width: 767.98px) {
+      padding: 0 12px;
+    }
   }
 
   h1 {
-    font-size: 25px;
+    font-size: 1.5rem;
     color: var(--light-text-color);
     font-weight: 700;
-    margin: 0 0 10px 0;
+    margin: 0 0 16px 0;
+    text-align: center;
   }
 }
 
@@ -29,14 +42,16 @@
     display: flex;
     gap: 2rem;
     align-items: center;
+
     .userprofile-icon {
-      font-size: 100px;
-      width: 100px;
-      height: 100px;
+      font-size: 120px;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
     }
 
     .full-width {
-      width: 400px;
+      width: 100%;
     }
 
     button {
@@ -68,6 +83,8 @@
     }
   }
 
-
+  @media (max-width: 767.98px) {
+    padding: 10px 12px;
+  }
 
 }

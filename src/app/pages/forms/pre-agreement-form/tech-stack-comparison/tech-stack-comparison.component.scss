@@ -1,249 +1,509 @@
-.container {
-  width: 70vw;
-  height: 100%;
-  h1 {
+.tscomparison-block {
+  padding-top: 30px;
+
+  h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--bodytext-color);
+    line-height: 1.2;
+    margin: 0 0 30px 0;
     text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .form-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    // margin: 0px 10px;
-    height: 5rem;
-    border-bottom: 1px dashed var(--secondary-color);
-    label {
-      flex: 4;
-      // font-weight: bold;
-    }
-
-    .dropdown {
-      flex: 3;
-      width: 60%;
-    }
-    .price-input {
-      flex: 1;
-      width: 30%;
-    }
-
-    .currency,
-    .per-month {
-      font-weight: bold;
-    }
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-        display: none;
-    }
-  }
-
-  .total {
-    display: inline-flex;
-    font-size: 24px;
-    margin-top: 10px;
-    background-color: var(--primary-color);
-    color: white;
-    width: 100%;
-    height: 4rem;
-    justify-content: flex-end;
-    align-items: center;
-    div{
-        padding-inline: 30px;
-    }
-    p {
-      margin-right: 10px;
-    }
   }
 }
-.gap-in-tech-div {
-  .heading {
-    color: var(--secondary-color);
-    margin-inline: 10px;
-  }
-  div {
-    margin: 5px 10px;
 
-    display: grid;
-    grid-template-columns:  1fr 1fr 1fr;
-   
-    .checkBox {
-      border-radius: 6px;
-      border: 1px solid var(--secondary-color);
-      box-shadow: 0 0px 3px rgba(25, 25, 25, 0.538);
-      margin: 3px;
-    }
-   
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 5rem;
+  border-bottom: 1px dashed var(--secondary-color);
+
+  label {
+    flex: 4;
+  }
+
+  .dropdown {
+    flex: 3;
+    width: 60%;
+  }
+
+  .price-input {
+    flex: 1;
+    width: 30%;
+  }
+
+  .currency,
+  .per-month {
+    font-weight: bold;
+  }
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
   }
 }
+
 .tab-group {
+  font-family: 'Work Sans', sans-serif;
+  color: var(--bodytext-color);
+  background-color: #ffffff;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
   overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgb(0 0 0 / 20%);
+
   ::ng-deep .mat-mdc-tab-labels {
     .mdc-tab__text-label {
-      font-size: 24px;
-      font-weight: bold;
-      margin: 10px;
+      font-family: 'Work Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
     }
+
+    .mat-mdc-tab.mdc-tab {
+      flex-grow: 0;
+      border-radius: 20px 20px 0px 0px;
+      padding: 16px 48px;
+      height: auto;
+      overflow: hidden;
+
+      .mdc-tab-indicator {
+        display: none;
+      }
+    }
+
     .mdc-tab-indicator--active {
       background-color: var(--primary-color) !important;
+
       .mdc-tab__text-label {
         color: white !important;
+        transition: inherit;
       }
     }
   }
 }
+
 //
 ::ng-deep .mat-mdc-tab-body-content {
   overflow-y: hidden !important;
 }
 
+.techselecter-list {
+  padding: 30px 20px;
 
-::ng-deep .mdc-checkbox__native-control:enabled:checked
-~ .mdc-checkbox__background,
-.mdc-checkbox__native-control:enabled:indeterminate
-~ .mdc-checkbox__background {
-  border-color: var(--primary-color);
-background-color: var(--primary-color) !important;
+  .tech_selecter {
+    width: 100%;
+    border-bottom: 1px dashed #CBCBCB;
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .provider-label {
+      font-size: 18px;
+    }
+
+    .techselecterfield-right {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      --mdc-protected-button-label-text-color: #fff;
+      --mdc-protected-button-container-color: var(--secondary-color);
+
+      .tscopyBtn {
+        font-size: 11px;
+        font-weight: 400;
+        padding: 5px;
+        margin-right: 5px;
+        width: auto;
+        height: auto;
+        min-width: inherit;
+        border-radius: 3px;
+      }
+    }
+
+    .techstackfield-selct {
+      width: 340px;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+
+      &:before {
+        content: "expand_more";
+        font-family: "Material Icons";
+        font-size: 35px;
+        display: inline-block;
+        font-variant: normal;
+        color: var(--bodytext-color);
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+      }
+
+      input {
+        font-size: 18px;
+        color: var(--bodytext-color);
+        background-color: #F8FDFF;
+        border: 1px solid rgba(37, 168, 224, 0.50);
+        border-radius: 8px;
+        padding: 5px 26px 5px 10px;
+        line-height: 40px;
+        height: 50px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        overflow: hidden;
+        width: 100%;
+        outline: none;
+        box-shadow: inherit;
+      }
+    }
+
+    .techstackfield-input {
+      display: flex;
+      align-items: center;
+      margin-left: 30px;
+
+      input {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--bodytext-color);
+        text-align: right;
+        padding: 10px;
+        border: 1px solid rgba(37, 168, 224, 0.50);
+        background-color: #F8FDFF;
+        border-radius: 8px;
+        margin: 0 5px;
+        width: 120px;
+        height: 50px;
+        outline: none;
+        box-shadow: inherit;
+      }
+    }
+  }
 }
 
-.spending{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  .spend-title{
-    width: 100%;
+.tstotal-bar {
+  background-color: #FFE9D4;
+  padding: 12px 20px;
+
+  .tstotalbar-inner {
     display: flex;
-    justify-content: center;
-    h2{
-      width: 50%;
-      text-align: center;
-      padding: 10px 0;
-      background-color: rgb(137, 236, 252);
-      border-top-left-radius: 16px;
-      border-top-right-radius: 16px;
-      span{
-        color: var(--primary-color);
-        text-decoration: underline;
+    align-items: center;
+    justify-content: flex-end;
+    --mdc-protected-button-label-text-color: #fff;
+    --mdc-protected-button-container-color: var(--primary-color);
+
+    .tstotalbar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    button {
+      font-size: 1rem;
+      margin-right: 32px;
+    }
+
+    strong {
+      padding-right: 20px;
+    }
+
+    span {
+      font-weight: 600;
+    }
+  }
+
+  .tstotalbarfield-input input {
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--bodytext-color);
+    text-align: right;
+    padding: 10px;
+    border: none;
+    background-color: #fff;
+    border-radius: 8px;
+    margin: 0 5px;
+    width: 120px;
+    height: 50px;
+  }
+}
+
+.teckstackgap-block {
+  padding: 30px 20px;
+
+  .teckstackgap-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--bodytext-color);
+    line-height: 1.1;
+    margin: 0 0 20px 0;
+    position: relative;
+    z-index: 1;
+
+    span {
+      display: inline-block;
+      vertical-align: top;
+      padding-right: 30px;
+      background-color: #ffffff;
+    }
+
+    &:after {
+      content: "";
+      background-color: var(--secondary-color);
+      height: 3px;
+      width: 100%;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 0;
+      z-index: -1;
+    }
+  }
+
+  .heading {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin: 0 0 8px 0;
+  }
+
+  .teckstackgap-info {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .teckstack-gapservices {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    --mat-checkbox-label-text-color: var(--bodytext-color);
+    --mat-checkbox-label-text-font: 'Work Sans', sans-serif;
+    --mat-checkbox-label-text-size: 1rem;
+    --mat-checkbox-label-text-weight: 500;
+    --mat-checkbox-label-text-line-height: 1;
+    --mdc-checkbox-state-layer-size: 30px;
+
+    .checkBox {
+      display: flex;
+      align-items: center;
+      border: 1px solid #B2E8FF;
+      border-radius: 6px;
+      min-height: 40px;
+
+      &::ng-deep .mdc-checkbox__background {
+        margin: 1px;
+        width: 16px;
+        height: 16px;
+      }
+
+      &::ng-deep .mat-internal-form-field>label {
+        padding-left: 2px;
       }
     }
   }
-  .head{
-    display: flex;
-    background-color: rgb(10, 167, 246);
-    align-items: center;
-    border-top-left-radius:20px ;
-    border-top-right-radius: 20px;
-    padding-inline: 10px;
-    width: 90%;
-    margin: auto;
-    img{
-      width: 50px;
-    }
-    h2{
-      flex-grow: 3;
-    }
-    button{
-      flex-grow: 1;
-    }
+}
+
+::ng-deep .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,
+.mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color) !important;
+}
+
+.teckstacksummary-info {
+  padding: 30px 20px;
+
+  .teckstacksummaryinfo-main {
+    max-width: 1152px;
+    margin: 0 auto;
+    border-radius: 16px;
+    border: 2px solid #BDEAFF;
+    padding: 24px;
   }
-  .techs{
-    display: flex;
-    flex-direction: column;
-    background-color: rgb(22, 42, 52);
-    color: white;
-    align-items: center;
-    width: 90%;
-    margin: auto;
-    padding: 0 10px;
-    // .heading {
-    //   color: var(--secondary-color);
-    //   margin-inline: 10px;
-    // }
-    .batch {
-      h3{
-        color: rgb(29, 185, 237);
+
+  .techsummary-top {
+    text-align: center;
+    max-width: 705px;
+    margin: 0 auto 40px auto;
+
+    .techsummarytop-price {
+      background-color: #DCF4FF;
+      border-radius: 15px 15px 0px 0px;
+      padding: 12px 30px;
+      display: inline-block;
+      vertical-align: top;
+      margin-bottom: 24px;
+      position: relative;
+
+      &:after {
+        content: "";
+        // background-image: url('src/assets/images/seperator-shadow1.png');
+        box-shadow: -4px 0px 4px 1px rgb(0 0 0 / 20%);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        position: absolute;
+        bottom: 0;
+        left: -30px;
+        width: calc(100% + 60px);
+        // height: 12px;
       }
-      div{
-        width: 100%;
-        margin: 5px 10px;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        mat-icon{
+
+      strong {
+        font-size: 22px;
+        font-weight: 700;
+
+        span {
           color: var(--primary-color);
+          text-decoration: underline;
         }
       }
-      
-    }  
+    }
+  }
+
+  .techsummarytop-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: -15px -15px 0 -15px;
+
+    .techsummarylogo-item {
+      width: 33.33%;
+      padding: 15px 15px 0 15px;
+    }
+  }
+
+  .techsummarylogobox {
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px 15px 5px;
+    border-bottom: 1px dashed rgb(37 168 224 / 50%);
+    height: 100%;
+
+    img {
+      max-height: 36px;
+      width: auto;
+    }
   }
 }
 
-.no-spending{
-  min-height: 60vh;
+.techsummary-box {
+  background-color: #092A3D;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.techsummarybox-top {
+  background-color: var(--secondary-color);
+  padding: 12px 20px;
+
+  .techsummarybox-topinnr {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+
+    .techsummryhead-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+
+      img {
+        margin-right: 16px;
+      }
+
+      strong {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+.techsummarybox-innr {
+  color: white;
+  padding: 20px;
+
+  .techsummarybox-batch {
+    margin-bottom: 20px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h4 {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--secondary-color);
+      margin: 0 0 12px 0;
+    }
+
+    .techsummary-services {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .gapNames {
+      font-size: 1rem;
+      display: flex;
+      width: 100%;
+
+      mat-icon {
+        font-size: 20px;
+        color: var(--primary-color);
+        width: 20px;
+        height: auto;
+        padding-top: 1px;
+      }
+
+      span {
+        width: calc(100% - 20px);
+        padding-left: 5px;
+      }
+    }
+  }
+}
+
+.techstack-nosummry {
+  padding: 100px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  p{
-    width: 70%;
+
+  .tsnosummry-inner {
+    color: var(--bodytext-color);
+    max-width: 750px;
+    margin: 0 auto;
     text-align: center;
-    font-size: 20px;
+
+    p {
+      font-size: 20px;
+      letter-spacing: -0.7px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
 }
 
-.tech_selecter{
-  width: 100%;
-  border-bottom: 2px dashed blue;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-  .copyBtn{
-    margin-left: -90px;
-  }
-  .provider-label{
-    width: 50%;
-    font-size: 20px;
-  }
-  .select-provider{
-    width: 30%;
-    height: 2.8rem;
-    background-color: rgb(229, 249, 249);
-    border-radius: 10px;
-    border: 0.2px solid aqua;
-    font-size: 20px;
-  }
-  
-  .select-price{
-    width: 10%;
-    height: 2.8rem;
-    background-color: rgb(229, 249, 249);
-    border-radius: 10px;
-    border: none;
-    border: 0.2px solid aqua;
-    font-size: 20px;
-  }
-  .select-price:disabled {
-    background-color: #f5f5f5; /* Light gray background */
-    color: #a1a1a1; /* Gray text color */
-    border: 1px solid #dcdcdc; /* Light gray border */
-    cursor: not-allowed; /* Show "not allowed" cursor */
-    opacity: 0.7; /* Slightly transparent */
-  }
-
-}
-
-.gapNames{
-  display: flex;
-  align-items: center;
-  margin: 5px 0;
-  max-width: 15.5rem;
-  gap: 5px;
-  mat-icon{
-    font-size: 20px;
-  }
-}
 .provider-logos {
   display: flex;
   flex-wrap: wrap;
@@ -271,4 +531,682 @@ background-color: var(--primary-color) !important;
   font-size: 14px;
   color: #555;
   margin: 0;
+}
+
+@media only screen and (max-width: 1399.98px) {
+  .tscomparison-block h2 {
+    font-size: 2rem;
+  }
+
+  .tab-group {
+    ::ng-deep .mat-mdc-tab-labels {
+      .mdc-tab__text-label {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .teckstacksummary-info {
+    .teckstacksummaryinfo-main {
+      padding: 16px 12px 12px 12px;
+    }
+
+    .techsummary-top {
+      .techsummarytop-price {
+        strong {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+
+  .techstack-nosummry {
+    padding: 80px 20px;
+  }
+}
+
+@media only screen and (max-width: 1199.98px) {
+  .tscomparison-block {
+    padding-top: 20px;
+
+    h2 {
+      font-size: 1.75rem;
+    }
+  }
+
+  .tab-group {
+    ::ng-deep .mat-mdc-tab-labels {
+      .mdc-tab__text-label {
+        font-size: 18px;
+      }
+    }
+  }
+
+  .techselecter-list {
+    padding: 24px 12px;
+
+    .tech_selecter {
+      padding: 10px 0;
+
+      .provider-label {
+        font-size: 16px;
+      }
+
+      .techstackfield-selct {
+        width: 260px;
+
+        &:before {
+          font-size: 28px;
+          right: 2px;
+        }
+
+        input {
+          font-size: 16px;
+          height: 42px;
+          line-height: 32px;
+        }
+      }
+
+      .techstackfield-input {
+        margin-left: 20px;
+
+        span {
+          font-size: 16px;
+        }
+
+        input {
+          font-size: 16px;
+          width: 95px;
+          height: 42px;
+        }
+      }
+    }
+  }
+
+  .tstotal-bar {
+    font-size: 16px;
+    padding: 10px 12px;
+
+    .tstotalbar-inner {
+      button {
+        font-size: 0.85rem;
+        margin-right: 24px;
+        padding: 10px 20px;
+        height: auto;
+      }
+    }
+
+    .tstotalbarfield-input {
+      input {
+        font-size: 16px;
+        width: 95px;
+        height: 42px;
+      }
+    }
+  }
+
+  .teckstackgap-block {
+    padding: 24px 12px;
+
+    .teckstackgap-title {
+      font-size: 22px;
+
+      span {
+        padding-right: 20px;
+      }
+    }
+
+    .teckstackgap-info {
+      margin-bottom: 16px;
+    }
+
+    .heading {
+      font-size: 16px;
+    }
+
+    .teckstack-gapservices {
+      --mat-checkbox-label-text-size: 14px;
+
+      .checkBox {
+        min-height: 36px;
+      }
+    }
+  }
+
+  .teckstacksummary-info {
+    padding: 24px 12px;
+
+    .teckstacksummaryinfo-main {
+      padding: 16px 6px 6px 6px;
+    }
+
+    .techsummary-top {
+      margin-bottom: 30px;
+
+      .techsummarytop-price {
+        padding: 10px 20px;
+
+        strong {
+          font-size: 18px;
+        }
+      }
+    }
+
+    .techsummarytop-logos {
+      margin-top: -12px;
+
+      .techsummarylogo-item {
+        padding-top: 12px;
+      }
+
+      .techsummarylogobox {
+        font-size: 14px;
+        padding-bottom: 12px;
+      }
+    }
+  }
+
+  .techsummarybox-top {
+    padding: 12px;
+
+    .techsummarybox-topinnr {
+
+      .techsummryhead-left {
+        img {
+          margin-right: 10px;
+          max-width: 42px;
+        }
+
+        strong {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+  .techsummarybox-innr {
+    padding: 20px 12px;
+
+    .techsummarybox-batch {
+      .gapNames {
+        font-size: 15px;
+
+        mat-icon {
+          padding-top: 0;
+          margin-top: -1px;
+        }
+      }
+    }
+  }
+
+  .techstack-nosummry {
+    padding: 40px 20px;
+
+    .tsnosummry-inner {
+      &>img {
+        max-height: 120px;
+      }
+
+      p {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  .tab-group {
+    ::ng-deep .mat-mdc-tab-labels {
+      .mat-mdc-tab.mdc-tab {
+        padding: 12px 32px;
+      }
+    }
+  }
+
+  .techselecter-list {
+    padding: 24px 12px;
+
+    .tech_selecter {
+      flex-wrap: wrap;
+
+      .provider-label {
+        width: 100%;
+        padding-bottom: 6px;
+      }
+
+      .techselecterfield-right {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .techstackfield-selct {
+        width: 100%;
+      }
+    }
+  }
+
+  .teckstackgap-block .teckstack-gapservices {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .techsummarybox-innr .techsummarybox-batch .techsummary-services {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .tscomparison-block {
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+  }
+
+  .tab-group {
+    border-radius: 12px;
+
+    ::ng-deep .mat-mdc-tab-labels {
+      .mat-mdc-tab.mdc-tab {
+        padding: 10px 24px;
+        border-radius: 12px 12px 0px 0px;
+
+        .mdc-tab__text-label {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .techselecter-list {
+    padding: 16px 10px;
+
+    .tech_selecter {
+      padding: 10px 0;
+
+      .provider-label {
+        font-size: 14px;
+      }
+
+      .techstackfield-selct {
+        &:before {
+          font-size: 24px;
+        }
+
+        input {
+          font-size: 14px;
+          padding: 3px 20px 3px 6px;
+          height: 36px;
+          line-height: 30px;
+          border-radius: 5px;
+        }
+      }
+
+      .techstackfield-input {
+        margin-left: 12px;
+
+        span {
+          font-size: 14px;
+        }
+
+        input {
+          font-size: 14px;
+          padding: 6px;
+          width: 80px;
+          height: 36px;
+          border-radius: 5px;
+        }
+      }
+    }
+  }
+
+  .tstotal-bar {
+    font-size: 14px;
+    padding: 8px 10px;
+
+    .tstotalbar-inner {
+      button {
+        margin-right: 12px;
+        padding: 5px 12px 6px 12px;
+      }
+
+      strong {
+        padding-right: 10px;
+      }
+    }
+
+    .tstotalbarfield-input {
+      input {
+        font-size: 14px;
+        padding: 6px;
+        width: 80px;
+        height: 36px;
+        border-radius: 5px;
+      }
+    }
+  }
+
+  .teckstackgap-block {
+    padding: 16px 10px;
+
+    .teckstackgap-title {
+      font-size: 18px;
+
+      span {
+        padding-right: 12px;
+      }
+    }
+
+    .teckstackgap-info {
+      margin-bottom: 12px;
+    }
+
+    .heading {
+      font-size: 15px;
+    }
+
+    .teckstack-gapservices {
+      --mat-checkbox-label-text-size: 13px;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+
+      .checkBox {
+        min-height: 34px;
+      }
+    }
+  }
+
+  .teckstacksummary-info {
+    padding: 10px 10px;
+
+    .teckstacksummaryinfo-main {
+      padding: 10px 4px 4px 4px;
+      border-radius: 10px;
+      border-width: 1px;
+    }
+
+    .techsummary-top {
+      margin-bottom: 24px;
+
+      .techsummarytop-price {
+        padding: 8px 16px;
+
+        strong {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .techsummarytop-logos {
+      margin: -8px -5px 0 -5px;
+
+      .techsummarylogo-item {
+        padding: 8px 5px 0 5px;
+      }
+
+      .techsummarylogobox {
+        font-size: 12px;
+        padding-bottom: 8px;
+      }
+    }
+  }
+
+  .techsummary-box {
+    border-radius: 12px;
+  }
+
+  .techsummarybox-top {
+    padding: 10px 6px;
+
+    .techsummarybox-topinnr {
+
+      .techsummryhead-left {
+        img {
+          margin-right: 6px;
+          max-width: 34px;
+        }
+
+        strong {
+          font-size: 16px;
+        }
+      }
+
+      .techsummryhead-right {
+        button {
+          font-size: 13px;
+          padding: 6px 13px 7px 13px;
+          height: auto;
+
+          ::ng-deep mat-icon {
+            font-size: 1rem;
+            padding-top: 2px;
+            margin-right: 2px;
+          }
+
+          ::ng-deep .mat-mdc-button-touch-target {
+            height: 32px;
+          }
+        }
+      }
+    }
+  }
+
+  .techsummarybox-innr {
+    padding: 16px 10px;
+
+    .techsummarybox-batch {
+      h4 {
+        font-size: 16px;
+      }
+
+      .techsummary-services {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .gapNames {
+        font-size: 14px;
+
+        mat-icon {
+          font-size: 18px;
+          margin-top: -0;
+        }
+      }
+    }
+  }
+
+  .techstack-nosummry {
+    padding: 30px 16px;
+
+    .tsnosummry-inner {
+      &>img {
+        max-height: 100px;
+      }
+
+      p {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 479.98px) {
+
+  .tscomparison-block {
+    h2 {
+      font-size: 1.35rem;
+    }
+  }
+
+  .tab-group {
+    ::ng-deep .mat-mdc-tab-labels {
+      .mat-mdc-tab.mdc-tab {
+        padding: 8px 16px;
+
+        .mdc-tab__text-label {
+          font-size: 15px;
+        }
+      }
+    }
+  }
+
+  .techselecter-list {
+
+    .tech_selecter {
+
+      .provider-label {
+        font-size: 13px;
+      }
+
+      .techselecterfield-right {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .tscopyBtn {
+          margin-bottom: 6px;
+        }
+
+        .techstackfield-selct {
+          input {
+            font-size: 13px;
+          }
+        }
+
+        .techstackfield-input {
+          margin-left: 0;
+          margin-top: 8px;
+
+          span {
+            font-size: 13px;
+          }
+
+          input {
+            font-size: 13px;
+            padding: 5px;
+            width: 60px;
+            margin: 0 5px;
+          }
+        }
+      }
+    }
+  }
+
+  .tstotal-bar {
+    font-size: 13px;
+
+    .tstotalbar-inner {
+      justify-content: space-between;
+
+      .tstotalbar-right {
+        flex-direction: column;
+        align-items: flex-start;
+        order: 1;
+      }
+
+      button {
+        margin-right: 0;
+        order: 2;
+      }
+
+      strong {
+        padding-right: 0;
+        margin-bottom: 6px;
+      }
+    }
+
+    .tstotalbarfield-input {
+      input {
+        font-size: 13px;
+        padding: 5px;
+        width: 60px;
+      }
+    }
+  }
+
+  .teckstackgap-block {
+    .teckstackgap-title {
+      font-size: 16px;
+
+      span {
+        padding-right: 8px;
+      }
+    }
+
+    .heading {
+      font-size: 14px;
+    }
+
+    .teckstack-gapservices {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+
+  .teckstacksummary-info {
+    .techsummary-top {
+      .techsummarytop-price {
+        padding: 5px;
+        margin-bottom: 16px;
+        border-radius: 8px 8px 0px 0px;
+
+        strong {
+          font-size: 13px;
+        }
+      }
+    }
+
+    .techsummarytop-logos {
+      .techsummarylogo-item {
+        width: 50%;
+      }
+    }
+  }
+
+  .techsummarybox-top {
+    padding: 10px 6px;
+
+    .techsummarybox-topinnr {
+      flex-direction: column;
+
+      .techsummryhead-left {
+        flex-direction: column;
+
+        img {
+          max-width: 30px;
+          margin: 0 0 6px 0;
+        }
+
+        strong {
+          font-size: 16px;
+          text-align: center;
+        }
+      }
+
+      .techsummryhead-right {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .techsummarybox-innr {
+    .techsummarybox-batch {
+      .techsummary-services {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .techstack-nosummry {
+    padding: 30px 12px;
+
+    .tsnosummry-inner {
+      &>img {
+        max-height: 80px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+    }
+  }
 }

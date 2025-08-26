@@ -1,201 +1,205 @@
-<div class="container">
-  <app-header style="position: sticky; top: 0; z-index: 2"></app-header>
-  <h1>Pre-Agreement Form</h1>
-  <div class="form-container">
-    <form [formGroup]="preAgreementForm" (ngSubmit)="onSubmit()">
-      <div class="form-section">
-        <h2 style="color: var(--secondary-color)">Customer Details</h2>
-        <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Practice Industry</mat-label>
-            <mat-select formControlName="practiceIndustry">
-              
-              <mat-option value="dental" (click)="dental_or_optometry='dental'">Dental</mat-option>
-              <mat-option value="optometry" (click)="dental_or_optometry='optometry'">Optometry</mat-option>
-              <mat-option value="orthodontic" (click)="dental_or_optometry='orthodontic'">Orthodontic</mat-option>
-              <mat-option value="chiropractic" (click)="dental_or_optometry='chiropractic'">Chiropractic</mat-option>
-           
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>New or Existing Client?</mat-label>
-            <mat-select formControlName="newOrExistingClient">
-              <mat-option value="new">New</mat-option>
-              <mat-option value="existing">Existing</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Multiple Locations?</mat-label>
-            <mat-select formControlName="multipleLocations">
-              <mat-option value="yes">Yes</mat-option>
-              <mat-option value="no">No</mat-option>
-            </mat-select>
-          </mat-form-field>
-       
-        </div>
-        @if(preAgreementForm.get('multipleLocations')?.value == 'yes'){
-          <div class="form-row">
-            <div class="upload">
-            <h4>Upload multiple locations data</h4>
-              <label for="fileInput" class="file-upload">
+<app-header></app-header>
+<div id="mainContainer">
+  <div class="preagreeform-block">
+    <div class="wrap-inner">
+      <div class="main-title">
+        <h1>Pre-Agreement Form</h1>
+      </div>
+      <div class="form-container">
+        <form [formGroup]="preAgreementForm" (ngSubmit)="onSubmit()">
+          <div class="form-section">
+            <h2>Customer Details</h2>
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="nowarnmsg-field white-formfield">
+                <mat-label>Practice Industry</mat-label>
+                <mat-select formControlName="practiceIndustry">
+                  <mat-option value="dental" (click)="dental_or_optometry='dental'">Dental</mat-option>
+                  <mat-option value="optometry" (click)="dental_or_optometry='optometry'">Optometry</mat-option>
+                  <mat-option value="orthodontic" (click)="dental_or_optometry='orthodontic'">Orthodontic</mat-option>
+                  <mat-option value="chiropractic"
+                    (click)="dental_or_optometry='chiropractic'">Chiropractic</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="nowarnmsg-field white-formfield">
+                <mat-label>New or Existing Client?</mat-label>
+                <mat-select formControlName="newOrExistingClient">
+                  <mat-option value="new">New</mat-option>
+                  <mat-option value="existing">Existing</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="nowarnmsg-field white-formfield">
+                <mat-label>Multiple Locations?</mat-label>
+                <mat-select formControlName="multipleLocations">
+                  <mat-option value="yes">Yes</mat-option>
+                  <mat-option value="no">No</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            @if(preAgreementForm.get('multipleLocations')?.value == 'yes'){
+            <div class="form-row">
+              <div class="upload">
+                <strong>Upload multiple locations data</strong>
+                <label for="fileInput" class="file-upload">
                   <span class="file-upload-label">Choose File</span>
                   @if(selectedFile){
-                    <span class="file-upload-name">  &nbsp; {{ selectedFile.name }}</span>
+                  <span class="file-upload-name"> &nbsp; {{ selectedFile.name }}</span>
                   }@else {
-                    <span class="file-upload-name"> &nbsp; No file chosen</span>
+                  <span class="file-upload-name"> &nbsp; No file chosen</span>
                   }
-              </label>
+                </label>
                 <input id="fileInput" type="file" (change)="onFileSelected($event)">
+              </div>
+              <div class="sample_file" (click)="downloadSampleFile()">
+                <span>Download Sample File</span>
+              </div>
             </div>
-            <div class="sample_file" (click)="downloadSampleFile()">
-              <span >Download Sample File</span>
-            </div>
-          </div>
-        }
-        <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Account ID</mat-label>
-            <input matInput formControlName="accountId" maxlength="19"/>
-            
-            <!-- Loading indicator -->
-       
-            
-            <!-- Validation error messages -->
-            <!-- @if(!isAccountIdLoading) {
-              @if(preAgreementForm.get('accountId')?.hasError('required') && preAgreementForm.get('accountId')?.touched) {
-                <mat-error>
-                  Account ID is required.
-                </mat-error>
-              } @else if(preAgreementForm.get('accountId')?.hasError('pattern')) {
+            }
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="nowarnmsg-field white-formfield">
+                <mat-label>Account ID</mat-label>
+                <input matInput formControlName="accountId" maxlength="19" />
+
+                <!-- Loading indicator -->
+
+
+                <!-- Validation error messages -->
+                <!-- @if(!isAccountIdLoading) {
+                  @if(preAgreementForm.get('accountId')?.hasError('required') && preAgreementForm.get('accountId')?.touched) {
+                    <mat-error>
+                      Account ID is required.
+                    </mat-error>
+                  } @else if(preAgreementForm.get('accountId')?.hasError('pattern')) {
+                    <mat-error>
+                      Account ID must be exactly 19 digits.
+                    </mat-error>
+                  } @else if(preAgreementForm.get('accountId')?.hasError('apiError')) {
+                    <mat-error>
+                      {{ preAgreementForm.get('accountId')?.getError('apiError') }}
+                    </mat-error>
+                  } @else if(errorMessage) {
+                    <mat-error style="color: red;">
+                      {{ errorMessage }}
+                    </mat-error>
+                  } @else if(successMsg) {
+                    <mat-error style="color: green;">
+                      {{ successMsg }}
+                    </mat-error>
+                  }
+                } -->
+                @if(preAgreementForm.get('accountId')?.hasError('pattern')) {
                 <mat-error>
                   Account ID must be exactly 19 digits.
                 </mat-error>
-              } @else if(preAgreementForm.get('accountId')?.hasError('apiError')) {
-                <mat-error>
-                  {{ preAgreementForm.get('accountId')?.getError('apiError') }}
-                </mat-error>
-              } @else if(errorMessage) {
+                } @else if(errorMessage) {
                 <mat-error style="color: red;">
                   {{ errorMessage }}
                 </mat-error>
-              } @else if(successMsg) {
-                <mat-error style="color: green;">
-                  {{ successMsg }}
-                </mat-error>
-              }
-            } -->
-              @if(preAgreementForm.get('accountId')?.hasError('pattern')) {
-                <mat-error>
-                  Account ID must be exactly 19 digits.
-                </mat-error>
-              } @else if(errorMessage) {
-                <mat-error style="color: red;">
-                  {{ errorMessage }}
-                </mat-error>
-              }@else if(successMsg) {
+                }@else if(successMsg) {
                 <mat-hint style="color: green;">
                   {{ successMsg }}
                 </mat-hint>
-              }
-          </mat-form-field>
-          
-          @if(deals.length>0 || formPatched){
-            <mat-form-field appearance="fill">
-              <mat-label>Select a Deal</mat-label>
-              <mat-select formControlName="deal" (selectionChange)="onDealSelect($event)">
-                @if(deals.length > 0) {
-                  @for(deal of deals; track deal) {
-                    <mat-option [value]="deal.name">
-                      {{ deal.name }}
-                    </mat-option>
-                  }
-                } @else {
-                  @if(preAgreementForm.get('deal')?.value) {
-                    <mat-option [value]="preAgreementForm.get('deal')?.value">
-                      {{ preAgreementForm.get('deal')?.value }}
-                    </mat-option>
-                  }
                 }
-              </mat-select>
-            </mat-form-field>
-          }
-   
-          <mat-form-field appearance="fill">
-            <mat-label>Select Currency</mat-label>
-            <mat-select formControlName="currency">
-              <mat-option value="USD">USD</mat-option>
-              <mat-option value="CAD">CAD</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Select PMS</mat-label>
-            <mat-select formControlName="pms">
-             @if(dental_or_optometry!=''){
-              @if(dental_or_optometry=='optometry'){
-                <mat-option value="CrystalPM">CrystalPM</mat-option>
-                <mat-option value="OfficeMate">OfficeMate</mat-option>
-                <mat-option value="RevolutionEHR">RevolutionEHR</mat-option>
-              }@else if(dental_or_optometry=='dental') {
-                <mat-option value="AbelDent">AbelDent</mat-option>
-                <mat-option value="ClearDent">ClearDent</mat-option>
-                <mat-option value="Curve">Curve</mat-option>
-                <mat-option value="Denticon">Denticon</mat-option>
-                <mat-option value="Dentrix">Dentrix</mat-option>
-                <mat-option value="Dentrix Ascend">Dentrix Ascend</mat-option>
-                <mat-option value="Eaglesoft">Eaglesoft</mat-option>
-                <mat-option value="Easy Dental">Easy Dental</mat-option>
-                <mat-option value="OpenDental">OpenDental</mat-option>
-                <mat-option value="PracticeWorks">PracticeWorks</mat-option>
-                <mat-option value="Practice Web">Practice Web</mat-option>
-                <mat-option value="Tracker">Tracker</mat-option>
-              }@else if(dental_or_optometry=='chiropractic') {
-                <mat-option value="chiroTouch">ChiroTouch</mat-option>
-              }@else if(dental_or_optometry=='orthodontic') {
-                <mat-option value="cloud9">Cloud9</mat-option>
-                <mat-option value="dolphin">Dolphin</mat-option>
-                <mat-option value="ortho2Edge">Ortho2Edge</mat-option>
-                <mat-option value="orthoTrac">OrthoTrac</mat-option>
+              </mat-form-field>
+
+              @if(deals.length>0 || formPatched){
+              <mat-form-field appearance="fill" class="nowarnmsg-field white-formfield">
+                <mat-label>Select a Deal</mat-label>
+                <mat-select formControlName="deal" (selectionChange)="onDealSelect($event)">
+                  @if(deals.length > 0) {
+                  @for(deal of deals; track deal) {
+                  <mat-option [value]="deal.name">
+                    {{ deal.name }}
+                  </mat-option>
+                  }
+                  } @else {
+                  @if(preAgreementForm.get('deal')?.value) {
+                  <mat-option [value]="preAgreementForm.get('deal')?.value">
+                    {{ preAgreementForm.get('deal')?.value }}
+                  </mat-option>
+                  }
+                  }
+                </mat-select>
+              </mat-form-field>
               }
-             }@else {
-              <mat-option value=" " disabled>Select Practice Industry</mat-option>
-             }
-            </mat-select>
-          </mat-form-field>
-        </div>
-          <mat-checkbox formControlName="displayPricing"  (click)="addVaildate()">Display Pricing</mat-checkbox>
-          @if(preAgreementForm.get('displayPricing')?.value){
+
+              <mat-form-field appearance="fill" class="nowarnmsg-field white-formfield">
+                <mat-label>Select Currency</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option value="USD">USD</mat-option>
+                  <mat-option value="CAD">CAD</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="nowarnmsg-field white-formfield">
+                <mat-label>Select PMS</mat-label>
+                <mat-select formControlName="pms">
+                  @if(dental_or_optometry!=''){
+                  @if(dental_or_optometry=='optometry'){
+                  <mat-option value="CrystalPM">CrystalPM</mat-option>
+                  <mat-option value="OfficeMate">OfficeMate</mat-option>
+                  <mat-option value="RevolutionEHR">RevolutionEHR</mat-option>
+                  }@else if(dental_or_optometry=='dental') {
+                  <mat-option value="AbelDent">AbelDent</mat-option>
+                  <mat-option value="ClearDent">ClearDent</mat-option>
+                  <mat-option value="Curve">Curve</mat-option>
+                  <mat-option value="Denticon">Denticon</mat-option>
+                  <mat-option value="Dentrix">Dentrix</mat-option>
+                  <mat-option value="Dentrix Ascend">Dentrix Ascend</mat-option>
+                  <mat-option value="Eaglesoft">Eaglesoft</mat-option>
+                  <mat-option value="Easy Dental">Easy Dental</mat-option>
+                  <mat-option value="OpenDental">OpenDental</mat-option>
+                  <mat-option value="PracticeWorks">PracticeWorks</mat-option>
+                  <mat-option value="Practice Web">Practice Web</mat-option>
+                  <mat-option value="Tracker">Tracker</mat-option>
+                  }@else if(dental_or_optometry=='chiropractic') {
+                  <mat-option value="chiroTouch">ChiroTouch</mat-option>
+                  }@else if(dental_or_optometry=='orthodontic') {
+                  <mat-option value="cloud9">Cloud9</mat-option>
+                  <mat-option value="dolphin">Dolphin</mat-option>
+                  <mat-option value="ortho2Edge">Ortho2Edge</mat-option>
+                  <mat-option value="orthoTrac">OrthoTrac</mat-option>
+                  }
+                  }@else {
+                  <mat-option value=" " disabled>Select Practice Industry</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <mat-checkbox class="displaypricing-checkbox" formControlName="displayPricing"
+              (click)="addVaildate()">Display Pricing</mat-checkbox>
+            @if(preAgreementForm.get('displayPricing')?.value){
             <div class="pricing-section">
-              <div class="form-grid">
+              <div class="form-row">
                 <!-- Promotion Type -->
                 <!-- <mat-form-field appearance="fill" class="form-field">
-                  <mat-label>Promotion Type</mat-label>
-                  <mat-select formControlName="sales_person_promotion_type">
-                    <mat-option value="Smile Source">Smile Source</mat-option>
-                    <mat-option value="TruBlu">TruBlu</mat-option>
-                    <mat-option value="DDSOM">DDSOM</mat-option>
-                    <mat-option value="AIDA Member">AIDA Member</mat-option>
-                    <mat-option value="Custom">Custom</mat-option>
-                    <mat-option value="Event">Event</mat-option>
-                    <mat-option value="Outbound AE">Outbound AE</mat-option>
-                    <mat-option value="Outbound AE (Lite)">Outbound AE (Lite)</mat-option>
-                    <mat-option value="Outbound AE (Only Lite)">Outbound AE (Only Lite)</mat-option>
-                    <mat-option value="Only Lite - 1st Yr Promo">Only Lite - 1st Yr Promo</mat-option>
-                    <mat-option value="Admin">Admin</mat-option>
-                    <mat-option selected value="No Vendor Promo">No Vendor Promo</mat-option>
-                    <mat-option value="Inbound Core">Inbound Core</mat-option>
-                    <mat-option value="Outbound Core">Outbound Core</mat-option>
-                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
-                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
-                    <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
-                  </mat-select>
-                </mat-form-field> -->
-                <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>Promotion Type</mat-label>
+                      <mat-select formControlName="sales_person_promotion_type">
+                        <mat-option value="Smile Source">Smile Source</mat-option>
+                        <mat-option value="TruBlu">TruBlu</mat-option>
+                        <mat-option value="DDSOM">DDSOM</mat-option>
+                        <mat-option value="AIDA Member">AIDA Member</mat-option>
+                        <mat-option value="Custom">Custom</mat-option>
+                        <mat-option value="Event">Event</mat-option>
+                        <mat-option value="Outbound AE">Outbound AE</mat-option>
+                        <mat-option value="Outbound AE (Lite)">Outbound AE (Lite)</mat-option>
+                        <mat-option value="Outbound AE (Only Lite)">Outbound AE (Only Lite)</mat-option>
+                        <mat-option value="Only Lite - 1st Yr Promo">Only Lite - 1st Yr Promo</mat-option>
+                        <mat-option value="Admin">Admin</mat-option>
+                        <mat-option selected value="No Vendor Promo">No Vendor Promo</mat-option>
+                        <mat-option value="Inbound Core">Inbound Core</mat-option>
+                        <mat-option value="Outbound Core">Outbound Core</mat-option>
+                        <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
+                        <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                        <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
+                      </mat-select>
+                    </mat-form-field> -->
+                <mat-form-field appearance="fill" class="form-field nowarnmsg-field white-formfield">
                   <mat-label>Promotion Type</mat-label>
                   <mat-select formControlName="sales_person_promotion_type" (selectionChange)="onPromotionChange()">
-            
-                   @if(preAgreementForm.get('practiceIndustry')?.value=='dental' || preAgreementForm.get('practiceIndustry')?.value==''){
+
+                    @if(preAgreementForm.get('practiceIndustry')?.value=='dental' ||
+                    preAgreementForm.get('practiceIndustry')?.value==''){
                     <mat-option value="Smile Source">Smile Source</mat-option>
                     <mat-option value="TruBlu">TruBlu</mat-option>
                     <mat-option value="DDSOM">DDSOM</mat-option>
@@ -212,10 +216,12 @@
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
                     <mat-option value="Inbound Free Phones">Inbound Free Phones</mat-option>
                     <mat-option value="Outbound Free Phones">Outbound Free Phones</mat-option>
-                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
-                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free
+                      Verifications</mat-option>
+                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free
+                      Verifications</mat-option>
                     <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
-                   }@else if(preAgreementForm.get('practiceIndustry')?.value=='optometry'){
+                    }@else if(preAgreementForm.get('practiceIndustry')?.value=='optometry'){
                     <mat-option value="Custom">Custom</mat-option>
                     <mat-option value="Event">Event</mat-option>
                     <mat-option value="Outbound AE">Outbound AE</mat-option>
@@ -228,154 +234,177 @@
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
                     <mat-option value="Inbound Free Phones">Inbound Free Phones</mat-option>
                     <mat-option value="Outbound Free Phones">Outbound Free Phones</mat-option>
-                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
-                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
+                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free
+                      Verifications</mat-option>
+                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free
+                      Verifications</mat-option>
                     <mat-option value="Outbound Core - 1st Yr">Outbound Core - 1st Yr</mat-option>
-                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='orthodontic'){
+                    }@else if(preAgreementForm.get('practiceIndustry')?.value=='orthodontic'){
                     <mat-option value="Custom">Custom</mat-option>
                     <mat-option value="Event">Event</mat-option>
                     <mat-option value="Admin">Admin</mat-option>
                     <mat-option value="Inbound Core">Inbound Core</mat-option>
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
-                  }@else if(preAgreementForm.get('practiceIndustry')?.value=='chiropractic'){
-                       <mat-option value="Custom">Custom</mat-option>
+                    }@else if(preAgreementForm.get('practiceIndustry')?.value=='chiropractic'){
+                    <mat-option value="Custom">Custom</mat-option>
                     <mat-option value="Event">Event</mat-option>
                     <mat-option value="Admin">Admin</mat-option>
                     <mat-option value="Inbound Core">Inbound Core</mat-option>
                     <mat-option value="Outbound Core">Outbound Core</mat-option>
-                     <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free Verifications</mat-option>
-                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free Verifications</mat-option>
-                  }
+                    <mat-option class="free-veri" value="Inbound Free Verifications">Inbound Free
+                      Verifications</mat-option>
+                    <mat-option class="free-veri" value="Outbound Free Verifications">Outbound Free
+                      Verifications</mat-option>
+                    }
                   </mat-select>
                 </mat-form-field>
                 <!-- Promotion Expiry Date -->
-                <mat-form-field appearance="fill" class="form-field">
+                <mat-form-field appearance="fill" class="form-field nowarnmsg-field white-formfield">
                   <mat-label>Promotion Expiry Date</mat-label>
-                  <input
-                    formControlName="promotionExpiryDate"
-                    matInput
-                    [matDatepicker]="picker"
-                    [matDatepickerFilter]="disablePastDates"
-                    (dateChange)="onDateChange($event, picker)"
-                  />
+                  <input formControlName="promotionExpiryDate" matInput [matDatepicker]="picker"
+                    [matDatepickerFilter]="disablePastDates" (dateChange)="onDateChange($event, picker)" />
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
                 @if (selectedPromotion === 'Event') {
-                  <mat-form-field appearance="fill" class="form-field">
-                    <mat-label>Select Scheduler</mat-label>
-                    <mat-select formControlName="event_type">
-                      @for(event of eventOptions; track event){
-                        <mat-option [value]="event.name">
-                          {{ event.name }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
+                <mat-form-field appearance="fill" class="form-field nowarnmsg-field white-formfield">
+                  <mat-label>Select Scheduler</mat-label>
+                  <mat-select formControlName="event_type">
+                    @for(event of eventOptions; track event){
+                    <mat-option [value]="event.name">
+                      {{ event.name }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
                 }
-                
+
               </div>
-         
-               @if(loading){
-                <div class="loader-overlay">
-                  <div class="loader"></div>
-                </div>
-               }@else {
-                <div formGroupName="pricingDetails" class="pricing-details">
-                  @for( control of getPricingControls();track control; let i = $index){
-                    <ng-container>
-                      <!-- Show Section Title When a New Bundle Starts -->
-                       @if(shouldShowTitle(control, i)){
-                        <ng-container>
-                          <h3 class="bundle-title">{{ getBundleTitle(control) }}
-                            @if(selectedPromotion=='No Vendor Promo'){
-                              <input type="checkbox" (change)="toggleBundle(control)" [checked]="isAddOnEnabled(control)" class="hidden-checkbox2" />
 
-                              @if (isNoVendorPackage(control)) {
-                              <div (click)="toggleBundle(control)" [class.checked]="!isAddOnEnabled(control)" class="custom-checkbox2">
-                                {{ !isBundleEnabled(control) ? '✓' : '' }}
-                              </div>
-                              }
-                              
-                            }
-                          </h3>
-                        </ng-container>
-                       }
-             
-                      <div [class]="getBundleClass(control)" class="bundle">
-                        <mat-form-field appearance="fill" class="form-field">
-                          <mat-label>{{ getLabel(control) }}</mat-label>
-                          <span matPrefix>$&nbsp;</span>
-                          <input matInput type="number" [formControlName]="control" [min]="getMinValue(control)" [max]="getMaxValue(control)"  />
-                    
-                            <input type="checkbox" (change)="toggleAddOn(control)" [checked]="isAddOnEnabled(control)" class="hidden-checkbox" />
+              @if(loading){
+              <div class="loader-overlay">
+                <div class="loader"></div>
+              </div>
+              }@else {
+              <div formGroupName="pricingDetails" class="pricing-details">
+                @for( control of getPricingControls();track control; let i = $index){
+                <ng-container>
+                  <!-- Show Section Title When a New Bundle Starts -->
+                  @if(shouldShowTitle(control, i)){
+                  <ng-container>
+                    <strong class="pricingoffr-title">Paid Monthly</strong>
+                    <h3 class="bundle-title">{{ getBundleTitle(control) }}
+                      @if(selectedPromotion=='No Vendor Promo'){
+                      <input type="checkbox" (change)="toggleBundle(control)" [checked]="isAddOnEnabled(control)"
+                        class="hidden-checkbox2" />
 
-                            <!-- Custom checkbox for add_on controls -->
-                            @if (isAddOnControl(control)) {
-                              <!-- @if(gotId){
-                                  <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  true: false" class="custom-checkbox">
-                                {{isAddOnEnabled(control) ?  '✓': ''}}
-                              </div>
-                              }@else { -->
-                                     <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  false: true" class="custom-checkbox">
-                                {{isAddOnEnabled(control) ?  '': '✓' }}
-                              </div>
-                              <!-- } -->
-                            }
-                      
-                          <!-- Error Messages -->
-                          @if (getFormControl(control)?.hasError('required')) {
-                            <mat-error>
-                              This field is required.
-                            </mat-error>
-                          } @else if (getFormControl(control)?.hasError('min')) {
-                            <mat-error>
-                              Value must be at least {{ getMinValue(control) }}.
-                            </mat-error>
-                          } @else if (getFormControl(control)?.hasError('max')) {
-                            <mat-error>
-                              Value must not exceed {{ getMaxValue(control) }}.
-                            </mat-error>
-                          }
-                        </mat-form-field>
+                      @if (isNoVendorPackage(control)) {
+                      <div (click)="toggleBundle(control)" [class.checked]="!isAddOnEnabled(control)"
+                        class="custom-checkbox2">
+                        {{ !isBundleEnabled(control) ? '✓' : '' }}
                       </div>
-                    </ng-container>
+                      }
+
+                      }
+                    </h3>
+                  </ng-container>
                   }
-                 
-                </div>
-                
-               }
-              
-              
+
+                  <div [class]="getBundleClass(control)" class="bundle">
+                    <mat-form-field appearance="fill" class="form-field">
+                      <mat-label>{{ getLabel(control) }}</mat-label>
+                      <span matPrefix>$&nbsp;</span>
+                      <input matInput type="number" [formControlName]="control" [min]="getMinValue(control)"
+                        [max]="getMaxValue(control)" />
+
+                      <input type="checkbox" (change)="toggleAddOn(control)" [checked]="isAddOnEnabled(control)"
+                        class="hidden-checkbox" />
+
+                      <!-- Custom checkbox for add_on controls -->
+                      @if (isAddOnControl(control)) {
+                      <!-- @if(gotId){
+                                      <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  true: false" class="custom-checkbox">
+                                    {{isAddOnEnabled(control) ?  '✓': ''}}
+                                  </div>
+                                  }@else { -->
+                      <div (click)="toggleAddOn(control)" [class.checked]="isAddOnEnabled(control)?  false: true"
+                        class="custom-checkbox">
+                        {{isAddOnEnabled(control) ? '': '✓' }}
+                      </div>
+                      <!-- } -->
+                      }
+
+                      <!-- Error Messages -->
+                      @if (getFormControl(control)?.hasError('required')) {
+                      <mat-error>
+                        This field is required.
+                      </mat-error>
+                      } @else if (getFormControl(control)?.hasError('min')) {
+                      <mat-error>
+                        Value must be at least {{ getMinValue(control) }}.
+                      </mat-error>
+                      } @else if (getFormControl(control)?.hasError('max')) {
+                      <mat-error>
+                        Value must not exceed {{ getMaxValue(control) }}.
+                      </mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
+                </ng-container>
+                }
+
+              </div>
+
+              }
+
+
               <!-- Activation Fee -->
               <!-- <div class="activation-fee">
-                <h3 class="section-title"></h3>
-                <mat-form-field appearance="fill">
+                    <h3 class="section-title"></h3>
+                    <mat-form-field appearance="fill">
+                      <mat-label>Activation Fee</mat-label>
+                      <input matInput type="number" formControlName="activation_fee"  />
+                    </mat-form-field>
+                  </div> -->
+
+              <div class="activationfee-formfield active-numdays-formfield">
+                <mat-form-field class="nowarnmsg-field">
                   <mat-label>Activation Fee</mat-label>
-                  <input matInput type="number" formControlName="activation_fee"  />
+                  <input matInput type="number" value="500" placeholder="0" />
+                  <span matTextPrefix>$&nbsp;</span>
                 </mat-form-field>
-              </div> -->
+                <mat-form-field class="nowarnmsg-field">
+                  <mat-label>No. of days</mat-label>
+                  <input matInput type="number" value="0" placeholder="0" />
+                  <span matTextPrefix>$&nbsp;</span>
+                </mat-form-field>
+              </div>
+
             </div>
             }
-          
-      
-        <mat-checkbox formControlName="displayTechStackComparison">Display Tech Stack Comparison?</mat-checkbox>
-         @if(gotId && sendForm) {
-          <app-tech-stack-comparison  [getForm]="sendForm" (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
-        }@else if( preAgreementForm.get('displayTechStackComparison')?.value){
-          <app-tech-stack-comparison (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
-        }
+
+
+            <mat-checkbox class="displayts-checkbox" formControlName="displayTechStackComparison">Display Tech Stack
+              Comparison?</mat-checkbox>
+            @if(gotId && sendForm) {
+            <app-tech-stack-comparison [getForm]="sendForm"
+              (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
+            }@else if( preAgreementForm.get('displayTechStackComparison')?.value){
+            <app-tech-stack-comparison (formChanged)="onFormChanged($event)"></app-tech-stack-comparison>
+            }
+          </div>
+          <div class="formsubmit-btn">
+            <button mat-raised-button type="submit">Generate Presentation</button>
+          </div>
+        </form>
       </div>
-      <span>
-        <button mat-raised-button type="submit">Generate Presentation</button>
-      </span>
-    </form>
+    </div>
   </div>
 </div>
-     @if(isAccountIdLoading) {
-             
-                <div class="loader-overlay">
-                  <div class="loader"></div>
-                </div>
-              
-            }
+@if(isAccountIdLoading) {
+
+<div class="loader-overlay">
+  <div class="loader"></div>
+</div>
+
+}

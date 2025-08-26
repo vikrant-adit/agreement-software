@@ -8,10 +8,11 @@ import {
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-choose-packages',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule],
   templateUrl: './choose-packages.component.html',
   styleUrl: './choose-packages.component.scss',
 })

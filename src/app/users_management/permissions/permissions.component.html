@@ -4,7 +4,7 @@
 
     @if(hasPermission('add_permissions')){
     <div class="add-permission">
-      <mat-form-field class="white-formfield nowarnmsg-field">
+      <mat-form-field class="white-formfield nowarnmsg-field permissioname-field">
         <mat-label>Permission Name</mat-label>
         <input type="text" matInput [(ngModel)]="newPermissionName" />
       </mat-form-field>
@@ -12,7 +12,7 @@
           <mat-label>Permission Description</mat-label>
           <input type="text" matInput [(ngModel)]="newPermissionDescription" />
         </mat-form-field> -->
-      <button mat-raised-button (click)="addPermission()">
+      <button class="addpermission-btn" mat-raised-button (click)="addPermission()">
         Add Permission
       </button>
     </div>

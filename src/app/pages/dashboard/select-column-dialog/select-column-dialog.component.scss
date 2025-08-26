@@ -1,15 +1,17 @@
 .dialog-title {
   padding: 24px;
   margin: 0;
+
+  @media (max-width: 767.98px) {
+    padding: 16px 12px 10px 12px;
+  }
 }
 
 .content {
-  width: 60vw;
   display: flex;
 
   .modify-column {
     width: 50%;
-
   }
 
   .selected-column {
@@ -17,6 +19,27 @@
     padding-left: 10px;
     height: fit-content;
     border-left: 4px solid rgba(12, 11, 11, 0.595);
+  }
+
+  @media (max-width: 767.98px) {
+    flex-direction: column;
+    padding: 0 10px 0 10px;
+
+    .modify-column {
+      width: 100%;
+    }
+
+    .selected-column {
+      width: 100%;
+      margin-top: 12px;
+      padding-left: 0;
+      border-left: none;
+      border-top: 4px solid rgba(12, 11, 11, 0.595);
+    }
+
+    .column-box {
+      padding: 12px 6px;
+    }
   }
 }
 

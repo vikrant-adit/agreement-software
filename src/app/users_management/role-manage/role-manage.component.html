@@ -5,11 +5,11 @@
     <!-- Add Role -->
     @if(hasPermission('add_roles')){
     <div class="add-role">
-      <mat-form-field class="white-formfield nowarnmsg-field">
-        <mat-label> Enter Role Name </mat-label>
+      <mat-form-field class="white-formfield nowarnmsg-field rolename-field">
+        <mat-label>Enter Role Name </mat-label>
         <input matInput [(ngModel)]="newRole" placeholder="Enter Role Name" />
       </mat-form-field>
-      <button mat-raised-button (click)="addRole()">Add Role</button>
+      <button class="addrole-btn" mat-raised-button (click)="addRole()">Add Role</button>
     </div>
     }
   </div>

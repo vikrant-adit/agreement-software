@@ -1,118 +1,124 @@
-<div class="container">
-  <app-header></app-header>
-  <h1>{{edit?"Edit":'Create'}} User</h1>
-  <form [formGroup]="userForm" (ngSubmit)="submitUser()" class="user-form">
-    <div class="group">
-      <mat-form-field class="full-width">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="name" />
-      </mat-form-field>
+<app-header></app-header>
+<div id="mainContainer">
+  <div class="createuser-block">
+    <div class="wrap-inner">
+      <h1>{{edit?"Edit":'Create'}} User</h1>
+      <form [formGroup]="userForm" (ngSubmit)="submitUser()" class="user-form">
+        <div class="group">
+          <mat-form-field class="white-formfield nowarnmsg-field full-width">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
 
-      <mat-form-field class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" />
-      </mat-form-field>
+          <mat-form-field class="white-formfield nowarnmsg-field full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" />
+          </mat-form-field>
 
-      <!-- <mat-form-field class="full-width">
-        <mat-label>Designation</mat-label>
-        <input matInput formControlName="designation" />
-      </mat-form-field> -->
-    </div>
+          <!-- <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Designation</mat-label>
+              <input matInput formControlName="designation" />
+            </mat-form-field> -->
+        </div>
 
-    <!-- <div class="group">
-      <mat-form-field class="full-width">
-        <mat-label>Company Name</mat-label>
-        <input matInput formControlName="companyName" />
-      </mat-form-field>
+        <!-- <div class="group">
+            <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Company Name</mat-label>
+              <input matInput formControlName="companyName" />
+            </mat-form-field>
 
-      <mat-form-field class="full-width">
-        <mat-label>Reseller Email</mat-label>
-        <input matInput formControlName="resellerEmail" />
-      </mat-form-field>
+            <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Reseller Email</mat-label>
+              <input matInput formControlName="resellerEmail" />
+            </mat-form-field>
 
-      <mat-form-field class="full-width">
-        <mat-label>Verification ID</mat-label>
-        <input matInput formControlName="verificationId" [disabled]="true" />
-      </mat-form-field>
-    </div> -->
+            <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Verification ID</mat-label>
+              <input matInput formControlName="verificationId" [disabled]="true" />
+            </mat-form-field>
+          </div> -->
 
-    <!-- <div class="group">
-      <mat-form-field class="full-width">
-        <mat-label>Group</mat-label>
-        <mat-select formControlName="group">
-            <mat-option value="ae">AE</mat-option>
-            <mat-option value="isr">ISR</mat-option>
-            <mat-option value="sdr">SDR</mat-option>
-            <mat-option value="management">Management</mat-option>
-            <mat-option value="outbound ae">Outbound AE</mat-option>
-          </mat-select>
-      </mat-form-field>
+        <!-- <div class="group">
+            <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Group</mat-label>
+              <mat-select formControlName="group">
+                  <mat-option value="ae">AE</mat-option>
+                  <mat-option value="isr">ISR</mat-option>
+                  <mat-option value="sdr">SDR</mat-option>
+                  <mat-option value="management">Management</mat-option>
+                  <mat-option value="outbound ae">Outbound AE</mat-option>
+                </mat-select>
+            </mat-form-field>
 
-      <mat-form-field class="full-width">
-        <mat-label>Reseller ID</mat-label>
-        <input matInput formControlName="resellerId" />
-      </mat-form-field>
+            <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Reseller ID</mat-label>
+              <input matInput formControlName="resellerId" />
+            </mat-form-field>
 
-      
-    </div> -->
+            
+          </div> -->
 
-    <div class="group">
-      <!-- <mat-form-field class="full-width">
-        <mat-label>Username</mat-label>
-        <input matInput formControlName="username" type="text" />
-      </mat-form-field> -->
-      <mat-form-field class="full-width">
-        <mat-label>Password</mat-label>
-        <input matInput formControlName="password" type="password" #passwordInput />
-        <button mat-icon-button matSuffix type="button" (click)="generatePassword(passwordInput)">
-          <mat-icon matTooltip="Generate Password">autorenew</mat-icon>
-        </button>
-      </mat-form-field>
+        <div class="group">
+          <!-- <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username" type="text" />
+            </mat-form-field> -->
+          <mat-form-field class="white-formfield full-width nowarnmsg-field">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" type="password" #passwordInput />
+            <button mat-icon-button matSuffix type="button" (click)="generatePassword(passwordInput)">
+              <mat-icon matTooltip="Generate Password">autorenew</mat-icon>
+            </button>
+          </mat-form-field>
 
-      <!-- <mat-form-field class="full-width">
-        <mat-label>Is Deactivated</mat-label>
-        <mat-select formControlName="isDeactivated">
-            <mat-option value="yes" >Yes</mat-option>
-            <mat-option value="no" >No</mat-option>
-          </mat-select>
-      </mat-form-field> -->
-    </div>
-    <div class="role">
-      <mat-accordion>
-        <mat-expansion-panel class="expand" expanded="true">
-          <mat-expansion-panel-header>
-            <mat-panel-title> Roles</mat-panel-title>
-          </mat-expansion-panel-header>
-            <mat-radio-group formControlName="role_id"  aria-label="Select an option">
-              @for (role of roles; track role.id) {
+          <!-- <mat-form-field class="full-width nowarnmsg-field">
+              <mat-label>Is Deactivated</mat-label>
+              <mat-select formControlName="isDeactivated">
+                  <mat-option value="yes" >Yes</mat-option>
+                  <mat-option value="no" >No</mat-option>
+                </mat-select>
+            </mat-form-field> -->
+        </div>
+        <div class="role">
+          <mat-accordion>
+            <mat-expansion-panel class="expand" expanded="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Roles</mat-panel-title>
+              </mat-expansion-panel-header>
+              <mat-radio-group class="roleradio-group" formControlName="role_id" aria-label="Select an option">
+                @for (role of roles; track role.id) {
                 @if(hasPermission('add_admin') && role.name === 'Super Admin'){
-                  <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
+                <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
                 }
                 @if(hasPermission('add_admin') && role.name === 'Admin'){
-                  <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
+                <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
                 }@else if(role.name !== 'Admin' && role.name !== 'Super Admin') {
-                  <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
+                <mat-radio-button [value]="role.id" (change)="getRadioInfo($event)">{{role.name}}</mat-radio-button>
                 }
-              }
-           
-          </mat-radio-group>
-          @if(viewPermission){
-            <div class="permissions">
+                }
+
+              </mat-radio-group>
+              @if(viewPermission){
+              <div class="permissions">
                 @for(permission of mappedPermissions;track permission){
-                <mat-checkbox [checked]="permission.checked" (change)="edit?onCheckboxChange($event, permission.id):addExtraPermission($event, permission.id)">
+                <mat-checkbox [checked]="permission.checked"
+                  (change)="edit?onCheckboxChange($event, permission.id):addExtraPermission($event, permission.id)">
                   {{ permission.name }}
                 </mat-checkbox>
-                } 
-            </div>
-          }
-        <p>
-          <button mat-raised-button type="button" (click)="override()">Override Permissions</button>
-        </p> 
-        </mat-expansion-panel>
-      </mat-accordion>
+                }
+              </div>
+              }
+              <p>
+                <button mat-raised-button type="button" (click)="override()">Override Permissions</button>
+              </p>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+        <div class="group">
+          <button class="submitButton" mat-raised-button color="primary"
+            type="submit">{{edit?'Update':'Create'}}</button>
+        </div>
+      </form>
     </div>
-    <div class="group">
-      <button class="submitButton" mat-raised-button color="primary" type="submit">{{edit?'Update':'Create'}}</button>
-    </div>
-  </form>
+  </div>
 </div>

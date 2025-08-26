@@ -16,7 +16,7 @@
     <mat-radio-group>
       <div class="column">
         @for(option of filteredProviders;track option){
-          <mat-radio-button [value]="option" (click)="setValue(option)">
+          <mat-radio-button [value]="option" (click)="setValue(option)" class="modalradio_btn">
             {{ option }}
           </mat-radio-button>
         }

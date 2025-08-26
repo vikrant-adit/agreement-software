@@ -3,13 +3,13 @@
   <div class="dashboard-container">
     <div class="dashboard-block">
       <div class="container">
-        <div class="search-pagination-container">
-          <mat-form-field>
+        <div class="search-createbtn-container">
+          <mat-form-field class="usersearch-field">
             <mat-label>Search by Name, Email</mat-label>
             <input matInput (keyup)="applyFilter($event)">
           </mat-form-field>
           @if(hasPermission('add_users')){
-          <button (click)="createForm()">+ Create</button>
+          <button (click)="createForm()" class="usercreate-topbtn">+ Create</button>
 
           }
         </div>
@@ -39,7 +39,7 @@
 
             <!-- Sales Person/Reseller -->
             <ng-container matColumnDef="role_name">
-              <mat-header-cell *matHeaderCellDef mat-sort-header>Role</mat-header-cell>
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Designation</mat-header-cell>
               <mat-cell *matCellDef="let element">{{ element.role_name }}</mat-cell>
             </ng-container>
 

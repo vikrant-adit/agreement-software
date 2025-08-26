@@ -1,12 +1,29 @@
+// Media query responsive
+$breakpoint_xxl: 1199.98px;
+$breakpoint_xl: 1199.98px;
+$breakpoint_lg: 991.98px;
+$breakpoint_md: 767.98px;
+$breakpoint_sm: 575.98px;
+$breakpoint_xs: 479.98px;
+
 .dashboard-container {
   background-color: var(--light-grey-color);
   height: calc(100vh - 53px);
+
 
   .dashboard-block {
     padding: 40px 30px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+
+    @media (max-width: $breakpoint_xl) {
+      padding: 30px 20px;
+    }
+
+    @media (max-width: $breakpoint_md) {
+      padding: 30px 12px;
+    }
 
     .dashtabletop-btn:hover {
       background-color: var(--primary-color);
@@ -30,16 +47,85 @@
         flex-direction: row;
         // align-items: baseline;
         gap: 1rem;
+        
+        .white-formfield {
+          ::ng-deep {
+            .mdc-text-field {
+              padding: 0 12px;
+            }
+          }
+        }
 
         button {
           border-radius: 6px;
           height: 3.5rem;
           background-color: #fff;
+
           &:hover {
             background-color: var(--secondary-color);
             color: #fff;
           }
         }
+
+        @media (max-width: $breakpoint_md) {
+          flex-wrap: wrap;
+          width: 100%;
+          gap: 0;
+
+          .tbloverview-field {
+            width: calc(100% - 160px);
+            padding-right: 16px;
+          }
+
+          .dashtabletop-btn {
+            --mat-protected-button-horizontal-padding: 16px;
+            width: 160px;
+          }
+
+          .tblrange-field {
+            width: calc(100% - 160px);
+            padding-right: 16px;
+            order: 1;
+          }
+
+          .tblsetting-topbtn {
+            order: 2;
+          }
+          .tblsearch-field {
+            width: 100%;
+            order: 3;
+          }
+        }
+
+        @media (max-width: $breakpoint_xs) {
+          .tbloverview-field {
+            width: 100%;
+            padding-right: 0;
+            margin-bottom: -8px;
+          }
+
+          .dashtabletop-btn {
+            width: 100%;
+          }
+
+          .tblrange-field {
+            width: 100%;
+            padding-right: 0;
+            order: 2;
+            margin-top: 12px;
+            margin-bottom: -8px;
+          }
+          .tblsetting-topbtn {
+            order: 1;
+            margin-top: 12px;
+          }
+        }
+
+      }
+
+      @media (max-width: $breakpoint_xl) {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
 
@@ -107,6 +193,24 @@
             min-width: 105px;
           }
         }
+
+        @media (max-width: $breakpoint_md) {
+
+          th,
+          td {
+            &:nth-last-child(2) {
+              right: auto;
+              box-shadow: inherit;
+            }
+
+            &:last-child {
+              position: relative;
+              right: auto;
+              width: auto;
+              min-width: inherit;
+            }
+          }
+        }
       }
 
       &::-webkit-scrollbar {
@@ -126,25 +230,18 @@
           background: #898888;
         }
       }
+
+      @media (max-width: $breakpoint_xl) {
+        max-height: calc(100vh - 321px);
+      }
+
+      @media (max-width: $breakpoint_md) {
+        max-height: inherit;
+      }
     }
-
   }
-}
 
-::ng-deep .mat-tooltip {
-  position: relative;
-}
-
-/* Arrow pointing downward (because tooltip is above) */
-::ng-deep .mat-tooltip::after {
-  content: '';
-  position: absolute;
-  bottom: -16px;
-  /* slightly overlaps the element */
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 6px;
-  border-style: solid;
-  border-color: red transparent transparent transparent;
-  /* top arrow color */
+  @media (max-width: $breakpoint_md) {
+    height: inherit;
+  }
 }

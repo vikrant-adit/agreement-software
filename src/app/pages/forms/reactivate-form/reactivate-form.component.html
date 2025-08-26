@@ -1,66 +1,112 @@
-<div class="container">
-  <app-header></app-header>
-  <h1>Re-Activate Form</h1>
-  <div class="form-container">
-    <form [formGroup]="reactivateForm">
-      <div class="form-row">
-        <mat-form-field appearance="fill">
-          <mat-label>Account ID</mat-label>
-          <input matInput formControlName="accountId" />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
-          <mat-label>Select Currency</mat-label>
-          <mat-select formControlName="currency">
-            <mat-option value="USD">USD</mat-option>
-            <mat-option value="EUR">EUR</mat-option>
-            <mat-option value="GBP">GBP</mat-option>
-          </mat-select>
-        </mat-form-field>
+<app-header></app-header>
+<div id="mainContainer">
+  <div class="reactivateform-block">
+    <div class="wrap-inner">
+      <div class="main-title">
+        <h1>Re-Activate Form</h1>
       </div>
+      <div class="form-container">
+        <h3>Customer Details</h3>
+        <form [formGroup]="reactivateForm">
+          <div class="form-row">
+            <div class="formfield-col formfield-col50">
+              <mat-form-field class="white-formfield" appearance="fill">
+                <mat-label>Account ID</mat-label>
+                <input matInput formControlName="accountId" />
+              </mat-form-field>
+            </div>
+            <div class="formfield-col formfield-col50">
+              <mat-form-field class="white-formfield" appearance="fill">
+                <mat-label>Select Currency</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option value="USD">USD</mat-option>
+                  <mat-option value="EUR">EUR</mat-option>
+                  <mat-option value="GBP">GBP</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="plans-row">
+            <div class="plans-col">
+              <div class="plans-block">
+                <h4>Adit Core Paid Monthly</h4>
+                <div class="plans-box">
+                  <mat-form-field class="nowarnmsg-field">
+                    <mat-label>Price</mat-label>
+                    <input matInput type="number" value="299" placeholder="0" />
+                    <span matTextPrefix>$&nbsp;</span>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <div class="plans-col">
+              <div class="plans-block">
+                <h4>Adit Core Paid Annually</h4>
+                <div class="plans-box">
+                  <mat-form-field class="nowarnmsg-field">
+                    <mat-label>Price</mat-label>
+                    <input matInput type="number" value="249" placeholder="0" />
+                    <span matTextPrefix>$&nbsp;</span>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h4 class="plansaddon-title">Add ons</h4>
+          <div class="plans-row">
+            <div class="plans-col">
+              <div class="plans-block">
+                <div class="plans-box">
+                  <strong>Phones</strong>
+                  <mat-checkbox class="priceplan-checkbox" formControlName="phones"></mat-checkbox>
+                  <mat-form-field class="nowarnmsg-field readonly_planprice">
+                    <mat-label>Price</mat-label>
+                    <input matInput type="number" value="100" placeholder="0" readonly="" />
+                    <span matTextPrefix>$&nbsp;</span>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <div class="plans-col">
+              <div class="plans-block analyticplan-block">
+                <div class="plans-box">
+                  <strong>Analytics</strong>
+                  <mat-checkbox class="priceplan-checkbox" formControlName="analytics"></mat-checkbox>
+                  <mat-form-field class="nowarnmsg-field readonly_planprice">
+                    <mat-label>Price</mat-label>
+                    <input matInput type="number" value="100" placeholder="0" readonly="" />
+                    <span matTextPrefix>$&nbsp;</span>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <div class="plans-col">
+              <div class="plans-block verifiplan-block">
+                <div class="plans-box">
+                  <strong>Verifications</strong>
+                  <mat-checkbox class="priceplan-checkbox" formControlName="verifications"></mat-checkbox>
+                  <mat-form-field class="nowarnmsg-field readonly_planprice">
+                    <mat-label>Price</mat-label>
+                    <input matInput type="number" value="150" placeholder="0" readonly="" />
+                    <span matTextPrefix>$&nbsp;</span>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="plan-options">
-        <div class="plan-option">
-          <h3>Adit Core Paid Monthly</h3>
-          <p>Price: $299</p>
-        </div>
-        <div class="plan-option">
-          <h3>Adit Core Paid Annually</h3>
-          <p>Price: $249</p>
-        </div>
+          <div class="activationfee-formfield">
+            <mat-form-field class="nowarnmsg-field">
+              <mat-label>Activation Fee</mat-label>
+              <input matInput type="number" value="500" placeholder="0" />
+              <span matTextPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+          <div class="formsubmit-btn">
+            <button mat-raised-button color="primary" (click)="generatePresentation()">Generate Presentation</button>
+          </div>
+        </form>
       </div>
-      <h3>Add ons</h3>
-      <div class="add-ons">
-        
-        <div class="add-on">
-          <mat-checkbox formControlName="phones"
-            >Phones (Price: $100)</mat-checkbox
-          >
-        </div>
-        <div class="add-on">
-          <mat-checkbox formControlName="analytics"
-            >Analytics (Price: $100)</mat-checkbox
-          >
-        </div>
-        <div class="add-on">
-          <mat-checkbox formControlName="verifications"
-            >Verifications (Price: $150)</mat-checkbox
-          >
-        </div>
-      </div>
-
-      <div class="activation-fee">
-        <h3>Activation Fee</h3>
-        <p>$500</p>
-      </div>
-
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="generatePresentation()"
-      >
-        Generate Presentation
-      </button>
-    </form>
+    </div>
   </div>
 </div>

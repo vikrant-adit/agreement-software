@@ -11,6 +11,10 @@
   .container {
     max-width: 100%;
     padding: 0 30px;
+
+    @media (max-width: 1199.98px) {
+      padding: 0 12px;
+    }
   }
 }
 
@@ -47,8 +51,10 @@
   }
 }
 
-// .menuList{
-//  button{
-//   text-align: center;
-//  }
-// }
+@media (max-width: 767.98px) {
+  .header-main {
+    .header-logo {
+      width: 64px;
+    }
+  }
+}

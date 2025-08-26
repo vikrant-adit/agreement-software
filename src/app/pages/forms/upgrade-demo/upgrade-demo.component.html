@@ -1,29 +1,41 @@
-<div class="container">
 <app-header></app-header>
-<h1>Interested Upgrade</h1>
-<div class="form-container">
-      <form [formGroup]="upgradeForm">
-        <mat-form-field appearance="fill">
-          
-          <mat-select formControlName="interestedUpgrade" placeholder="Select...">
-            <mat-option value="Insurance verfication">Insurance verfication</mat-option>
-            <mat-option value="Analytics">Analytics</mat-option>
-            <mat-option value="Marketing">Marketing</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
-          <mat-label>Booked by</mat-label>
-          <input matInput formControlName="bookedBy">
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
-          <mat-label>Scheduling Remarks</mat-label>
-          <textarea matInput formControlName="schedulingRemarks"></textarea>
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" (click)="submitForm()">Submit</button>
-      </form>
-  
-</div>
+<div id="mainContainer">
+  <div class="upgradeform-block">
+    <div class="wrap-inner">
+      <div class="main-title">
+        <h1>Upgrade Demo</h1>
+      </div>
+      <div class="form-container">
+        <form [formGroup]="upgradeForm">
+          <div class="form-row">
+            <div class="formfield-col">
+              <mat-form-field appearance="fill" class="white-formfield">
+                <mat-label>Interested Upgrade</mat-label>
+                <mat-select formControlName="interestedUpgrade" placeholder="Select...">
+                  <mat-option value="Insurance verfication">Insurance verfication</mat-option>
+                  <mat-option value="Analytics">Analytics</mat-option>
+                  <mat-option value="Marketing">Marketing</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="formfield-col">
+              <mat-form-field appearance="fill" class="white-formfield">
+                <mat-label>Booked by</mat-label>
+                <input matInput formControlName="bookedBy">
+              </mat-form-field>
+            </div>
+            <div class="formfield-col">
+              <mat-form-field appearance="fill" class="white-formfield">
+                <mat-label>Scheduling Remarks</mat-label>
+                <textarea matInput formControlName="schedulingRemarks"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="formsubmit-btn">
+            <button mat-raised-button color="primary" (click)="submitForm()">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>

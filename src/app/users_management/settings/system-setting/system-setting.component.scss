@@ -1,6 +1,14 @@
 .systemsetting-block {
   padding: 20px;
+
+  @media (max-width: 767.98px) {
+    padding: 12px 8px;
+    h2 {
+      margin-top: 4px;
+    }
+  }
 }
+
 ul {
   list-style-type: none; // Remove default bullet points
   padding: 0; // Remove default padding
@@ -36,6 +44,19 @@ ul {
 
       &:active {
         background-color: #990000; // Even darker red on click
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      font-size: 15px;
+      padding: 8px;
+
+      button {
+        .mat-icon {
+          font-size: 17px;
+          height: 16px;
+          width: 18px;
+        }
       }
     }
   }

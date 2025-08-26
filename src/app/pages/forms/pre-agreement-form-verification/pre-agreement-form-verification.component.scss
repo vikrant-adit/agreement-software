@@ -1,47 +1,65 @@
-.container{
-    background-color: var(--background-color);
-    height: 100%;
-    
+.packchangeform-block {
+  padding: 60px 0;
+
+  .main-title {
     h1 {
-      text-align: center;
-      color: var(--primary-color);
-      // margin-bottom: 20px;
-    }
-    .form-container {
-      width: 70vw;
-      margin: 20px auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background-color: #fff;
-      form{
-        display: flex;
-        flex-direction: column;
-      }
-    
-      .form-row {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-    
-        mat-form-field {
-          width: calc(50% - 5px);
-        }
-      }
-    
-      .full-width {
-        width: 100%;
-      }
-    
-     span{
-      width: 100%;
-      text-align: center;
-      button {
-        // margin-top: 20px;
-        width: 20rem;
-        background-color: var(--primary-color);
-        color: white;
-      }
-     }
+      font-size: 35px;
     }
   }
+
+  .form-container {
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    max-width: 700px;
+    margin: 0 auto;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
+  @media only screen and (max-width: 1399.98px) {
+    .main-title {
+      h1 {
+        font-size: 32px;
+      }
+    }
+  }
+
+  @media only screen and (max-width: 1199.98px) {
+    padding: 40px 0;
+
+    .main-title {
+      h1 {
+        font-size: 28px;
+      }
+    }
+  }
+
+  @media only screen and (max-width: 767.98px) {
+    padding: 30px 0;
+
+    .main-title {
+      margin-bottom: 20px;
+
+      h1 {
+        font-size: 26px;
+      }
+    }
+
+    .form-container {
+      padding: 20px 16px;
+      border-radius: 12px;
+    }
+  }
+
+  @media only screen and (max-width: 479.98px) {
+    .main-title {
+      h1 {
+        font-size: 24px;
+      }
+    }
+  }
+}

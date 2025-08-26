@@ -1,24 +1,79 @@
-.container{
-    background-color: var(--background-color);
-    height: 100%;
-    h1{
-        text-align: center;
-        color: var(--primary-color);
-    }
-    .form-container{
-        width: 50vw;
-        background-color: white;
-        margin: 20px auto;
-        padding: 20px;
-        border-radius: 6px;
-       form{
-        display: flex;
-        flex-direction: column;
-       }
-       button{
-        background-color: var(--primary-color);
-        color: white;
-        font-size: 18px;
-       }
-    }
+.upgradeform-block {
+	padding: 60px 0;
+}
+
+.form-container {
+	background-color: #ffffff;
+	box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+	padding: 30px 20px;
+	border-radius: 16px;
+	max-width: 750px;
+	margin: 0 auto;
+
+	.form-row {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0 -12px;
+
+		.formfield-col {
+			width: 100%;
+			padding: 0 12px;
+
+			mat-form-field {
+				width: 100%;
+			}
+		}
+
+		.formfield-col50 {
+			width: 50%;
+		}
+	}
+}
+
+.formsubmit-btn {
+	margin-top: 8px;
+	text-align: center;
+
+	button {
+		font-family: 'Ubuntu', sans-serif;
+		font-size: 18px;
+		font-weight: 700;
+		background-color: var(--primary-color);
+		color: white;
+		max-width: 260px;
+		width: 100%;
+		padding: 14px 24px;
+		height: auto;
+	}
+}
+
+@media only screen and (max-width: 1199.98px) {
+	.upgradeform-block {
+		padding: 40px 0;
+	}
+
+	.formsubmit-btn {
+		button {
+			font-size: 16px;
+			max-width: 240px;
+		}
+	}
+}
+
+@media only screen and (max-width: 767.98px) {
+	.upgradeform-block {
+		padding: 30px 0;
+	}
+	.form-container {
+    padding: 20px 12px;
+	}
+
+	.formsubmit-btn {
+		button {
+			font-size: 15px;
+			max-width: 100%;
+			width: auto;
+			padding: 10px 32px;
+		}
+	}
 }

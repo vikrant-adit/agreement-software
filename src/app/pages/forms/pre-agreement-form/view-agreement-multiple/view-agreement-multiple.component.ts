@@ -17,6 +17,7 @@ import SignaturePad from 'signature_pad';
 import { MatDividerModule } from '@angular/material/divider';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatExpansionModule} from '@angular/material/expansion';
 import { ChangeDetectorRef } from '@angular/core';
 import {
   ReactiveFormsModule,
@@ -62,6 +63,7 @@ import { CardDetailsComponent } from './card-details/card-details.component';
     MatTabsModule,
     ChoosePackagesComponent,
     PhoneNumberFormatterDirective,
+    MatExpansionModule,
   ],
   templateUrl: './view-agreement-multiple.component.html',
   styleUrl: './view-agreement-multiple.component.scss',

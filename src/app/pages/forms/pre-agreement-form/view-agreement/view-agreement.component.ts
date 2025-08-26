@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { HeaderComponent } from '../../../../header/header.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import SignaturePad from 'signature_pad';
@@ -60,6 +61,7 @@ import { environment } from '../../../../../environments/environment';
     HeaderComponent,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
     MatSelectModule,
     MatTabsModule,
     ChoosePackagesComponent,

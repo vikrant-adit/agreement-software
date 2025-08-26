@@ -10,6 +10,14 @@
     margin: 0;
   }
 
+  .white-formfield {
+    ::ng-deep {
+      .mdc-text-field {
+        padding: 0 8px;
+      }
+    }
+  }
+
   .add-permission {
     display: flex;
 
@@ -22,10 +30,33 @@
       cursor: pointer;
     }
   }
+
+  @media (max-width: 767.98px) {
+    padding: 12px 8px;
+    flex-direction: column;
+
+    .add-permission {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    .permissioname-field {
+      width: calc(100% - 136px);
+    }
+
+    .addpermission-btn {
+      width: 136px;
+      margin-right: 0;
+    }
+  }
 }
 
 .permissiontable-block {
   padding: 20px;
+
+  @media (max-width: 767.98px) {
+    padding: 12px 8px;
+  }
 }
 
 .table-container {
@@ -35,6 +66,7 @@
   table {
     width: 100%;
     border-collapse: collapse;
+    white-space: nowrap;
   }
 
   th {
@@ -71,6 +103,12 @@
       button:last-child {
         margin-right: 0;
       }
+    }
+
+    input {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #afadad;
     }
   }
 }

@@ -1,46 +1,348 @@
-.container{
-    background-color: var(--background-color);
-    height: 100%;
-    h1{
-        text-align: center;
-        color: var(--primary-color);
+.reactivateform-block {
+  font-family: 'Ubuntu', sans-serif;
+  padding: 60px 0;
+}
+
+.form-container {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+  padding: 30px 20px;
+  border-radius: 16px;
+
+  h3 {
+    font-size: 26px;
+    font-weight: 500;
+    color: #092A3D;
+    margin: 0 0 16px 0;
+  }
+
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -12px;
+
+    .formfield-col {
+      width: 100%;
+      padding: 0 12px;
+
+      mat-form-field {
+        width: 100%;
+      }
     }
-    .form-container{
-        background-color: white;
-        width: 70vw;
-        margin: 20px auto;
-        padding: 20px;
+
+    .formfield-col50 {
+      width: 50%;
     }
+  }
+}
+
+.plans-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -12px;
+
+  .plans-col {
+    width: 33.33%;
+    padding: 0 12px;
+    margin-bottom: 20px;
+  }
+}
+
+.plans-block {
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #092A3D;
+    text-decoration-line: underline;
+    margin: 0 0 12px 0;
+  }
+
+  .plans-box {
+    background-color: rgb(229 239 255 / 60%);
+    color: var(--bodytext-color);
+    border-radius: 5px;
+    padding: 20px 12px;
+    --mat-form-field-container-text-font: 'Ubuntu', sans-serif;
+    --mdc-filled-text-field-label-text-font: 'Ubuntu', sans-serif;
+    --mdc-filled-text-field-label-text-weight: 500;
+    --mdc-filled-text-field-active-indicator-color: #7CCCF1;
+    --mdc-filled-text-field-hover-active-indicator-color: #7CCCF1;
+    position: relative;
+
+    strong {
+      font-size: 16px;
+      font-weight: 700;
+      color: #306BCA;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background-color: transparent;
+        padding: 0;
+
+        .mat-mdc-floating-label {
+          top: 29px;
+
+          &.mdc-floating-label--float-above {
+            top: 20px;
+            left: -14px;
+          }
+        }
+      }
+
+      .mat-mdc-form-field-focus-overlay {
+        --mat-form-field-state-layer-color: transparent;
+      }
+
+      .mat-mdc-form-field-infix {
+        padding-top: 16px;
+        padding-bottom: 5px;
+        min-height: inherit;
+      }
+    }
+
+    .priceplan-checkbox {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      --mdc-checkbox-state-layer-size: 22px;
+
+      ::ng-deep {
+        .mdc-checkbox {
+          flex: 0 0 22px;
+          width: 22px;
+          height: 22px;
+          padding: 0;
+
+          input {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
+
+          .mat-mdc-checkbox-touch-target {
+            display: none;
+          }
+
+          .mdc-checkbox__ripple {
+            display: none;
+          }
+
+          .mdc-checkbox__background {
+            border-radius: 50%;
+            border-color: #F28820;
+            width: 22px;
+            height: 22px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            svg {
+              width: 15px;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+          }
+        }
+      }
+    }
+
+    .readonly_planprice {
+      ::ng-deep {
+        .mdc-line-ripple {
+          &::before {
+            border-bottom-style: dashed;
+          }
+
+          &::after {
+            border: none;
+          }
+        }
+
+        input {
+          color: rgb(9 42 61 / 80%);
+        }
+      }
+    }
+  }
+
+  &.analyticplan-block {
+    .plans-box {
+      background-color: rgb(255 241 231 / 60%);
+
+      strong {
+        color: #F28820;
+      }
+    }
+  }
+
+  &.verifiplan-block {
+    .plans-box {
+      background-color: rgb(250, 245, 250);
+
+      strong {
+        color: #A569BD;
+      }
+    }
+  }
+}
+
+.plansaddon-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #092A3D;
+  text-decoration-line: underline;
+  margin: 0 0 12px 0;
+}
+
+.activationfee-formfield {
+  --mat-form-field-container-text-font: 'Ubuntu', sans-serif;
+  --mdc-filled-text-field-label-text-font: 'Ubuntu', sans-serif;
+  --mdc-filled-text-field-label-text-weight: 500;
+  --mdc-filled-text-field-active-indicator-color: #7CCCF1;
+  --mdc-filled-text-field-hover-active-indicator-color: #7CCCF1;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background-color: transparent;
+      padding: 0;
+
+      .mat-mdc-floating-label {
+        top: 29px;
+
+        &.mdc-floating-label--float-above {
+          top: 20px;
+          left: -14px;
+        }
+      }
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      --mat-form-field-state-layer-color: transparent;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 16px;
+      padding-bottom: 5px;
+      min-height: inherit;
+    }
+  }
+}
+
+.formsubmit-btn {
+  margin-top: 20px;
+  text-align: center;
+
+  button {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    background-color: var(--primary-color);
+    color: white;
+    max-width: 260px;
+    width: 100%;
+    padding: 14px 24px;
+    height: auto;
+  }
+}
+
+@media only screen and (max-width: 1399.98px) {
+  .form-container {
+    h3 {
+      font-size: 24px;
+    }
+  }
+}
+
+@media only screen and (max-width: 1199.98px) {
+  .reactivateform-block {
+    padding: 40px 0;
+  }
+
+  .form-container {
+    h3 {
+      font-size: 22px;
+    }
+  }
+
+  .formsubmit-btn {
+    button {
+      font-size: 16px;
+      max-width: 240px;
+    }
+  }
+}
+
+@media only screen and (max-width: 991.98px) {
+  .form-container {
     .form-row {
-        display: flex;
-        justify-content: space-between;
+      .formfield-col50 {
+        width: 100%;
       }
-    
-      .form-row mat-form-field {
-        width: 48%;
+    }
+  }
+
+  .plans-row {
+    .plans-col {
+      width: 100%;
+    }
+  }
+
+  .formsubmit-btn {
+    button {
+      font-size: 16px;
+      max-width: 240px;
+    }
+  }
+}
+
+@media only screen and (max-width: 767.98px) {
+  .reactivateform-block {
+    padding: 30px 0;
+  }
+
+  .form-container {
+    padding: 20px 12px;
+
+    h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .plans-block {
+    h4 {
+      font-size: 14px;
+    }
+
+    .plans-box {
+      strong {
+        font-size: 14px;
       }
-    
-      .plan-options {
-        display: flex;
-        justify-content: space-between;
-        // margin-bottom: 20px;
-      }
-    
-      .plan-option {
-        border: 1px solid #ccc;
-        // padding: 15px;
-        width: 48%;
-        text-align: center;
-      }
-    
-      .add-ons {
-        // margin-bottom: 20px;
-        display: flex;
-      }
-    
-   
-    
-      .activation-fee {
-        margin-bottom: 20px;
-      }
+    }
+  }
+
+  .plansaddon-title {
+    font-size: 14px;
+  }
+
+  .formsubmit-btn {
+    button {
+      font-size: 15px;
+      max-width: 100%;
+      width: auto;
+      padding: 10px 20px;
+    }
+  }
 }

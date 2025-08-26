@@ -1,10 +1,64 @@
-.dialog-container{
-    padding: 20px;
-    .column{
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-    .search-field{
-        width: 100%;
-    }  
+.dialog-container {
+	padding: 30px 20px 20px 20px;
+
+	h2 {
+		font-size: 22px;
+		font-weight: 600;
+		color: var(--bodytext-color);
+		text-align: center;
+		margin: 0 0 20px 0;
+	}
+
+	.column {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		column-gap: 12px;
+		--mat-radio-label-text-color: var(--bodytext-color);
+		--mat-radio-label-text-font: "Work Sans", sans-serif;
+		--mat-radio-label-text-weight: 600;
+		--mat-radio-label-text-size: 1rem;
+
+		.modalradio_btn {
+			border-bottom: 1px solid var(--light-grey-color);
+		}
+	}
+
+	.search-field {
+		width: 100%;
+	}
+
+	@media only screen and (max-width: 1199.98px) {
+		h2 {
+			font-size: 20px;
+		}
+
+		.column {
+			--mat-radio-label-text-size: 0.85rem;
+		}
+	}
+
+	@media only screen and (max-width: 767.98px) {
+		padding: 20px 12px 12px 12px;
+
+		.column {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media only screen and (max-width: 479.98px) {
+		padding: 16px 8px 12px 8px;
+
+		h2 {
+			font-size: 18px;
+		}
+
+		.column {
+			--mat-radio-label-text-size: 0.75rem;
+			--mdc-radio-state-layer-size: 24px;
+
+			.modalradio_btn {
+				padding: 5px 0;
+			}
+		}
+	}
 }
